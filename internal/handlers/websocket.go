@@ -4,15 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"yus/internal/models"
+	"yus/internal/service"
 
 	"github.com/gorilla/websocket"
 )
 
 // var ConnMap sync.Map
-type Location struct {
-	Latitude  string `json:"latitude"`
-	Longitude string `json:"longitude"`
-}
 
 // func ws_hanler(w http.ResponseWriter, r *http.Request) {
 // 	fmt.Println("working")
@@ -61,7 +59,7 @@ func Ws_hanler(w http.ResponseWriter, r *http.Request) {
 func listen_for_location(conn *websocket.Conn) {
 	defer conn.Close()
 	fmt.Println("driver connected successfully ")
-	var current_location Location
+	var current_location models.Location
 	for {
 		_, loc, err := conn.ReadMessage()
 		if err != nil {
@@ -72,7 +70,8 @@ func listen_for_location(conn *websocket.Conn) {
 		if err != nil {
 			fmt.Println("error while unmarshaling the location - ", err)
 		}
-		fmt.Printf("lattitude - %s & longitude - %s", current_location.Latitude, current_location.Longitude)
+		// fmt.Printf("lattitude - %s & longitude - %s & Speed - %s ", current_location.Latitude, current_location.Longitude, current_location.Speed)
 		fmt.Println("\n\n")
+		service.Reverse_Geocoding(current_location)
 	}
 }
