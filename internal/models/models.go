@@ -18,3 +18,9 @@ type NominatimResponse struct {
 		City    string `json:"city"`
 	} `json:"address"`
 }
+
+type RouteStops struct {
+	Lat          string `json:"lat"`
+	Lon          string `json:"lon"`
+	LocationName string `json:"location_name"`
+}

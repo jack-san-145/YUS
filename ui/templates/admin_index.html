@@ -954,10 +954,23 @@
                 map.panTo([lat, lng]);
                 map.setZoom(15);
                 
-                // Add a marker
-                addMarker(lat, lng, "Current Location");
+                // // Add a marker
+                // addMarker(lat, lng, "Current Location");
+                 // Get custom name or use default
+                let customName = document.getElementById('location-name').value;
+                if (!customName) {
+                    customName = `Stop ${routePoints.length + 1}`;
+                }
                 
-                showNotification('Your location has been found and marked');
+                // Add marker
+                addMarker(lat, lng, customName);
+                
+                // Clear the input field
+                document.getElementById('location-name').value = '';
+                
+                showNotification(`Added "${customName}" to route`);
+                
+                // showNotification('Your location has been found and marked');
             }, function(error) {
                 showNotification('Could not get your location. Please enable location permissions.', 'error');
             }, {
@@ -1252,10 +1265,10 @@
 
     async function send_route_to_server(route_points){
 
-        const response= await fetch("/yus/save-new-route/",{
+        const response= await fetch("/yus/save-new-route",{
             method:"POST",
             headers : {
-                "ContentType":"application/json"
+                "Content-Type":"application/json"
             },
             body:JSON.stringify(route_points)
         })

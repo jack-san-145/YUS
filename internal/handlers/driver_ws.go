@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"yus/internal/models"
-	"yus/internal/service"
+	// "yus/internal/service"
 
 	"github.com/gorilla/websocket"
 )
@@ -72,7 +72,7 @@ func listen_for_location(conn *websocket.Conn) {
 		}
 		// fmt.Printf("lattitude - %s & longitude - %s & Speed - %s ", current_location.Latitude, current_location.Longitude, current_location.Speed)
 		fmt.Println("\n\n")
-		service.Reverse_Geocoding(current_location)
-		fmt.Println("speed - ", current_location.Speed)
+		// service.Reverse_Geocoding(current_location)
+		fmt.Printf("lattitude - %v & longitude - %v & speed - ", current_location.Latitude, current_location.Longitude, current_location.Speed)
 	}
 }
