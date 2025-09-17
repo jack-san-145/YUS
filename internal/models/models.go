@@ -19,6 +19,14 @@ type NominatimResponse struct {
 	} `json:"address"`
 }
 
+type Route struct {
+	Id            int          `json:"route_id"`
+	Name          string       `json:"route_name"`
+	Stops         []RouteStops `json:"stops"`
+	DepartureTime string       `json:"departure_time"`
+	ArrivalTime   string       `json:"arrival_time"`
+}
+
 type RouteStops struct {
 	Lat          string `json:"lat"`
 	Lon          string `json:"lon"`

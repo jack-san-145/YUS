@@ -70,9 +70,11 @@ func listen_for_location(conn *websocket.Conn) {
 		if err != nil {
 			fmt.Println("error while unmarshaling the location - ", err)
 		}
+
+		send_location_to_passenger(&current_location)
 		// fmt.Printf("lattitude - %s & longitude - %s & Speed - %s ", current_location.Latitude, current_location.Longitude, current_location.Speed)
 		fmt.Println("\n\n")
 		// service.Reverse_Geocoding(current_location)
-		fmt.Printf("lattitude - %v & longitude - %v & speed - ", current_location.Latitude, current_location.Longitude, current_location.Speed)
+		fmt.Printf("lattitude - %v & longitude - %v & speed - %v", current_location.Latitude, current_location.Longitude, current_location.Speed)
 	}
 }

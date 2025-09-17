@@ -996,7 +996,7 @@
             return;
         }
         
-        send_route_to_server(routePoints) 
+        send_route_to_server(routeName,routePoints) 
         // Create route object
         const route = {
             id: Date.now(), // Use timestamp as ID
@@ -1263,17 +1263,19 @@
     renderSavedRoutes();
 
 
-    async function send_route_to_server(route_points){
+    async function send_route_to_server(route_name,route_points){
 
         const response= await fetch("/yus/save-new-route",{
             method:"POST",
             headers : {
                 "Content-Type":"application/json"
             },
-            body:JSON.stringify(route_points)
+            body:JSON.stringify({"route_name":route_name,"stops":route_points})
         })
 
         const data = await response.json()
+        console.log("payload:", { route_name: route_name, stops: route_points });
+
         console.log("response for save new route - ",data)
     }
 </script>
