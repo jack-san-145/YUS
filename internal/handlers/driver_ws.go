@@ -42,7 +42,7 @@ import (
 
 // }
 
-func Ws_hanler(w http.ResponseWriter, r *http.Request) {
+func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("working")
 	var upgrader = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool {
 		return true
@@ -73,5 +73,6 @@ func listen_for_location(conn *websocket.Conn) {
 		// fmt.Printf("lattitude - %s & longitude - %s & Speed - %s ", current_location.Latitude, current_location.Longitude, current_location.Speed)
 		fmt.Println("\n\n")
 		service.Reverse_Geocoding(current_location)
+		fmt.Println("speed - ", current_location.Speed)
 	}
 }
