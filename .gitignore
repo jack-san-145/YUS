@@ -3,3 +3,6 @@
 yus
 *.exe
 *.out
+app.log
+yus_notes.txt
+db.txt
