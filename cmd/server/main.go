@@ -12,7 +12,7 @@ import (
 
 func main() {
 
-	err := godotenv.Load()
+	err := godotenv.Load("../../.env")
 	if err != nil {
 		fmt.Println("error while loading .env file", err)
 		return
@@ -24,7 +24,7 @@ func main() {
 	router.Get("/yus/passenger-ws", handlers.Passenger_Ws_handler)
 	router.Get("/yus/src-{source}&dest-{destination}", handlers.Src_Dest_handler) //here i changed the endpoint format
 
-	postgres.Connect_to_postgres() //make a connection to postgres
+	postgres.Connect() //make a connection to postgres
 
 	fmt.Println("Server listening on :8090")
 	err = http.ListenAndServe("0.0.0.0:8090", router)

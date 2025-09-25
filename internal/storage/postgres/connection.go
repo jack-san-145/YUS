@@ -11,7 +11,7 @@ import (
 
 var pool *pgxpool.Pool
 
-func Connect_to_postgres() {
+func Connect() {
 	var (
 		config *pgxpool.Config
 		err    error
@@ -22,7 +22,7 @@ func Connect_to_postgres() {
 	port := os.Getenv("POSTGRES_DB_PORT")
 
 	conn := fmt.Sprintf(`postgres://%s:%s@postgres.kws.services:%s/yus?sslmode=disable`, username, pass, port)
-	fmt.Println("conn - ", conn)
+	// fmt.Println("conn - ", conn)
 
 	//here context is used for timeout -> if the connection try to connect the db for more than 5 sec , it automatticaly close only that connection
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
