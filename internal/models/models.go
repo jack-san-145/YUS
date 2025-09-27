@@ -6,28 +6,17 @@ type Location struct {
 	Speed     string `json:"speed"`
 }
 
-type NominatimResponse struct {
-	DisplayName string `json:"display_name"`
-	Lat         string `json:"lat"`
-	Lon         string `json:"lon"`
-	Address     struct {
-		Village string `json:"village"`
-		Town    string `json:"town"`
-		Amenity string `json:"amenity"`
-		Road    string `json:"road"`
-		City    string `json:"city"`
-	} `json:"address"`
-}
-
 type Route struct {
-	Id            int          `json:"route_id"`
-	Name          string       `json:"route_name"`
-	Stops         []RouteStops `json:"stops"`
-	DepartureTime string       `json:"departure_time"`
-	ArrivalTime   string       `json:"arrival_time"`
+	Id                int          `json:"route_id"`
+	Name              string       `json:"route_name"`
+	Stops             []RouteStops `json:"stops"`
+	UpDepartureTime   string       `json:"up_departure_time"`
+	UpArrivalTime     string       `json:"up_arrival_time"`
+	DownDepartureTime string       `json:"down_departure_time"`
 }
 
 type RouteStops struct {
+	IsStop       bool   `json:"is_stop"`
 	Lat          string `json:"lat"`
 	Lon          string `json:"lon"`
 	LocationName string `json:"location_name"`
