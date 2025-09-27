@@ -53,3 +53,24 @@ working passenger app websocket upgradation
 passenger connected successfully 
 working passenger app websocket upgradation
 passenger connected successfully 
+
+
+type Route struct {
+	Id                int          `json:"route_id"`
+	Name              string       `json:"route_name"`
+	Stops             []RouteStops `json:"stops"`
+	UpDepartureTime   string       `json:"up_departure_time"`
+	UpArrivalTime     string       `json:"up_arrival_time"`
+	DownDepartureTime string       `json:"down_departure_time"`
+}
+
+type RouteStops struct {
+	LocationName string `json:"location_name"`
+	Lat          string `json:"lat"`
+	Lon          string `json:"lon"`
+	IsStop       bool   `json:"is_stop"`
+    departure_time string `json:"departure_time"`
+    arrival_time string `json:"arrival_time"`
+}
+
+up_route -  {2 Madurai to Kamaraj college [{Madurai 9.6733665 77.9650611 true 08:30} {Thirumangalam 9.6732961 77.9650622 true 08:48} {Kallikudi 9.6732833 77.965055 false 09:02} {Kamaraj college 9.6732768 77.9650303 true 09:15}] 08:30 9:15 04:40}

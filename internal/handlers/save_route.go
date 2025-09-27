@@ -17,8 +17,8 @@ func Save_New_route_handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	NewRoute.Id = len(All_Bus_Routes) + 1
-	NewRoute.DepartureTime = "12:23"
-	NewRoute.ArrivalTime = "18:10"
+	// NewRoute.DepartureTime = "12:23"
+	// NewRoute.ArrivalTime = "18:10"
 
 	All_Bus_Routes = append(All_Bus_Routes, NewRoute)
 	display_all_routes()
