@@ -7,7 +7,7 @@ import (
 )
 
 // Admin provides only arrival_time for each stop
-// here I calculates departure_time for each stop
+// here I calculates departure_time for each stop -> calculated by arrival_time
 func Calculate_Uproute_departure(upRoute *models.Route) {
 	upStops := upRoute.Stops
 
@@ -29,14 +29,17 @@ func Calculate_Uproute_departure(upRoute *models.Route) {
 		}
 	}
 	upRoute.Stops = upStops
+	upRoute.DepartureTime = upStops[0].Departure_time          //starting from the source
+	upRoute.ArrivalTime = upStops[len(upStops)-1].Arrival_time // reaches the destination
 }
 
-func Find_down_route(down_route models.Route) models.Route {
-	down_route.Stops, down_route.DepartureTime, down_route.ArrivalTime = calculate_down_routeStops(&down_route)
+func Find_down_route(down_route models.Route) *models.Route {
+
+	calculate_down_routeStops(&down_route)
 	down_route.Src = down_route.Dest
 	down_route.Dest = down_route.Src
 	down_route.Direction = "DOWN"
-	return down_route
+	return &down_route
 
 }
 
@@ -52,9 +55,9 @@ func goTime_to_string(t time.Time) string {
 }
 
 // Down route is fully derived from Up route segment durations
-// Admin provides only DownDepartureTime (first stop of Down route)
-func calculate_down_routeStops(upRoute *models.Route) ([]models.RouteStops, string, string) {
-	upStops := upRoute.Stops
+// Admin provides only DownDepartureTime (first stop of Down route) <=> calculates by departure_time
+func calculate_down_routeStops(down_route *models.Route) {
+	upStops := down_route.Stops //down_route is an exact copy of the uproute
 
 	// Step 1: Calculate segment durations from Up route
 	segmentDurations := []time.Duration{}
@@ -73,15 +76,15 @@ func calculate_down_routeStops(upRoute *models.Route) ([]models.RouteStops, stri
 	   segmentDurations = [18m, 14m, 13m]
 	*/
 
-	// Step 2: Initialize Down route stops
-	downStops := make([]models.RouteStops, len(upStops))
-	copy(downStops, upStops)
-	slices.Reverse(downStops) // reverse Up stops → Down stops
+	// // Step 2: Initialize Down route stops
+	// downStops := make([]models.RouteStops, len(upStops))
+	// copy(downStops, upStops)
+	slices.Reverse(down_route.Stops) // reverse Up stops → Down stops
 
 	// Step 3: Set first stop arrival & departure
-	downDeparture := string_to_Gotime(upRoute.DownDepartureTime)
-	downStops[0].Arrival_time = goTime_to_string(downDeparture)
-	downStops[0].Departure_time = goTime_to_string(downDeparture)
+	downDeparture := string_to_Gotime(down_route.DepartureTime)
+	down_route.Stops[0].Arrival_time = down_route.DepartureTime
+	down_route.Stops[0].Departure_time = down_route.DepartureTime
 	currentTime := downDeparture
 	/*
 	   | Stop            | Arrival | Departure |
@@ -97,20 +100,20 @@ func calculate_down_routeStops(upRoute *models.Route) ([]models.RouteStops, stri
 	*/
 
 	// Step 5: Calculate arrival/departure for each stop
-	for i := 0; i < len(downStops)-1; i++ {
+	for i := 0; i < len(down_route.Stops)-1; i++ {
 		duration := segmentDurations[i]
 
 		// Arrival at next stop = previous departure + segment duration
 		currentTime = currentTime.Add(duration)
-		downStops[i+1].Arrival_time = goTime_to_string(currentTime)
+		down_route.Stops[i+1].Arrival_time = goTime_to_string(currentTime)
 
 		// Add 1-min halt if stop
-		if downStops[i+1].IsStop {
+		if down_route.Stops[i+1].IsStop {
 			currentTime = currentTime.Add(1 * time.Minute)
 		}
 
 		// Departure = arrival + 1 min if IsStop else same as arrival
-		downStops[i+1].Departure_time = goTime_to_string(currentTime)
+		down_route.Stops[i+1].Departure_time = goTime_to_string(currentTime)
 
 		/*
 
@@ -131,8 +134,7 @@ func calculate_down_routeStops(upRoute *models.Route) ([]models.RouteStops, stri
 		*/
 	}
 
-	downRouteDeparture := goTime_to_string(downDeparture)
-	downRouteArrival := downStops[len(downStops)-1].Arrival_time
+	down_route.ArrivalTime = down_route.Stops[len(down_route.Stops)-1].Arrival_time
 
 	/*
 	   Final Down route table:
@@ -144,5 +146,4 @@ func calculate_down_routeStops(upRoute *models.Route) ([]models.RouteStops, stri
 	   | Madurai         | 17:26   | 17:27     |
 	*/
 
-	return downStops, downRouteDeparture, downRouteArrival
 }
