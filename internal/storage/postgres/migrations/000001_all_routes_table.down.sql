@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS all_routes;
+DROP TABLE IF EXISTS all_routes CASCADE;

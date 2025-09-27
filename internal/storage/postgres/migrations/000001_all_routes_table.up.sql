@@ -1,4 +1,4 @@
-CREATE TABLE all_routes (
+CREATE TABLE IF NOT EXISTS all_routes (
     route_id SERIAL PRIMARY KEY,
     src TEXT NOT NULL DEFAULT '',
     dest TEXT NOT NULL DEFAULT '',

@@ -21,9 +21,10 @@ show_yus_process :
 
 
 #to automate the sql migrations
-migrate_up:
+migrate-up:
 	migrate -path ./internal/storage/postgres/migrations -database "${POSTGRES_DATABASE_CONNECTION}" up
 
-migrate_down:
+migrate-down:
 	migrate -path ./internal/storage/postgres/migrations -database "${POSTGRES_DATABASE_CONNECTION}" down
-
+drop-schema:
+	migrate -path ./internal/storage/postgres/migrations -database "${POSTGRES_DATABASE_CONNECTION}" drop
