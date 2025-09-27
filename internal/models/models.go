@@ -11,7 +11,7 @@ type Route struct {
 	UpRouteName       string       `json:"up_route_name"`
 	DownRouteName     string       `json:"down_route_name"`
 	Src               string       `json:"src"`
-	Dest              string       `json"dest"`
+	Dest              string       `json:"dest"`
 	Stops             []RouteStops `json:"stops"`
 	Direction         string       `json:"direction"`
 	DepartureTime     string       `json:"up_departure_time"`

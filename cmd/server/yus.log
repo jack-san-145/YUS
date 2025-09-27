@@ -53,24 +53,18 @@ working passenger app websocket upgradation
 passenger connected successfully 
 working passenger app websocket upgradation
 passenger connected successfully 
+bus route -  {1 sample [{-26.126733 157.500000 Stop 1} {-10.165357 696.093750 Stop 2} {-86.830480 60.468750 Stop 3} {36.268135 9.843750 Stop 4}] 12:23 18:10}
 
 
-type Route struct {
-	Id                int          `json:"route_id"`
-	Name              string       `json:"route_name"`
-	Stops             []RouteStops `json:"stops"`
-	UpDepartureTime   string       `json:"up_departure_time"`
-	UpArrivalTime     string       `json:"up_arrival_time"`
-	DownDepartureTime string       `json:"down_departure_time"`
-}
+bus route -  {2 Madurai to Kamaraj college [{9.6733665 77.9650611 Madurai} {9.6732961 77.9650622 Thirumangalam} {9.6732833 77.965055 Kallikudi} {9.6732768 77.9650303 Kamaraj college}] 12:23 18:10}
 
-type RouteStops struct {
-	LocationName string `json:"location_name"`
-	Lat          string `json:"lat"`
-	Lon          string `json:"lon"`
-	IsStop       bool   `json:"is_stop"`
-    departure_time string `json:"departure_time"`
-    arrival_time string `json:"arrival_time"`
-}
 
-up_route -  {2 Madurai to Kamaraj college [{Madurai 9.6733665 77.9650611 true 08:30} {Thirumangalam 9.6732961 77.9650622 true 08:48} {Kallikudi 9.6732833 77.965055 false 09:02} {Kamaraj college 9.6732768 77.9650303 true 09:15}] 08:30 9:15 04:40}
+bus route -  {3 Sattur to madurai [{9.6732895 77.9653529 Sattur} {9.6733197 77.9653089 RR nagar} {9.6732335 77.9653012 Virudhunagar} {9.6733455 77.9651965 Madurai}] 12:23 18:10}
+
+
+bus route -  {4 Sulakarai to sattur [{9.530838 77.9450447 Sulakakkarai} {9.4936374 77.9415231 Pattampudur} {9.472002607387893 77.9601689055562 RR nagar} {9.3737595 77.9123846 Venkatachalapuram} {9.3675617 77.9149958 Prc} {9.3647737 77.9160698 Petrol bunk} {9.364701895942067 77.91694477200508 Madurai bus stop} {9.3583122 77.9185389 Madurai bus stop} {9.3551336 77.919651 Jack Stop}] 12:23 18:10}
+
+
+bus route -  {5 My home [{9.3540035 77.9231079 Garden} {9.3538361 77.9231022 Frst window} {9.3538282 77.9231091 Door} {9.353818 77.9231322 End}] 12:23 18:10}
+
+
