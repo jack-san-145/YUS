@@ -9,6 +9,7 @@ import (
 )
 
 func SaveRoute_to_DB(up_route *models.Route) map[string]string {
+
 	up_route.Direction = "UP"
 
 	services.Calculate_Uproute_departure(up_route)
@@ -18,25 +19,62 @@ func SaveRoute_to_DB(up_route *models.Route) map[string]string {
 	fmt.Println()
 	fmt.Println("down route - ", down_route)
 
-	//inserting up route
-	query := "insert into all_routes(src,dest,direction,departure_time,arrival_time) values($1,$2,$3,$4,$5);"
-	_, err := pool.Exec(context.Background(), query, up_route.Src, up_route.Dest, up_route.Direction, up_route.UpDepartureTime, up_route.ArrivalTime)
+	//check is the new  route exist or not ?
+
+	err := check_if_route_exist(up_route.Src, up_route.Dest, up_route.Stops)
 	if err != nil {
-		fmt.Println("error while inserting up route to the db - ", err)
-		return map[string]string{"status": "failed"}
+		fmt.Println(err.Error())
+		return map[string]string{"status": err.Error()}
 	}
 
-	//inserting down route
-	query = "insert into all_routes(src,dest,direction,departure_time,arrival_time) values($1,$2,$3,$4,$5);"
-	_, err = pool.Exec(context.Background(), query, down_route.Src, down_route.Dest, down_route.Direction, down_route.DownDepartureTime, down_route.ArrivalTime)
-	if err != nil {
-		fmt.Println("error while inserting down route to the db - ", err)
+	//inserting both up and down routes to db
+	err1 := insert_route_to_db(up_route)
+	err2 := insert_route_to_db(down_route)
+
+	if err1 != nil && err2 != nil {
 		return map[string]string{"status": "failed"}
+	} else {
+		return map[string]string{"status": "success"}
 	}
-	return map[string]string{"status": "success"}
 
 }
 
+func insert_route_to_db(route *models.Route) error {
+
+	var (
+		arrival_time   string
+		departure_time string
+	)
+
+	if route.Direction == "UP" {
+		arrival_time = route.ArrivalTime
+		departure_time = route.UpDepartureTime
+	} else if route.Direction == "DOWN" {
+		arrival_time = route.ArrivalTime
+		departure_time = route.DownDepartureTime
+	}
+
+	//inserting route and route_stops
+	query := "insert into all_routes(src,dest,direction,departure_time,arrival_time) values($1,$2,$3,$4,$5) returning route_id;"
+	err := pool.QueryRow(context.Background(), query, route.Src, route.Dest, route.Direction, departure_time, arrival_time).Scan(&route.Id)
+	if err != nil {
+		fmt.Println("error while inserting route to db - ", err)
+		return fmt.Errorf("error")
+	}
+
+	for _, stop := range route.Stops {
+		query = "insert into route_stops(route_id,stop_name,is_stop,lat,lon,arrival_time,departure_time) values($1,$2,$3,$4,$5,$6,$7)"
+		_, err := pool.Exec(context.Background(), query, route.Id, stop.LocationName, stop.IsStop, stop.Lat, stop.Lon, stop.Arrival_time, stop.Departure_time)
+		if err != nil {
+			fmt.Println("error while inserting the route stops  - ", err)
+			return fmt.Errorf("error")
+		}
+
+	}
+	return nil
+}
+
+// to check if the route is exist on DB or not
 func check_if_route_exist(src string, dest string, stops []models.RouteStops) error {
 	var route_id int
 	query := "select coalesce( (select route_id from all_routes where src = $1 and dest = $2),0) as route_id;"
@@ -70,5 +108,5 @@ func check_if_route_exist(src string, dest string, stops []models.RouteStops) er
 		}
 	}
 
-	return fmt.Errorf("Root already exists")
+	return fmt.Errorf("root already exists")
 }
