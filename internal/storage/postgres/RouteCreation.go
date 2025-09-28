@@ -51,15 +51,24 @@ func check_if_route_exist(src string, dest string, stops []models.RouteStops) er
 		fmt.Println("no rows")
 		return nil
 	}
-	for rows.Next() {
+
+	for _, stop := range stops {
 		var (
 			stop_name string
 			is_stop   bool
 		)
+		if !rows.Next() {
+			break
+		}
 		err := rows.Scan(&stop_name, &is_stop)
 		if err != nil {
 			fmt.Println("error while accessing the stopname and is_stop - ", err)
 		}
+
+		if !(stop_name == stop.LocationName && is_stop == stop.IsStop) {
+			return nil
+		}
 	}
-	return nil
+
+	return fmt.Errorf("Root already exists")
 }
