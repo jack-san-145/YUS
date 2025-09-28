@@ -26,6 +26,7 @@ func SaveRoute_to_DB(up_route *models.Route) map[string]string {
 		return map[string]string{"status": err.Error()}
 	}
 
+	fmt.Println("going to insert route to table")
 	//inserting both up and down routes to db
 	err1 := insert_route_to_db(up_route)
 	err2 := insert_route_to_db(down_route)
@@ -75,37 +76,72 @@ func insert_route_to_db(route *models.Route) error {
 
 // to check if the route is exist on DB or not
 func check_if_route_exist(src string, dest string, stops []models.RouteStops) error {
-	var route_id int
-	query := "select coalesce( (select route_id from all_routes where src = $1 and dest = $2),0) as route_id;"
-	pool.QueryRow(context.Background(), query, src, dest).Scan(&route_id)
 
-	if route_id == 0 {
-		return nil
-	}
-	query = "select stop_name,is_stop from route_stops where route_id = $1"
-	rows, err := pool.Query(context.Background(), query, route_id)
-	if err == sql.ErrNoRows {
-		fmt.Println("no rows")
-		return nil
+	var is_match_found_inthis_routes bool
+
+	query := "select route_id from all_routes where src = $1 and dest = $2 ;"
+	route_id_rows, err_error := pool.Query(context.Background(), query, src, dest)
+	if err_error != nil {
+		fmt.Println("error while finding the route id - ", err_error)
 	}
 
-	for _, stop := range stops {
+	for route_id_rows.Next() {
 		var (
-			stop_name string
-			is_stop   bool
+			route_id int
 		)
-		if !rows.Next() {
-			break
-		}
-		err := rows.Scan(&stop_name, &is_stop)
-		if err != nil {
-			fmt.Println("error while accessing the stopname and is_stop - ", err)
-		}
 
-		if !(stop_name == stop.LocationName && is_stop == stop.IsStop) {
+		route_id_rows.Scan(&route_id)
+
+		fmt.Println("route id - ", route_id)
+		if route_id == 0 {
 			return nil
 		}
-	}
+		if route_id == 29 {
+			fmt.Println("comming outside the nested for loop")
+		}
+		query = "select stop_name,is_stop from route_stops where route_id = $1"
+		rows, err := pool.Query(context.Background(), query, route_id)
+		if err != nil {
+			fmt.Println("error while accesing the stopname - ", err)
+		}
+		if err == sql.ErrNoRows {
+			fmt.Println("no rows")
+			continue
+		}
 
-	return fmt.Errorf("root already exists")
+		for _, stop := range stops {
+			var (
+				stop_name string
+				is_stop   bool
+			)
+			if !rows.Next() {
+				break
+			}
+			if route_id == 29 {
+				fmt.Println("comming inside the nested for loop")
+			}
+			err := rows.Scan(&stop_name, &is_stop)
+			if err != nil {
+				fmt.Println("error while accessing the stopname and is_stop - ", err)
+			}
+
+			if !(stop_name == stop.LocationName && is_stop == stop.IsStop) {
+				fmt.Printf("route %d is not matched - ", route_id)
+				is_match_found_inthis_routes = false
+				break
+			} else {
+				is_match_found_inthis_routes = true
+			}
+
+		}
+		rows.Close()
+		if is_match_found_inthis_routes {
+			return fmt.Errorf("root already exists")
+		}
+		fmt.Printf("route - %d ending - ", route_id)
+	}
+	route_id_rows.Close()
+
+	fmt.Println("comming out ")
+	return nil
 }

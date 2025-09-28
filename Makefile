@@ -15,7 +15,7 @@ run_forever :
 	cd cmd && cd server && nohup ./yus > yus.log 2>&1 &
  
 #to show the cuurently running process of yus application
-show_yus_process : 
+stop : 
 	ps aux | grep yus
 
 
