@@ -3,7 +3,7 @@
 yus
 *.exe
 *.out
-app.log
 yus_notes.txt
 db.txt
 yus.log.txt
+*.log
