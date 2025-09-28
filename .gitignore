@@ -4,7 +4,7 @@ yus
 *.exe
 *.out
 yus_notes.txt
-db.txt
 yus.log.txt
 *.log
-cmd/server/yus.logcmd/server/yus.log
+echo "cmd/server/yus.log" >> .gitignore
+echo "cmd/server/*.log" >> .gitignore
