@@ -96,9 +96,6 @@ func check_if_route_exist(src string, dest string, stops []models.RouteStops) er
 		if route_id == 0 {
 			return nil
 		}
-		if route_id == 29 {
-			fmt.Println("comming outside the nested for loop")
-		}
 		query = "select stop_name,is_stop from route_stops where route_id = $1"
 		rows, err := pool.Query(context.Background(), query, route_id)
 		if err != nil {
@@ -117,16 +114,13 @@ func check_if_route_exist(src string, dest string, stops []models.RouteStops) er
 			if !rows.Next() {
 				break
 			}
-			if route_id == 29 {
-				fmt.Println("comming inside the nested for loop")
-			}
+
 			err := rows.Scan(&stop_name, &is_stop)
 			if err != nil {
 				fmt.Println("error while accessing the stopname and is_stop - ", err)
 			}
 
 			if !(stop_name == stop.LocationName && is_stop == stop.IsStop) {
-				fmt.Printf("route %d is not matched - ", route_id)
 				is_match_found_inthis_routes = false
 				break
 			} else {
@@ -138,10 +132,7 @@ func check_if_route_exist(src string, dest string, stops []models.RouteStops) er
 		if is_match_found_inthis_routes {
 			return fmt.Errorf("root already exists")
 		}
-		fmt.Printf("route - %d ending - ", route_id)
 	}
 	route_id_rows.Close()
-
-	fmt.Println("comming out ")
 	return nil
 }
