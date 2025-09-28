@@ -11,7 +11,6 @@ import (
 func SaveRoute_to_DB(up_route *models.Route) map[string]string {
 
 	up_route.Direction = "UP"
-
 	services.Calculate_Uproute_departure(up_route)
 	down_route := services.Find_down_route(*up_route)
 	fmt.Println()
