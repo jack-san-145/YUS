@@ -21,3 +21,7 @@ func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func validate_mobileno(mobile_no string) {
+	re := ``
+}
