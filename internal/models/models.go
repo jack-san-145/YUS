@@ -32,3 +32,10 @@ type RouteStops struct {
 	Departure_time string `json:"departure_time"`
 	Arrival_time   string `json:"arrival_time"`
 }
+
+type Driver struct {
+	DriverId  int    `json:"driver_id"`
+	Name      string `json:"name"`
+	Mobile_no string `json:"mobile_no"`
+	Password  string `json:"password"`
+}
