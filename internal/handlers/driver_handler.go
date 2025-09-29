@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"regexp"
 	"yus/internal/models"
 	"yus/internal/storage/postgres"
 )
@@ -17,11 +18,38 @@ func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, driver := range Driver_array {
 		fmt.Println("driver - ", driver)
-		go postgres.Store_new_driver_to_DB(&driver)
+		if validateMobileNo(driver.Mobile_no) && validateName(driver.Name) {
+			go postgres.Store_new_driver_to_DB(&driver)
+		}
+
 	}
 
 }
 
-func validate_mobileno(mobile_no string) {
-	re := ``
+// validate the name
+func validateName(name string) bool {
+	// Allows alphabets and spaces, 2 to 50 chars long
+	re := regexp.MustCompile(`^[A-Za-z ]{2,50}$`)
+	is_valid := re.MatchString(name)
+	return is_valid
 }
+
+// validate the mobile_no with the regexp
+
+func validateMobileNo(mobileNo string) bool {
+	re := regexp.MustCompile(`^[6-9]\d{9}$`)
+	is_valid := re.MatchString(mobileNo)
+	return is_valid
+}
+
+// frontend -> backend: (post)
+
+// {
+// 	"email":"23ucs145@kamarajengg.edu.in",
+// 	"password":"jack@145"
+// }
+
+// backend -> frontend
+// {
+// 	"login_status":"valid" or "Invalid"
+// }
