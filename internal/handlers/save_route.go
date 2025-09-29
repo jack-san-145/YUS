@@ -34,14 +34,25 @@ func Save_New_route_handler(w http.ResponseWriter, r *http.Request) {
 				"stops": [
 							{"location_name": "Sattur","lat": "9.3540035",  "lon": "77.9231079","is_stop":true,"arrival_time":"08:00"},
 							{"location_name": "rr nagar", "lat": "9.3538361", "lon": "77.9231022","is_stop":true,"arrival_time":"08:15"},
-                            {"location_name": "soolakrai", "lat": "9.3538361", "lon": "77.9231022","is_stop":false,"arrival_time":"08:35"},
-                            {"location_name": "collectrate", "lat": "9.3538361", "lon": "77.9231022","is_stop":true,"arrival_time":"08:45"},
+							{"location_name": "soolakrai", "lat": "9.3538361", "lon": "77.9231022","is_stop":false,"arrival_time":"08:35"},
+							{"location_name": "collectrate", "lat": "9.3538361", "lon": "77.9231022","is_stop":true,"arrival_time":"08:45"},
 							{"location_name": "Kamaraj-College","lat": "9.3538282",  "lon": "77.9231091","is_stop":false,"arrival_time":"09:00"}
 						],
 				"down_departure_time":"16:40"
 			}
 	*/
 }
+
+/* //function to provide the new routes
+
+async function send_route_to_server(new_route) {
+	const response = await fetch("https://yus.kwscloud.in/yus/save-new-route", {
+	method: "POST",
+	headers: { "Content-Type": "application/json" },
+	body: JSON.stringify(new_route),
+	});
+}
+*/
 
 // func display_all_routes() {
 // 	for _, bus_routes := range All_Bus_Routes {

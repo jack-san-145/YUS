@@ -92,7 +92,6 @@ func check_if_route_exist(src string, dest string, stops []models.RouteStops) er
 
 		route_id_rows.Scan(&route_id)
 
-		fmt.Println("route id - ", route_id)
 		if route_id == 0 {
 			return nil
 		}
