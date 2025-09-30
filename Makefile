@@ -11,7 +11,7 @@ run :
 
 
 #to run the application even after close the terminal 
-run_forever :
+run-forever :
 	cd cmd && cd server && nohup ./yus > yus.log 2>&1 &
  
 #to show the cuurently running process of yus application
