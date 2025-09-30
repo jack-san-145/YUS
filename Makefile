@@ -28,3 +28,13 @@ migrate-down:
 	migrate -path ./internal/storage/postgres/migrations -database "${POSTGRES_DATABASE_CONNECTION}" down
 drop-schema:
 	migrate -path ./internal/storage/postgres/migrations -database "${POSTGRES_DATABASE_CONNECTION}" drop
+
+
+#to automate the git push
+push:
+	git add .
+	git commit -m "$(filter-out $@,$(MAKECMDGOALS))"
+	git push
+
+%:
+	@:
