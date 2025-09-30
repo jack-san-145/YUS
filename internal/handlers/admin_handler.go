@@ -21,4 +21,5 @@ func Admin_registerhandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		admin_register_status["status"] = "invalid"
 	}
+
 }
