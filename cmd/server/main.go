@@ -22,6 +22,7 @@ func main() {
 	router.Post("/yus/save-new-route", handlers.Save_New_route_handler)
 	router.Get("/driver-ws", handlers.Driver_Ws_hanler)
 	router.Post("/yus/add-new-driver", handlers.Add_new_driver_handler)
+	router.Post("/yus/add-new-admin", handlers.Add_new_admin_handler)
 	router.Get("/yus/passenger-ws", handlers.Passenger_Ws_handler)
 	router.Get("/yus/src-{source}&dest-{destination}", handlers.Src_Dest_handler) //here i changed the endpoint format
 
