@@ -18,6 +18,7 @@ func Admin_registerhandler(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 	password := r.FormValue("password")
 	fmt.Println(email, name, password)
+
 	if services.ValidateClgMail(email) && services.ValidateName(name) && services.ValidatePassword(password) {
 		admin_register_status["status"] = redis.StoreAdmin(name, email, password)
 	} else {
