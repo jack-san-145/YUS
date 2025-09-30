@@ -3,8 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"regexp"
-	"strings"
+	"yus/internal/services"
 )
 
 func Add_new_admin_handler(w http.ResponseWriter, r *http.Request) {
@@ -15,15 +14,11 @@ func Add_new_admin_handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	email := r.FormValue("email")
-	fmt.Println("email - ", email)
-	isMatch, _ := regexp.MatchString(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`, email)
-	if !isMatch {
+	name := r.FormValue("name")
+	password := r.FormValue("password")
+	if services.ValidateClgMail(email) && services.ValidateName(name) && services.ValidatePassword(password) {
+		admin_register_status["status"] = "valid"
+	} else {
 		admin_register_status["status"] = "invalid"
-		return
-	}
-	isGmail := strings.Split(email, "@")
-	if isGmail[1] != "kamarajengg.edu.in" {
-		admin_register_status["status"] = "invalid"
-		return
 	}
 }

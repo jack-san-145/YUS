@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"regexp"
 	"yus/internal/models"
+	"yus/internal/services"
 	"yus/internal/storage/postgres"
 )
 
@@ -26,7 +26,7 @@ func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
 		status.Email = driver.Email
 
 		fmt.Println("driver - ", driver)
-		if validateMobileNo(driver.Mobile_no) && validateName(driver.Name) && validateEmail(driver.Email) {
+		if services.ValidateMobileNo(driver.Mobile_no) && services.ValidateName(driver.Name) && services.ValidateEmail(driver.Email) {
 			if postgres.Store_new_driver_to_DB(&driver) { //stores the new_driver to DB
 				status.IsAdded = true
 			} else {
@@ -41,28 +41,6 @@ func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
 	}
 	WriteJSON(w, r, Status_array)
 
-}
-
-// validate the name
-func validateName(name string) bool {
-	// Allows alphabets and spaces, 2 to 50 chars long
-	re := regexp.MustCompile(`^[A-Za-z ]{2,50}$`)
-	is_valid := re.MatchString(name)
-	return is_valid
-}
-
-// validate the mobile_no with the regexp
-
-func validateMobileNo(mobileNo string) bool {
-	re := regexp.MustCompile(`^[6-9]\d{9}$`)
-	is_valid := re.MatchString(mobileNo)
-	return is_valid
-}
-
-func validateEmail(email string) bool {
-	re := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
-	is_valid := re.MatchString(email)
-	return is_valid
 }
 
 // frontend -> backend: (post)
