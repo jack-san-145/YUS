@@ -6,9 +6,15 @@ import (
 )
 
 func ValidatePassword(password string) bool {
-	re := regexp.MustCompile(`^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$`)
-	is_valid := re.MatchString(password)
-	return is_valid
+	if len(password) < 8 {
+		return false
+	}
+	lower := regexp.MustCompile(`[a-z]`).MatchString
+	upper := regexp.MustCompile(`[A-Z]`).MatchString
+	number := regexp.MustCompile(`[0-9]`).MatchString
+	special := regexp.MustCompile(`[@$!%*?&]`).MatchString
+
+	return lower(password) && upper(password) && number(password) && special(password)
 }
 
 func ValidateClgMail(email string) bool {
