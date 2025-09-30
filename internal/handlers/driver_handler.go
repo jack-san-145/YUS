@@ -27,7 +27,7 @@ func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println("driver - ", driver)
 		if validateMobileNo(driver.Mobile_no) && validateName(driver.Name) && validateEmail(driver.Email) {
-			if postgres.Store_new_driver_to_DB(&driver) {
+			if postgres.Store_new_driver_to_DB(&driver) { //stores the new_driver to DB
 				status.IsAdded = true
 			} else {
 				status.IsAdded = false
