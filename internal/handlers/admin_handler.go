@@ -6,7 +6,7 @@ import (
 	"yus/internal/services"
 )
 
-func Add_new_admin_handler(w http.ResponseWriter, r *http.Request) {
+func Admin_registerhandler(w http.ResponseWriter, r *http.Request) {
 	var admin_register_status map[string]string
 	err := r.ParseForm()
 	if err != nil {
