@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"yus/internal/handlers"
 	"yus/internal/storage/postgres"
+	"yus/internal/storage/redis"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
@@ -26,7 +27,8 @@ func main() {
 	router.Get("/yus/passenger-ws", handlers.Passenger_Ws_handler)
 	router.Get("/yus/src-{source}&dest-{destination}", handlers.Src_Dest_handler) //here i changed the endpoint format
 
-	postgres.Connect() //make a connection to postgres
+	postgres.Connect()        //make a connection to postgres
+	redis.CreateRedisClient() //made a redis client
 
 	fmt.Println("Server listening on :8090")
 	err = http.ListenAndServe("0.0.0.0:8090", router)
