@@ -8,7 +8,7 @@ import (
 )
 
 func Admin_registerhandler(w http.ResponseWriter, r *http.Request) {
-	var admin_register_status map[string]string
+	var admin_register_status = make(map[string]string)
 	err := r.ParseForm()
 	if err != nil {
 		fmt.Println("error while parsing form")
@@ -22,6 +22,7 @@ func Admin_registerhandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		admin_register_status["status"] = "invalid"
 	}
+	WriteJSON(w, r, admin_register_status)
 }
 
 func Admin_login_handler(w http.ResponseWriter, r *http.Request) {
