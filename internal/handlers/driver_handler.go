@@ -12,7 +12,7 @@ import (
 func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
 	var (
 		Driver_array []models.Driver
-		// Status_array []models.DriverAddedStatus
+		Status_array []models.DriverAddedStatus
 	)
 	err := json.NewDecoder(r.Body).Decode(&Driver_array)
 	if err != nil {
@@ -27,10 +27,13 @@ func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println("driver - ", driver)
 		if validateMobileNo(driver.Mobile_no) && validateName(driver.Name) && validateEmail(driver.Email) {
-			go postgres.Store_new_driver_to_DB(&driver)
+			go postgres.Store_new_driver_to_DB(&driver, &status)
+		} else {
+			status.IsAdded = false
 		}
-
+		Status_array = append(Status_array, status)
 	}
+	WriteJSON(w, r, Status_array)
 
 }
 

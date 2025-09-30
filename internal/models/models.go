@@ -42,6 +42,7 @@ type Driver struct {
 }
 
 type DriverAddedStatus struct {
+	IsAdded  bool   `json:"is_added"`
 	Name     string `json:"name"`
 	MobileNo string `json:"mobile_no"`
 	Email    string `json:"email"`
