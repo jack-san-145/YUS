@@ -33,9 +33,8 @@ drop-schema:
 #to automate the git push
 push:
 	git add .
-	git commit -m "$(filter-out $@,$(MAKECMDGOALS))"
+	git commit -m "$(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))"
 	git push
 
 %:
 	@:
-
