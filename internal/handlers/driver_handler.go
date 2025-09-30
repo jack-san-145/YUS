@@ -10,15 +10,23 @@ import (
 )
 
 func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
-	var Driver_array []models.Driver
+	var (
+		Driver_array []models.Driver
+		// Status_array []models.DriverAddedStatus
+	)
 	err := json.NewDecoder(r.Body).Decode(&Driver_array)
 	if err != nil {
 		fmt.Println("error while decode the driver array - ", err)
 		return
 	}
 	for _, driver := range Driver_array {
+		var status models.DriverAddedStatus
+		status.Name = driver.Name
+		status.MobileNo = driver.Mobile_no
+		status.Email = driver.Email
+
 		fmt.Println("driver - ", driver)
-		if validateMobileNo(driver.Mobile_no) && validateName(driver.Name) {
+		if validateMobileNo(driver.Mobile_no) && validateName(driver.Name) && validateEmail(driver.Email) {
 			go postgres.Store_new_driver_to_DB(&driver)
 		}
 
@@ -39,6 +47,12 @@ func validateName(name string) bool {
 func validateMobileNo(mobileNo string) bool {
 	re := regexp.MustCompile(`^[6-9]\d{9}$`)
 	is_valid := re.MatchString(mobileNo)
+	return is_valid
+}
+
+func validateEmail(email string) bool {
+	re := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
+	is_valid := re.MatchString(email)
 	return is_valid
 }
 

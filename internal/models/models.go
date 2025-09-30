@@ -37,5 +37,12 @@ type Driver struct {
 	DriverId  int    `json:"driver_id"`
 	Name      string `json:"name"`
 	Mobile_no string `json:"mobile_no"`
+	Email     string `json:"email"`
 	Password  string `json:"password"`
+}
+
+type DriverAddedStatus struct {
+	Name     string `json:"name"`
+	MobileNo string `json:"mobile_no"`
+	Email    string `json:"email"`
 }
