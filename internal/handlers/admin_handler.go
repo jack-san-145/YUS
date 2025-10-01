@@ -8,7 +8,7 @@ import (
 )
 
 func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
-	var admin_register_status = make(map[string]string)
+	var admin_otp_status = make(map[string]bool)
 	err := r.ParseForm()
 	if err != nil {
 		fmt.Println("error while parsing form")
@@ -20,35 +20,28 @@ func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(email, name, password)
 
 	if services.ValidateClgMail(email) && services.ValidateName(name) && services.ValidatePassword(password) {
+		ch := make(chan bool) //channel to store the otp is sent to email or not
 		otp := services.GenerateOtp()
-		go services.SendEmailTo(email, otp)
-		admin_register_status["status"] = "Otp sent"
-		// admin_register_status["status"] = redis.StoreAdmin(name, email, password)
+
+		go services.SendEmailTo(ch, email, otp) //pass also the channel
+
+		//this line wait until that go routine puts value to the ch
+		is_email_sent := <-ch //receives the email sent status from the bool channel 'ch'
+		if is_email_sent {
+			redis.SetOtp(email, otp) //set otp to redis if otp sent to email successfully
+		}
+
+		admin_otp_status["otp_sent"] = is_email_sent
 	} else {
-		admin_register_status["status"] = "invalid"
+		admin_otp_status["otp_sent"] = false
 	}
-	WriteJSON(w, r, admin_register_status)
+	WriteJSON(w, r, admin_otp_status)
 }
 
-func Verify_admin_otp(w http.ResponseWriter, r *http.Request) {
-	var admin_register_status = make(map[string]string)
-	err := r.ParseForm()
-	if err != nil {
-		fmt.Println("error while parsing form")
-		return
-	}
-	email := r.FormValue("email")
-	name := r.FormValue("name")
-	password := r.FormValue("password")
-	fmt.Println("verify otp for - ", email, name, password)
 
-	if services.ValidateClgMail(email) && services.ValidateName(name) && services.ValidatePassword(password) {
-		// admin_register_status["status"] = redis.StoreAdmin(name, email, password)
-	} else {
-		admin_register_status["status"] = "invalid"
-	}
-	WriteJSON(w, r, admin_register_status)
-}
+
+
+
 func Admin_login_handler(w http.ResponseWriter, r *http.Request) {
 	var login_status = make(map[string]string)
 	err := r.ParseForm()

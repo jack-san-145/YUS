@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func SendEmailTo(email string, otp string) {
+func SendEmailTo(ch chan bool, email string, otp string) {
 
 	from := "yellohbus@gmail.com"
 	password := os.Getenv("YUS_EMAIL_PASSWORD")
@@ -18,10 +18,12 @@ func SendEmailTo(email string, otp string) {
 	auth := smtp.PlainAuth("", from, password, "smtp.gmail.com")
 	err := smtp.SendMail("smtp.gmail.com:587", auth, from, []string{email}, msg)
 	if err != nil {
-		fmt.Println("Email not sent - ", err)
+		fmt.Println("otp not sent - ", err)
+		ch <- false
 		return
 	}
 	fmt.Println("Email sent ")
+	ch <- true
 }
 
 func GenerateOtp() string {
