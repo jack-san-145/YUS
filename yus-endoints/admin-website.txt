@@ -1,0 +1,70 @@
+1. Sending otp to Admin for register :
+
+endpoint: "https://yus.kwscloud.in/yus/send-otp-admin"
+method : Post (body)
+
+frontend -> backend(request):
+{
+    "email"    : "Admin-email(yusadmin@kamarajengg.edu.in)",
+    "name"     : "Admin-name",
+    "password" : "Admin-password"
+}
+
+backend -> frontend (response):
+{
+    "otp_sent" : "Admin already exists" (or)
+    "otp_sent" : true (or)
+    "otp_sent" : false (or)
+}
+
+
+
+
+
+
+
+2. Verify Otp for Admin registration : 
+
+endpoint : "https://yus.kwscloud.in/yus/verify-otp-admin"
+method : Post (body)
+
+frontend -> backend(request):
+{
+    "email"    : "Admin-email(yusadmin@kamarajengg.edu.in)",
+    "name"     : "Admin-name",
+    "password" : "Admin-password"
+    "otp"      : "000000"
+}
+
+backend -> frontend (response):
+{
+    "status" : "invalid" (or)
+    "status" : "invlaid otp" (or)
+    "status" : "invalid data" (or)
+    "status" : "Admin already exists" (or)
+    "status" : "successfully added admin" 
+}
+
+
+
+
+
+
+
+
+3. Admin login : 
+
+endpoint : "https://yus.kwscloud.in/yus/admin-login"
+method : Post (body)
+
+frontend -> backend(request):
+{
+    "email"    : "Admin-email(yusadmin@kamarajengg.edu.in)",
+    "password" : "Admin-password"
+}
+
+backend -> frontend (response):
+{
+    "login_status" : "valid" (or) 
+    "login_status" : "invalid"
+}
