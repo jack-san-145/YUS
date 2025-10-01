@@ -64,7 +64,7 @@ func Verify_admin_otp(w http.ResponseWriter, r *http.Request) {
 		if given_otp == redis.GetOtp(email) {
 			admin_register_status["status"] = redis.StoreAdmin(name, email, password)
 		} else {
-			admin_register_status["status"] = "invlaid otp"
+			admin_register_status["status"] = "invalid otp"
 		}
 
 	} else {
