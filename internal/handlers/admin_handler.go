@@ -8,7 +8,7 @@ import (
 )
 
 func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
-	var admin_otp_status = make(map[string]bool)
+	var admin_otp_status = make(map[string]any)
 	err := r.ParseForm()
 	if err != nil {
 		fmt.Println("error while parsing form")
@@ -20,6 +20,13 @@ func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(email, name, password)
 
 	if services.ValidateClgMail(email) && services.ValidateName(name) && services.ValidatePassword(password) {
+
+		if redis.Check_admin_exist() {
+			admin_otp_status["otp_sent"] = "Admin already exists"
+			WriteJSON(w, r, admin_otp_status)
+			return
+		}
+
 		ch := make(chan bool) //channel to store the otp is sent to email or not
 		otp := services.GenerateOtp()
 

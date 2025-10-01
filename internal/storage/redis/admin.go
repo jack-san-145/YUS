@@ -7,7 +7,7 @@ import (
 )
 
 func StoreAdmin(name string, email string, password string) string {
-	if check_admin_exist() {
+	if Check_admin_exist() {
 		fmt.Println("Admin already exists")
 		return "Admin already exists"
 	}
@@ -20,7 +20,7 @@ func StoreAdmin(name string, email string, password string) string {
 	return "successfully added admin"
 }
 
-func check_admin_exist() bool {
+func Check_admin_exist() bool {
 	Exists, err := rc.Exists(context.Background(), "Admin-data").Result()
 	if err != nil {
 		fmt.Println("error while checking the existance of Admin-data - ", err)
