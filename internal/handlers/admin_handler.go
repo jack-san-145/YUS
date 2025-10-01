@@ -38,9 +38,33 @@ func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, r, admin_otp_status)
 }
 
+func Verify_admin_otp(w http.ResponseWriter, r *http.Request) {
 
+	//show this admin_register_status as it is on the frontend
+	var admin_register_status = make(map[string]string)
+	err := r.ParseForm()
+	if err != nil {
+		fmt.Println("error while parsing form")
+		return
+	}
+	email := r.FormValue("email")
+	name := r.FormValue("name")
+	password := r.FormValue("password")
+	given_otp := r.FormValue("otp")
+	fmt.Println("verify otp for - ", email, name, password, given_otp)
 
+	if services.ValidateClgMail(email) && services.ValidateName(name) && services.ValidatePassword(password) {
+		if given_otp == redis.GetOtp(email) {
+			admin_register_status["status"] = redis.StoreAdmin(name, email, password)
+		} else {
+			admin_register_status["status"] = "invlaid otp"
+		}
 
+	} else {
+		admin_register_status["status"] = "invalid data"
+	}
+	WriteJSON(w, r, admin_register_status)
+}
 
 func Admin_login_handler(w http.ResponseWriter, r *http.Request) {
 	var login_status = make(map[string]string)

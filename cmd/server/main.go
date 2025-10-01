@@ -24,7 +24,7 @@ func main() {
 	router.Get("/driver-ws", handlers.Driver_Ws_hanler)
 	router.Post("/yus/add-new-driver", handlers.Add_new_driver_handler)
 	router.Post("/yus/send-otp-admin", handlers.Admin_otp_handler)
-	// router.Post("/yus/verify-otp-admin")
+	router.Post("/yus/verify-otp-admin", handlers.Verify_admin_otp)
 	router.Post("/yus/admin-login", handlers.Admin_login_handler)
 	router.Post("/yus/send-otp-admin", handlers.Admin_Otp_Handler)
 	router.Get("/yus/passenger-ws", handlers.Passenger_Ws_handler)
