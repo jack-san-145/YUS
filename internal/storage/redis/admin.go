@@ -58,3 +58,7 @@ func Validate_Admin_login(email string, password string) bool {
 	return false
 
 }
+
+func Change_Admin_password() {
+
+}

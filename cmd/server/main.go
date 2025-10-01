@@ -25,6 +25,7 @@ func main() {
 	router.Post("/yus/add-new-driver", handlers.Add_new_driver_handler)
 	router.Post("/yus/admin-register", handlers.Admin_registerhandler)
 	router.Post("/yus/admin-login", handlers.Admin_login_handler)
+	router.Post("/yus/send-otp-admin")
 	router.Get("/yus/passenger-ws", handlers.Passenger_Ws_handler)
 	router.Get("/yus/src-{source}&dest-{destination}", handlers.Src_Dest_handler) //here i changed the endpoint format
 
