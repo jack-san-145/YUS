@@ -7,7 +7,7 @@ import (
 	"yus/internal/storage/redis"
 )
 
-func Admin_registerhandler(w http.ResponseWriter, r *http.Request) {
+func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
 	var admin_register_status = make(map[string]string)
 	err := r.ParseForm()
 	if err != nil {
@@ -20,7 +20,10 @@ func Admin_registerhandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(email, name, password)
 
 	if services.ValidateClgMail(email) && services.ValidateName(name) && services.ValidatePassword(password) {
-		admin_register_status["status"] = redis.StoreAdmin(name, email, password)
+		otp := services.GenerateOtp()
+		go services.SendEmailTo(email, otp)
+		admin_register_status["status"] = "Otp sent"
+		// admin_register_status["status"] = redis.StoreAdmin(name, email, password)
 	} else {
 		admin_register_status["status"] = "invalid"
 	}
