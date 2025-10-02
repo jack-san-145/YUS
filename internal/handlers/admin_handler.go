@@ -35,6 +35,7 @@ func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
 		// //this line wait until that go routine puts value to the ch
 		// is_email_sent := <-ch //receives the email sent status from the bool channel 'ch'
 
+		//now synchronous
 		otp := services.GenerateOtp()
 		is_email_sent := services.SendEmailTo(email, otp)
 		if is_email_sent {

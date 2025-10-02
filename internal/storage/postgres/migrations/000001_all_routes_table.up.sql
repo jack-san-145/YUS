@@ -1,12 +1,13 @@
+
 CREATE TABLE IF NOT EXISTS all_routes (
-    route_id SERIAL PRIMARY KEY,
+    route_id int NOT NULL,
     src TEXT NOT NULL DEFAULT '',
     dest TEXT NOT NULL DEFAULT '',
     direction text NOT NULL DEFAULT '',
     departure_time TEXT NOT NULL DEFAULT '',
     arrival_time TEXT NOT NULL DEFAULT '',
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (route_id, direction)
 );
 
---creating index for source and destination
 CREATE INDEX idx_src_dest ON all_routes(src, dest);
