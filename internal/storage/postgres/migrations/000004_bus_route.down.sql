@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS bus_route CASCADE;
+DROP TABLE IF EXISTS current_bus_route CASCADE;
