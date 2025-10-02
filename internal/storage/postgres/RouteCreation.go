@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"yus/internal/models"
 	"yus/internal/services"
@@ -46,7 +47,10 @@ func find_route_id() (int, error) {
 	var route_id int
 	query := "select route_id from all_routes where direction = 'UP' order by route_id desc limit 1"
 	err := pool.QueryRow(context.Background(), query).Scan(&route_id)
-	if err != nil {
+	if errors.Is(err, sql.ErrNoRows) {
+		return 1, nil
+	} else if err != nil {
+		fmt.Println("this error column is working")
 		return -1, err
 	}
 
@@ -77,15 +81,15 @@ func insert_route_to_db(route *models.Route) (int, error) {
 	}
 
 	//inserting route and route_stops
-	query := "insert into all_routes(route_id,src,dest,direction,departure_time,arrival_time) values($1,$2,$3,$4,$5) returning route_id;"
-	err = pool.QueryRow(context.Background(), query, route.Id, route.Src, route.Dest, route.Direction, departure_time, arrival_time).Scan(&route.Id)
+	query := "insert into all_routes(route_id,src,dest,direction,departure_time,arrival_time) values($1,$2,$3,$4,$5,$6);"
+	_, err = pool.Exec(context.Background(), query, route.Id, route.Src, route.Dest, route.Direction, departure_time, arrival_time)
 	if err != nil {
 		fmt.Println("error while inserting route to db - ", err)
 		return -1, fmt.Errorf("error")
 	}
 
 	for _, stop := range route.Stops {
-		query = "insert into route_stops(route_id,stop_name,is_stop,lat,lon,arrival_time,departure_time) values($1,$2,$3,$4,$5,$6,$7)"
+		query = "insert into route_stops(route_id,direction,stop_name,is_stop,lat,lon,arrival_time,departure_time) values($1,$2,$3,$4,$5,$6,$7,$8)"
 		_, err := pool.Exec(context.Background(), query, route.Id, route.Direction, stop.LocationName, stop.IsStop, stop.Lat, stop.Lon, stop.Arrival_time, stop.Departure_time)
 		if err != nil {
 			fmt.Println("error while inserting the route stops  - ", err)
