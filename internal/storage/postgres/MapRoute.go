@@ -7,37 +7,31 @@ import (
 
 func Map_route_with_bus(route_id int, bus_id int) error {
 
-	var (
-		is_bus_present bool
-		// is_route_present bool
-	)
-
-	ctx := context.Background()
-
+	// finds , is the route_id existing in the current_bus_route
 	is_route_present, err := find_route_exists_CBR(route_id)
 	if err != nil {
 		return err
 	}
 
-	if is_bus_present {
-
-	}
-
 	if is_route_present {
-		query := "update current_bus_route set route_id = 0 where route_id = $1"
-		_, err = pool.Exec(ctx, query, route_id)
+
+		// update the bus_route when the route_id is exists
+		err := update_bus_route(route_id, bus_id)
 		if err != nil {
-			fmt.Println("error while update the existing route as 0 - ", err)
-			return fmt.Errorf(err.Error())
+			return err
+		}
+
+	} else {
+		// update the bus_route when the route_id is not exists
+		query := "update current_bus_route set route_id = $1 where bus_id = $2"
+		_, err = pool.Exec(context.Background(), query, route_id, bus_id)
+		if err != nil {
+			fmt.Println("error while update the route_id for given bus_id - ", err)
+			return err
 		}
 
 	}
-
-	query := "select exists(select 1 from current_bus_route where bus_id = $1)"
-	pool.QueryRow(ctx, query, bus_id).Scan(&is_bus_present)
-	if is_bus_present {
-		query = "update current_bus_route set route_id = "
-	}
+	return nil
 }
 
 // finds , is the route_id existing in the current_bus_route
@@ -52,7 +46,23 @@ func find_route_exists_CBR(route_id int) (bool, error) {
 	return is_route_present, nil
 }
 
-// func set_existing
+// update the bus_route when the route_id is exists
+func update_bus_route(route_id int, bus_id int) error {
+	query := "update current_bus_route set route_id = 0 where route_id = $1"
+	_, err := pool.Exec(context.Background(), query, route_id)
+	if err != nil {
+		fmt.Println("error while update the existing route as 0 - ", err)
+		return err
+	}
+
+	query = "update current_bus_route set route_id = $1 where bus_id = $2"
+	_, err = pool.Exec(context.Background(), query, route_id, bus_id)
+	if err != nil {
+		fmt.Println("error while update the route_id for given bus_id - ", err)
+		return err
+	}
+	return nil
+}
 
 func Add_new_bus(bus_no int) error {
 	query := "insert into current_bus_route(bus_id) values($1) "
