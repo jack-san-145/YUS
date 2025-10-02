@@ -20,6 +20,7 @@ func main() {
 	}
 	router := chi.NewRouter()
 	router.Get("/yus/admin-index-page", handlers.Serve_admin_index)
+	router.Get("/yus/available-routes", handlers.Load_all_available_routes)
 	router.Post("/yus/save-new-route", handlers.Save_New_route_handler)
 	router.Get("/driver-ws", handlers.Driver_Ws_hanler)
 	router.Post("/yus/add-new-driver", handlers.Add_new_driver_handler)

@@ -57,7 +57,7 @@ func Load_routes_by_src_and_dest(src string, dest string) {
 }
 
 // function to load all up_routes
-func Load_all_routes() []models.AvilableRoute {
+func Load_available_routes() []models.AvilableRoute {
 	var Available_routes []models.AvilableRoute
 	query := "select route_id,name,src,dest,direction from all_routes where direction = 'UP' "
 	all_routes, err := pool.Query(context.Background(), query)
@@ -84,14 +84,14 @@ func Load_all_routes() []models.AvilableRoute {
 			continue
 		}
 
-		query := "select bus_id from bus_routes where route_id = $1 and direction = 'UP' "
-		err = pool.QueryRow(context.Background(), query).Scan(&bus_id)
+		query := "select bus_id from current_bus_route where route_id = $1"
+		err = pool.QueryRow(context.Background(), query, route.Id).Scan(&bus_id)
 
 		if errors.Is(err, sql.ErrNoRows) {
 			//if route not present in bus_route and its available to map with a bus
 			route.Available = true
 		} else if err != nil {
-			fmt.Println("error while scanning bus_id from bus_routes - ", err)
+			fmt.Println("error while scanning bus_id from current_bus_route - ", err)
 			continue
 		}
 
