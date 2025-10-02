@@ -14,15 +14,15 @@ func Load_all_available_routes(w http.ResponseWriter, r *http.Request) {
 }
 
 func Add_New_Bus_handler(w http.ResponseWriter, r *http.Request) {
-	var status = make(map[string]bool)
+	var status = make(map[string]string)
 	bus_id_string := r.URL.Query().Get("bus_id")
 
 	bus_id_int, _ := strconv.Atoi(bus_id_string)
 	err := postgres.Add_new_bus(bus_id_int)
 	if err != nil {
-		status["bus_added"] = false
+		status["status"] = err.Error()
 	} else {
-		status["bus_added"] = true
+		status["status"] = "success"
 	}
 	WriteJSON(w, r, status)
 }

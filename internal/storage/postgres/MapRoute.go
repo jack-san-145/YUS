@@ -64,9 +64,24 @@ func update_bus_route(route_id int, bus_id int) error {
 	return nil
 }
 
-func Add_new_bus(bus_no int) error {
-	query := "insert into current_bus_route(bus_id) values($1) "
-	_, err := pool.Exec(context.Background(), query, bus_no)
+func Add_new_bus(bus_id int) error {
+
+	var is_bus_exists bool
+	fmt.Println("bus_id - ", bus_id)
+
+	query := "select exists(select 1 from current_bus_route where bus_id = $1)"
+	err := pool.QueryRow(context.Background(), query, bus_id).Scan(&is_bus_exists)
+	if err != nil {
+		fmt.Println("error while finding the existance of the bus - ", err)
+		return fmt.Errorf("failed")
+	}
+
+	if is_bus_exists {
+		return fmt.Errorf("bus already exists")
+	}
+
+	query = "insert into current_bus_route(route_id,bus_id) values(0,$1) "
+	_, err = pool.Exec(context.Background(), query, bus_id)
 	if err != nil {
 		fmt.Println("error while adding new bus - ", err)
 		return fmt.Errorf("failed")
