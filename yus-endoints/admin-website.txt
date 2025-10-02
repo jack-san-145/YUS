@@ -23,6 +23,7 @@ backend -> frontend (response):
 
 
 
+
 2. Verify Otp for Admin registration : 
 
 endpoint : "https://yus.kwscloud.in/yus/verify-otp-admin"
@@ -68,3 +69,15 @@ backend -> frontend (response):
     "login_status" : "valid" (or) 
     "login_status" : "invalid"
 }
+
+
+
+
+
+
+
+
+4. Get all available routes:
+
+endpoint : "https://yus.kwscloud.in/yus/admin-login"
+method : Post (body)
