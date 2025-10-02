@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"strconv"
 	"yus/internal/storage/postgres"
-
-	"github.com/go-chi/chi/v5"
 )
 
 func Load_all_available_routes(w http.ResponseWriter, r *http.Request) {
@@ -17,10 +15,10 @@ func Load_all_available_routes(w http.ResponseWriter, r *http.Request) {
 
 func Add_New_Bus_handler(w http.ResponseWriter, r *http.Request) {
 	var status = make(map[string]bool)
-	bus_no_string := chi.URLParam(r, "bus_no")
+	bus_id_string := r.URL.Query().Get("bus_id")
 
-	bus_no_int, _ := strconv.Atoi(bus_no_string)
-	err := postgres.Add_new_bus(bus_no_int)
+	bus_id_int, _ := strconv.Atoi(bus_id_string)
+	err := postgres.Add_new_bus(bus_id_int)
 	if err != nil {
 		status["bus_added"] = false
 	} else {
@@ -31,8 +29,8 @@ func Add_New_Bus_handler(w http.ResponseWriter, r *http.Request) {
 
 func Map_Route_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 	var status = make(map[string]bool)
-	route_id_string := chi.URLParam(r, "route_id")
-	bus_id_string := chi.URLParam(r, "bus_id")
+	route_id_string := r.URL.Query().Get("route_id")
+	bus_id_string := r.URL.Query().Get("bus_id")
 
 	route_id_int, _ := strconv.Atoi(route_id_string)
 	bus_id_int, _ := strconv.Atoi(bus_id_string)
