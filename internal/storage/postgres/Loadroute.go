@@ -88,8 +88,8 @@ func Load_all_routes() {
 			continue
 		}
 
-		// if is_route_present{
+		if is_route_present {
 
-		// }
+		}
 	}
 }
