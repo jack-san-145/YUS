@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"yus/internal/models"
 )
@@ -53,4 +54,42 @@ func Load_routes_by_src_and_dest(src string, dest string) {
 		stops.Close()
 	}
 
+}
+
+// function to load all up_routes
+func Load_all_routes() {
+	query := "select * from all_routes where direction = 'UP' "
+	all_routes, err := pool.Query(context.Background(), query)
+	if err != nil {
+		fmt.Println("error while finding the the all_routes - ", err)
+		return
+	}
+
+	defer all_routes.Close()
+
+	for all_routes.Next() {
+		var (
+			route_id  int
+			driver_id int
+		)
+		var is_route_present = true
+		err := all_routes.Scan(&route_id)
+		if err != nil {
+			fmt.Println("error while scanning route_id from all_routes - ", err)
+			continue
+		}
+
+		query := "select bus_id from bus_routes where route_id = $1 and direction = 'UP' "
+		err = pool.QueryRow(context.Background(), query).Scan(&driver_id)
+		if errors.Is(err, sql.ErrNoRows) {
+			is_route_present = false
+		} else if err != nil {
+			fmt.Println("error while scanning driver_id from bus_routes - ", err)
+			continue
+		}
+
+		// if is_route_present{
+
+		// }
+	}
 }

@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS cached_bus_route CASCADE;
