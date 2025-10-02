@@ -63,6 +63,7 @@ func insert_route_to_db(route *models.Route) (int, error) {
 	var (
 		arrival_time   string
 		departure_time string
+		route_name     string
 		err            error
 	)
 
@@ -73,16 +74,18 @@ func insert_route_to_db(route *models.Route) (int, error) {
 			return -1, err
 		}
 
+		route_name = route.UpRouteName
 		arrival_time = route.ArrivalTime
 		departure_time = route.UpDepartureTime
 	} else if route.Direction == "DOWN" {
+		route_name = route.DownRouteName
 		arrival_time = route.ArrivalTime
 		departure_time = route.DownDepartureTime
 	}
 
 	//inserting route and route_stops
-	query := "insert into all_routes(route_id,src,dest,direction,departure_time,arrival_time) values($1,$2,$3,$4,$5,$6);"
-	_, err = pool.Exec(context.Background(), query, route.Id, route.Src, route.Dest, route.Direction, departure_time, arrival_time)
+	query := "insert into all_routes(route_id,name,src,dest,direction,departure_time,arrival_time) values($1,$2,$3,$4,$5,$6);"
+	_, err = pool.Exec(context.Background(), query, route.Id, route_name, route.Src, route.Dest, route.Direction, departure_time, arrival_time)
 	if err != nil {
 		fmt.Println("error while inserting route to db - ", err)
 		return -1, fmt.Errorf("error")

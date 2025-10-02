@@ -48,11 +48,12 @@ type DriverAddedStatus struct {
 	Email    string `json:"email"`
 }
 
-type AvilableRoutes struct {
-	RouteId int    `json:"route_id"`
-	Name    string `json:"route_name"`
-	Src     string `json:"src"`
-	Dest    string `json:"dest"`
-	ISUsed  bool   `json:"is_used"` //is any bus using this route currently
-	UsedBy  int    `json:"used_by"` // bus using this row now
+type AvilableRoute struct {
+	Id        int    `json:"route_id"`
+	Name      string `json:"route_name"`
+	Src       string `json:"src"`
+	Dest      string `json:"dest"`
+	Direction string `json:"direction"`
+	Available bool   `json:"available"` //is any bus using this route currently
+	UsedBy    int    `json:"used_by"`   // bus using this row now
 }

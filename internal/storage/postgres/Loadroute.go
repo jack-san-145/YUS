@@ -57,39 +57,49 @@ func Load_routes_by_src_and_dest(src string, dest string) {
 }
 
 // function to load all up_routes
-func Load_all_routes() {
-	query := "select * from all_routes where direction = 'UP' "
+func Load_all_routes() []models.AvilableRoute {
+	var Available_routes []models.AvilableRoute
+	query := "select route_id,name,src,dest,direction from all_routes where direction = 'UP' "
 	all_routes, err := pool.Query(context.Background(), query)
 	if err != nil {
 		fmt.Println("error while finding the the all_routes - ", err)
-		return
+		return nil
 	}
 
 	defer all_routes.Close()
 
 	for all_routes.Next() {
 		var (
-			route_id  int
-			driver_id int
+			bus_id int
+			route  models.AvilableRoute
 		)
-		var is_route_present = true
-		err := all_routes.Scan(&route_id)
+
+		err := all_routes.Scan(&route.Id,
+			&route.Name,
+			&route.Src,
+			&route.Dest,
+			&route.Direction)
 		if err != nil {
 			fmt.Println("error while scanning route_id from all_routes - ", err)
 			continue
 		}
 
 		query := "select bus_id from bus_routes where route_id = $1 and direction = 'UP' "
-		err = pool.QueryRow(context.Background(), query).Scan(&driver_id)
+		err = pool.QueryRow(context.Background(), query).Scan(&bus_id)
+
 		if errors.Is(err, sql.ErrNoRows) {
-			is_route_present = false
+			//if route not present in bus_route and its available to map with a bus
+			route.Available = true
 		} else if err != nil {
-			fmt.Println("error while scanning driver_id from bus_routes - ", err)
+			fmt.Println("error while scanning bus_id from bus_routes - ", err)
 			continue
 		}
 
-		if is_route_present {
-
+		if !route.Available {
+			//if the bus present in the bus_route and its not available bcz it already mapped with a bus
+			route.UsedBy = bus_id
 		}
+		Available_routes = append(Available_routes, route)
 	}
+	return Available_routes
 }
