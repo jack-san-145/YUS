@@ -31,6 +31,7 @@ func main() {
 	router.Get("/yus/passenger-ws", handlers.Passenger_Ws_handler)
 	router.Get("/yus/src-{source}&dest-{destination}", handlers.Src_Dest_handler) //here i changed the endpoint format
 
+	router.Put("/yus/add-new-bus-{bus_no}", handlers.Add_New_Bus_handler)
 	router.Put("/yus/set{route_id}-{bus_id}", handlers.Map_Route_With_Bus_handler)
 
 	postgres.Connect()        //make a connection to postgres
