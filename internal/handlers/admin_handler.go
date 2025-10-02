@@ -27,13 +27,16 @@ func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		ch := make(chan bool) //channel to store the otp is sent to email or not
+		// ch := make(chan bool) //channel to store the otp is sent to email or not
+		// otp := services.GenerateOtp()
+
+		// go services.SendEmailTo(ch, email, otp) //pass also the channel
+
+		// //this line wait until that go routine puts value to the ch
+		// is_email_sent := <-ch //receives the email sent status from the bool channel 'ch'
+
 		otp := services.GenerateOtp()
-
-		go services.SendEmailTo(ch, email, otp) //pass also the channel
-
-		//this line wait until that go routine puts value to the ch
-		is_email_sent := <-ch //receives the email sent status from the bool channel 'ch'
+		is_email_sent := services.SendEmailTo(email, otp)
 		if is_email_sent {
 			redis.SetOtp(email, otp) //set otp to redis if otp sent to email successfully
 		}
