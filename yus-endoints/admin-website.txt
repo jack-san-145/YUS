@@ -1,3 +1,5 @@
+//Admin registration and login 
+
 1. Sending otp to Admin for register :
 
 endpoint: "https://yus.kwscloud.in/yus/send-otp-admin"
@@ -76,8 +78,9 @@ backend -> frontend (response):
 
 
 
+//Bus and driver Scheduling
 
-4. Get all available routes:
+1. Get all available routes:
 
 endpoint : "https://yus.kwscloud.in/yus/get-available-routes"
 method : Get 
@@ -104,4 +107,40 @@ backend -> frontend (response):
             "used_by": 0
         }
     ]
+}
+
+
+
+
+
+
+
+2. Add new Bus :
+
+endpoint : "https://yus.kwscloud.in/yus/add-new-bus?bus_id=6"
+method : Put (Query Parameter)
+
+
+backend -> frontend (response):
+{
+    "status" : "success" (or)
+    "status" : "failed" (or)
+    "status" : "bus already exists"
+}
+
+
+
+
+
+
+
+3. Mapping route with Bus
+
+endpoint : "https://yus.kwscloud.in/yus/map-bus-route?route_id=3&bus_id=6"
+method : Put (Query Parameter)
+
+backend -> frontend (response):
+{
+    "mapped" : true (or)
+    "mapped" : false 
 }
