@@ -146,7 +146,7 @@ func Add_new_bus(bus_id int) error {
 	}
 
 	//if doesn't exists then add the new bus to current_bus_route
-	query = "insert into current_bus_route(route_id,bus_id) values(0,$1) "
+	query = "insert into current_bus_route(bus_id) values($1) "
 	_, err = pool.Exec(context.Background(), query, bus_id)
 	if err != nil {
 		fmt.Println("error while adding new bus - ", err)

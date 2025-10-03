@@ -12,4 +12,4 @@ CREATE TABLE route_stops (
 );
 
 -- Create an index on (route_id, stop_name) for faster lookups
-CREATE INDEX idx_routeid_stopname ON route_stops(route_id, stop_name);
+CREATE INDEX idx_routeid_stopname ON route_stops(route_id, stop_name,direction);
