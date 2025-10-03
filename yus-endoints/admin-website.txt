@@ -136,7 +136,7 @@ backend -> frontend (response):
 
 3. Mapping route with Bus
 
-endpoint : "https://yus.kwscloud.in/yus/map-bus-route?route_id=3&bus_id=6"
+endpoint : "https://yus.kwscloud.in/yus/allocate-bus-route?route_id=3&bus_id=6"
 method : Put (Query Parameter)
 
 backend -> frontend (response):
