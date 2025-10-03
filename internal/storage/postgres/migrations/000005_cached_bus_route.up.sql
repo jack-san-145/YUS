@@ -3,3 +3,5 @@ CREATE TABLE IF NOT EXISTS cached_bus_route (
     driver_id int  NOT NULL REFERENCES drivers(driver_id),
     route_id int NOT NULL 
 );
+
+CREATE INDEX idx_cached_bus_route ON cached_bus_route(bus_id,route_id);
