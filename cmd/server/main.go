@@ -38,7 +38,7 @@ func main() {
 	router.Put("/yus/allocate-bus-route", handlers.Map_Route_With_Bus_handler)
 
 	//yus/allocate-bus-driver?driver_id=1005&bus_id=10
-	router.Put("/yus/allocate-bus-driver", handlers.Map_Driver_With_Bus_handler)
+	router.Post("/yus/allocate-bus-driver", handlers.Map_Driver_With_Bus_handler)
 
 	router.Get("/yus/get-available-drivers", handlers.Load_all_available_drivers)
 

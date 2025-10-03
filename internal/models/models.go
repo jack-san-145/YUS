@@ -63,3 +63,8 @@ type AvailableDriver struct {
 	Name      string `json:"driver_name"`
 	Available bool   `json:"available"`
 }
+
+type DriverAllocation struct {
+	DriverId int `json:"driver_id"`
+	BusId    int `json:"bus_id"`
+}

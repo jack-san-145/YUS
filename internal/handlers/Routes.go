@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
+	"yus/internal/models"
 	"yus/internal/storage/postgres"
 )
 
@@ -61,20 +63,25 @@ func Map_Route_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 
 func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 
+	//gets the driver and bus allocation array , after allocated it returns the results
+	var DriverAllocation_array []models.DriverAllocation
+
 	//mapping driver to the bus
-	var status = make(map[string]bool)
-	driver_id_string := r.URL.Query().Get("driver_id")
-	bus_id_string := r.URL.Query().Get("bus_id")
-
-	driver_id_int, _ := strconv.Atoi(driver_id_string)
-	bus_id_int, _ := strconv.Atoi(bus_id_string)
-	fmt.Println(driver_id_int, bus_id_int)
-
-	err := postgres.Map_driver_with_bus(driver_id_int, bus_id_int)
+	var status = make(map[int]bool)
+	err := json.NewDecoder(r.Body).Decode(&DriverAllocation_array)
 	if err != nil {
-		status["driver_mapped"] = false
-	} else {
-		status["driver_mapped"] = true
+		fmt.Println("error while decode the bus_and_drivers - ", err)
+		return
 	}
+
+	for _, allcoate_driver := range DriverAllocation_array {
+		err := postgres.Map_driver_with_bus(allcoate_driver.DriverId, allcoate_driver.BusId)
+		if err != nil {
+			status[allcoate_driver.BusId] = false
+		} else {
+			status[allcoate_driver.BusId] = true
+		}
+	}
+
 	WriteJSON(w, r, status)
 }
