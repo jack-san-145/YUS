@@ -134,7 +134,7 @@ backend -> frontend (response):
 
 
 
-3. Mapping route with Bus
+3. Allocation of Bus Routes:
 
 endpoint : "https://yus.kwscloud.in/yus/allocate-bus-route?route_id=3&bus_id=6"
 method : Put (Query Parameter)
@@ -144,3 +144,9 @@ backend -> frontend (response):
     "route_mapped" : true (or)
     "route_mapped" : false 
 }
+
+
+
+
+
+

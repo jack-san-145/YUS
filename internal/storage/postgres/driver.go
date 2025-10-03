@@ -20,7 +20,10 @@ func Store_new_driver_to_DB(new_driver *models.Driver) bool {
 }
 
 func Available_drivers() []models.AvailableDriver {
-	var all_available_drivers []models.AvailableDriver
+	var (
+		all_available_drivers []models.AvailableDriver
+		is_driver_exists      bool
+	)
 	query := "select driver_id,name from drivers"
 	all_drivers, err := pool.Query(context.Background(), query)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -40,10 +43,14 @@ func Available_drivers() []models.AvailableDriver {
 			continue
 		}
 		query = "select exists (select 1 from current_bus_route where driver_id = $1 ) "
-		err := pool.QueryRow(context.Background(), query, driver.Id).Scan(&driver.Available)
+		err := pool.QueryRow(context.Background(), query, driver.Id).Scan(&is_driver_exists)
 		if err != nil {
 			fmt.Println("error while checking existance of the driver in current_bus_route - ", err)
 			continue
+		}
+
+		if !is_driver_exists {
+			driver.Available = true
 		}
 		all_available_drivers = append(all_available_drivers, driver)
 	}
