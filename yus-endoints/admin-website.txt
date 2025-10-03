@@ -134,7 +134,7 @@ backend -> frontend (response):
 
 
 
-3. Allocation of Bus Routes:
+3.Bus Routes Allocation:
 
 endpoint : "https://yus.kwscloud.in/yus/allocate-bus-route?route_id=3&bus_id=6"
 method : Put (Query Parameter)
@@ -148,5 +148,55 @@ backend -> frontend (response):
 
 
 
+
+
+
+4. Get all available drivers:
+
+endpoint : "https://yus.kwscloud.in/yus/get-available-drivers"
+method : Get 
+
+backend -> frontend (response):
+{
+    [
+        {
+            "driver_id": 1001,
+            "driver_name": "santhosh",
+            "available": true
+        },
+        {
+            "driver_id": 1002,
+            "driver_name": "jack",
+            "available": false
+        },
+        {
+            "driver_id": 1003,
+            "driver_name": "bharath",
+            "available": false
+        },
+        {
+            "driver_id": 1004,
+            "driver_name": "sanjai",
+            "available": false
+        }
+    ]
+}
+
+
+
+
+
+
+
+5. Driver Allocation:
+
+endpoint : "https://yus.kwscloud.in/yus/allocate-bus-driver?driver_id=1004&bus_id=6"
+method : Put (Query Parameter)
+
+backend -> frontend (response):
+{
+    "driver_mapped" : true (or)
+    "driver_mapped" : false 
+}
 
 
