@@ -189,13 +189,36 @@ backend -> frontend (response):
 
 5. Driver Allocation:
 
-endpoint : "https://yus.kwscloud.in/yus/allocate-bus-driver?driver_id=1004&bus_id=6"
-method : Put (Query Parameter)
+endpoint : "https://yus.kwscloud.in/yus/allocate-bus-driver"
+method : Post (Body)
+
+frontend -> backend (request):
+{
+    [
+        {
+            "driver_id":1001,
+            "bus_id":6
+        },
+        {
+            "driver_id":1004,
+            "bus_id":15
+        }, 
+        {
+            "driver_id":1003,
+            "bus_id":10
+        },
+        {
+            "driver_id":1001,
+            "bus_id":10
+        }
+    ]
+}
+
 
 backend -> frontend (response):
 {
-    "driver_mapped" : true (or)
-    "driver_mapped" : false 
+    "10": true,
+    "15": true,
+    "6": true
 }
-
 
