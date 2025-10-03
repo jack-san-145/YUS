@@ -37,7 +37,7 @@ func main() {
 	//yus/map-bus-route?route_id=42&bus_id=10
 	router.Put("/yus/allocate-bus-route", handlers.Map_Route_With_Bus_handler)
 
-	// router.Put("/yus/")
+	router.Put("/yus/allocate-bus-driver")
 
 	postgres.Connect()        //make a connection to postgres
 	redis.CreateRedisClient() //made a redis client

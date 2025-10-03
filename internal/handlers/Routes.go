@@ -44,3 +44,13 @@ func Map_Route_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 	}
 	WriteJSON(w, r, status)
 }
+
+func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
+	var status = make(map[string]bool)
+	driver_id_string := r.URL.Query().Get("driver_id")
+	bus_id_string := r.URL.Query().Get("bus_id")
+
+	driver_id_int, _ := strconv.Atoi(driver_id_string)
+	bus_id_int, _ := strconv.Atoi(bus_id_string)
+	fmt.Println(driver_id_int, bus_id_int)
+}

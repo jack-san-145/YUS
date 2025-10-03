@@ -5,6 +5,10 @@ import (
 	"fmt"
 )
 
+func Map_driver_with_bus(driver_id int, bus_id int) {
+
+}
+
 func Map_route_with_bus(route_id int, bus_id int) error {
 
 	// finds , is the route_id existing in the current_bus_route
