@@ -141,6 +141,6 @@ method : Put (Query Parameter)
 
 backend -> frontend (response):
 {
-    "mapped" : true (or)
-    "mapped" : false 
+    "route_mapped" : true (or)
+    "route_mapped" : false 
 }

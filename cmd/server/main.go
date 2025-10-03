@@ -34,10 +34,13 @@ func main() {
 	//yus.kwscloud.in/yus/add-new-bus?bus_id=10
 	router.Put("/yus/add-new-bus", handlers.Add_New_Bus_handler)
 
-	//yus/map-bus-route?route_id=42&bus_id=10
+	//yus/allocate-bus-route?route_id=42&bus_id=10
 	router.Put("/yus/allocate-bus-route", handlers.Map_Route_With_Bus_handler)
 
-	router.Put("/yus/allocate-bus-driver")
+	//yus/allocate-bus-driver?driver_id=1005&bus_id=10
+	router.Put("/yus/allocate-bus-driver", handlers.Map_Driver_With_Bus_handler)
+
+	router.Get("/yus/get-available-drivers", handlers.Load_all_available_routes)
 
 	postgres.Connect()        //make a connection to postgres
 	redis.CreateRedisClient() //made a redis client
