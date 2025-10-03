@@ -150,7 +150,6 @@ backend -> frontend (response):
 
 
 
-
 4. Get all available drivers:
 
 endpoint : "https://yus.kwscloud.in/yus/get-available-drivers"
