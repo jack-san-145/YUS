@@ -5,8 +5,31 @@ import (
 	"fmt"
 )
 
-func Map_driver_with_bus(driver_id int, bus_id int) {
+func Map_driver_with_bus(driver_id int, bus_id int) error {
+	// finds , is the driver_id existing in the current_bus_route
+	is_driver_present, err := find_driver_exists_CBR(driver_id)
+	if err != nil {
+		return err
+	}
 
+	if is_driver_present {
+
+		// update the bus_route when the driver_id is exists
+		err := update_bus_driver(driver_id, bus_id)
+		if err != nil {
+			return err
+		}
+
+	} else {
+		// update the bus_route when the driver_id is not exists
+		query := "update current_bus_route set driver_id = $1 where bus_id = $2"
+		_, err = pool.Exec(context.Background(), query, driver_id, bus_id)
+		if err != nil {
+			fmt.Println("error while update the driver_id for given bus_id - ", err)
+			return err
+		}
+	}
+	return nil
 }
 
 func Map_route_with_bus(route_id int, bus_id int) error {
@@ -50,6 +73,18 @@ func find_route_exists_CBR(route_id int) (bool, error) {
 	return is_route_present, nil
 }
 
+// finds , is the route_id existing in the current_bus_route
+func find_driver_exists_CBR(driver_id int) (bool, error) {
+	var is_driver_present bool
+	query := "select exists(select 1 from current_bus_route where driver_id = $1)"
+	err := pool.QueryRow(context.Background(), query, driver_id).Scan(&is_driver_present)
+	if err != nil {
+		fmt.Println("error while finding the existance of driver_id in current_bus_route - ", err)
+		return false, err
+	}
+	return is_driver_present, nil
+}
+
 // update the bus_route when the route_id is exists on current_bus_route
 func update_bus_route(route_id int, bus_id int) error {
 
@@ -66,6 +101,27 @@ func update_bus_route(route_id int, bus_id int) error {
 	_, err = pool.Exec(context.Background(), query, route_id, bus_id)
 	if err != nil {
 		fmt.Println("error while update the route_id for given bus_id - ", err)
+		return err
+	}
+	return nil
+}
+
+// update the bus_route when the route_id is exists on current_bus_route
+func update_bus_driver(driver_id int, bus_id int) error {
+
+	//set the already mapped other bus's route_id as 0
+	query := "update current_bus_route set driver_id = 1000 where driver_id = $1"
+	_, err := pool.Exec(context.Background(), query, driver_id)
+	if err != nil {
+		fmt.Println("error while update the existing driver as 1000 - ", err)
+		return err
+	}
+
+	//map the new driver with bus
+	query = "update current_bus_route set driver_id = $1 where bus_id = $2"
+	_, err = pool.Exec(context.Background(), query, driver_id, bus_id)
+	if err != nil {
+		fmt.Println("error while update the driver_id for given bus_id - ", err)
 		return err
 	}
 	return nil

@@ -95,7 +95,7 @@ backend -> frontend (response):
             "dest": "madurai",
             "direction": "UP",
             "available": false,
-            "used_by": 6
+            "bus_id": 6
         },
         {
             "route_id": 2,
@@ -104,7 +104,7 @@ backend -> frontend (response):
             "dest": "madurai",
             "direction": "UP",
             "available": true,
-            "used_by": 0
+            "bus_id": 0
         }
     ]
 }

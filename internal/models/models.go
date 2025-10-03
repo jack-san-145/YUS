@@ -55,5 +55,11 @@ type AvilableRoute struct {
 	Dest      string `json:"dest"`
 	Direction string `json:"direction"`
 	Available bool   `json:"available"` //is any bus using this route currently
-	UsedBy    int    `json:"used_by"`   // bus using this row now
+	BusId     int    `json:"bus_id"`    // bus using this row now
+}
+
+type AvailableDriver struct {
+	Id        int    `json:"driver_id"`
+	Name      string `json:"driver_name"`
+	Available bool   `json:"available"`
 }

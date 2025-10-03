@@ -97,7 +97,7 @@ func Load_available_routes() []models.AvilableRoute {
 
 		if !route.Available {
 			//if the bus present in the bus_route and its not available bcz it already mapped with a bus
-			route.UsedBy = bus_id
+			route.BusId = bus_id
 		}
 		Available_routes = append(Available_routes, route)
 	}
