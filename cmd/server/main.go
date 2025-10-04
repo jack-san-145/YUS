@@ -20,7 +20,7 @@ func main() {
 	}
 	router := chi.NewRouter()
 	router.Get("/yus/admin-index-page", handlers.Serve_admin_index)
-	router.Get("/yus/get-available-routes", handlers.Load_all_available_routes)
+
 	router.Post("/yus/save-new-route", handlers.Save_New_route_handler)
 	router.Get("/driver-ws", handlers.Driver_Ws_hanler)
 	router.Post("/yus/add-new-driver", handlers.Add_new_driver_handler)
@@ -30,6 +30,8 @@ func main() {
 	router.Post("/yus/send-otp-admin", handlers.Admin_otp_handler)
 	router.Get("/yus/passenger-ws", handlers.Passenger_Ws_handler)
 	router.Get("/yus/src-{source}&dest-{destination}", handlers.Src_Dest_handler) //here i changed the endpoint format
+
+	router.Get("/yus/get-available-routes", handlers.Load_all_available_routes)
 
 	//yus.kwscloud.in/yus/add-new-bus?bus_id=10
 	router.Put("/yus/add-new-bus", handlers.Add_New_Bus_handler)

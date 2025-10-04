@@ -24,7 +24,7 @@ func Convert_to_CamelCase(s string) string {
 
 // this function converts a CamelCase string like "KamarajCollege"
 // back to a human-readable format like "Kamaraj College"
-func Convert_from_CamelCase(s string) string {
+func Convert_to_Normal(s string) string {
 	var b strings.Builder // Use string builder for efficient concatenation
 	for i, r := range s {
 

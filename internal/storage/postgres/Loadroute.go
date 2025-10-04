@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"yus/internal/models"
+	"yus/internal/services"
 )
 
 func Load_routes_by_src_and_dest(src string, dest string) {
@@ -83,6 +84,7 @@ func Load_available_routes() []models.AvilableRoute {
 			fmt.Println("error while scanning route_id from all_routes - ", err)
 			continue
 		}
+		route.Name = services.Convert_to_Normal(route.Name)
 
 		query := "select bus_id from current_bus_route where route_id = $1"
 		err = pool.QueryRow(context.Background(), query, route.Id).Scan(&bus_id)

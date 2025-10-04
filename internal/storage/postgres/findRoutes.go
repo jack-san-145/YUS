@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"yus/internal/models"
+	"yus/internal/services"
 )
 
 func FindRoutes_by_src_dest(src string, dest string) []models.CurrentRoute {
@@ -28,6 +29,11 @@ func FindRoutes_by_src_dest(src string, dest string) []models.CurrentRoute {
 			&route.RouteName,
 			&route.Src,
 			&route.Dest)
+
+		route.RouteName = services.Convert_to_Normal(route.RouteName)
+		route.Src = services.Convert_to_Normal(route.Src)
+		route.Dest = services.Convert_to_Normal(route.Dest)
+
 		route.Stops = findStops(route.RouteId, route.Direction)
 		All_routes = append(All_routes, route)
 	}
@@ -54,6 +60,7 @@ func findStops(route_id int, direction string) []models.RouteStops {
 			&stop.Arrival_time,
 			&stop.Departure_time)
 
+		stop.LocationName = services.Convert_to_Normal(stop.LocationName)
 		route_stops = append(route_stops, stop)
 	}
 	return route_stops

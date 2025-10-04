@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"yus/internal/services"
 	"yus/internal/storage/postgres"
 
 	// "yus/internal/models"
@@ -14,6 +15,9 @@ func Src_Dest_handler(w http.ResponseWriter, r *http.Request) {
 	src := chi.URLParam(r, "source")
 	dest := chi.URLParam(r, "destination")
 	fmt.Printf("given src - %v & destination - %v ", src, dest)
+
+	src = services.Convert_to_CamelCase(src)
+	dest = services.Convert_to_CamelCase(dest)
 	WriteJSON(w, r, postgres.FindRoutes_by_src_dest(src, dest))
 
 }

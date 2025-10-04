@@ -11,6 +11,11 @@ import (
 func Calculate_Uproute_departure(upRoute *models.Route) {
 	upStops := upRoute.Stops
 
+	//convert the normal names to camel-case to store in DB
+	upRoute.UpRouteName = Convert_to_CamelCase(upRoute.UpRouteName)
+	upRoute.Src = Convert_to_CamelCase(upRoute.Src)
+	upRoute.Dest = Convert_to_CamelCase(upRoute.Dest)
+
 	for i := 0; i < len(upStops); i++ {
 		if i == 0 {
 			// First stop: departure = arrival
@@ -27,10 +32,13 @@ func Calculate_Uproute_departure(upRoute *models.Route) {
 				upStops[i].Departure_time = upStops[i].Arrival_time
 			}
 		}
+		//convert the stop names(normal names )to camel-case to store in DB
+		upStops[i].LocationName = Convert_to_CamelCase(upStops[i].LocationName)
 	}
 	upRoute.Stops = upStops
 	upRoute.UpDepartureTime = upStops[0].Departure_time
 	upRoute.ArrivalTime = upStops[len(upStops)-1].Arrival_time // reaches the destination
+
 }
 
 func Find_down_route(down_route models.Route) *models.Route {
@@ -59,6 +67,11 @@ func calculate_down_routeStops(down_route *models.Route) {
 	// Step 1: Initialize Down route stops
 	downStops := make([]models.RouteStops, len(down_route.Stops))
 	copy(downStops, down_route.Stops)
+
+	//convert the normal names to camel-case to store in DB
+	down_route.DownRouteName = Convert_to_CamelCase(down_route.DownRouteName)
+	down_route.Src = Convert_to_CamelCase(down_route.Src)
+	down_route.Dest = Convert_to_CamelCase(down_route.Dest)
 
 	// Step 2: Calculate segment durations from Up route
 	segmentDurations := []time.Duration{}
@@ -132,6 +145,9 @@ func calculate_down_routeStops(down_route *models.Route) {
 		      Arrival = 17:08 + 18 min = 17:26
 		      Madurai IsStop = true → Departure = 17:27
 		*/
+
+		//convert the stop names(normal names )to camel-case to store in DB
+		downStops[i].LocationName = Convert_to_CamelCase(downStops[i].LocationName)
 	}
 	down_route.Stops = downStops
 	down_route.ArrivalTime = downStops[len(downStops)-1].Arrival_time
