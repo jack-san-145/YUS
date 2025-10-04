@@ -41,7 +41,7 @@ func FindRoutes_by_src_dest(src string, dest string) []models.CurrentRoute {
 	if found {
 		fmt.Println("succesfully route founded")
 	} else if !routes.Next() {
-		fmt.Println("No  routes available for this src and dest,so find reverse route")
+		fmt.Println("No routes available for this src and dest,so find reverse route")
 		All_routes = find_reverseRoute_by_routeId(dest, src)
 
 	}
@@ -53,8 +53,18 @@ func findStops(route *models.CurrentRoute) {
 	var (
 		route_stops []models.RouteStops
 		route_name  string
+		order       string
 	)
-	query := "select route_name,stop_name,is_stop,lat,lon,arrival_time,departure_time from route_stops where route_id = $1 and direction = $2"
+	if route.Direction == "UP" {
+		order = "asc"
+	} else if route.Direction == "DOWN" {
+		order = "desc"
+	}
+	query := fmt.Sprintf(`
+    SELECT route_name,stop_sequence, stop_name, is_stop, lat, lon, arrival_time, departure_time
+    FROM route_stops
+    WHERE route_id = $1 AND direction = $2
+    ORDER BY stop_sequence %s `, order)
 	all_stops, err := pool.Query(context.Background(), query, route.RouteId, route.Direction)
 	if err != nil {
 		fmt.Println("error while finding the route stops - ", err)
@@ -66,6 +76,7 @@ func findStops(route *models.CurrentRoute) {
 			stop models.RouteStops
 		)
 		all_stops.Scan(&route_name,
+			&stop.StopSequence,
 			&stop.LocationName,
 			&stop.IsStop,
 			&stop.Lat,

@@ -25,6 +25,7 @@ type Route struct {
 }
 
 type RouteStops struct {
+	StopSequence   int    `json:"stop_sequence"`
 	LocationName   string `json:"location_name"`
 	Lat            string `json:"lat"`
 	Lon            string `json:"lon"`
