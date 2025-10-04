@@ -8,7 +8,7 @@ import (
 	"yus/internal/storage/postgres"
 )
 
-var All_Bus_Routes []models.Route
+// var All_Bus_Routes []models.Route
 
 func Save_New_route_handler(w http.ResponseWriter, r *http.Request) {
 	var NewRoute models.Route
