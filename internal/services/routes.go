@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"slices"
 	"time"
 	"yus/internal/models"
@@ -148,7 +149,14 @@ func calculate_down_routeStops(down_route *models.Route) {
 
 		//convert the stop names(normal names )to camel-case to store in DB
 		downStops[i].LocationName = Convert_to_CamelCase(downStops[i].LocationName)
+
+		//adding stop sequence
+		downStops[i].StopSequence = i + 1
+		fmt.Println("location name - ", downStops[i].LocationName)
+		fmt.Println("downStops[i].StopSequence = i + 1 ", downStops[i].StopSequence)
 	}
+	//seperately assigning stopsequence for last stop
+	downStops[len(downStops)-1].StopSequence = len(downStops)
 	down_route.Stops = downStops
 	down_route.ArrivalTime = downStops[len(downStops)-1].Arrival_time
 

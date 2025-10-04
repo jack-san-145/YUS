@@ -53,18 +53,14 @@ func findStops(route *models.CurrentRoute) {
 	var (
 		route_stops []models.RouteStops
 		route_name  string
-		order       string
 	)
-	if route.Direction == "UP" {
-		order = "asc"
-	} else if route.Direction == "DOWN" {
-		order = "desc"
-	}
-	query := fmt.Sprintf(`
-    SELECT route_name,stop_sequence, stop_name, is_stop, lat, lon, arrival_time, departure_time
-    FROM route_stops
-    WHERE route_id = $1 AND direction = $2
-    ORDER BY stop_sequence %s `, order)
+	query := `
+			select route_name,stop_sequence, stop_name, is_stop, lat, lon, arrival_time, departure_time
+			from route_stops
+			where route_id = $1 AND direction = $2
+			order BY stop_sequence asc
+		`
+
 	all_stops, err := pool.Query(context.Background(), query, route.RouteId, route.Direction)
 	if err != nil {
 		fmt.Println("error while finding the route stops - ", err)
