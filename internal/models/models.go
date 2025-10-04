@@ -70,11 +70,12 @@ type DriverAllocation struct {
 }
 
 type CurrentRoute struct {
-	RouteId   int    `json:"route_id"`
-	BusId     int    `json:"bus_id"`
-	DriverId  int    `json:"driver_id"`
-	Direction string `json:"direction"`
-	RouteName string `json:"route_name"`
-	Src       string `json:"src"`
-	Dest      string `json:"dest"`
+	RouteId   int          `json:"route_id"`
+	BusId     int          `json:"bus_id"`
+	DriverId  int          `json:"driver_id"`
+	Direction string       `json:"direction"`
+	RouteName string       `json:"route_name"`
+	Src       string       `json:"src"`
+	Dest      string       `json:"dest"`
+	Stops     []RouteStops `json:"stops"`
 }
