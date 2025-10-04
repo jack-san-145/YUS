@@ -17,13 +17,6 @@ func Load_all_available_routes(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, r, all_available_routes)
 }
 
-func Load_all_available_drivers(w http.ResponseWriter, r *http.Request) {
-
-	//to load all the available routes
-	all_available_drivers := postgres.Available_drivers()
-	fmt.Println("avalaible drivers - ", all_available_drivers)
-	WriteJSON(w, r, all_available_drivers)
-}
 
 func Add_New_Bus_handler(w http.ResponseWriter, r *http.Request) {
 

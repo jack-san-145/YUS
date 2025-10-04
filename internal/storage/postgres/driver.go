@@ -2,8 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 	"fmt"
 	"yus/internal/models"
 )
@@ -24,12 +22,10 @@ func Available_drivers() []models.AvailableDriver {
 		all_available_drivers []models.AvailableDriver
 		is_driver_exists      bool
 	)
+
 	query := "select driver_id,driver_name from drivers"
 	all_drivers, err := pool.Query(context.Background(), query)
-	if errors.Is(err, sql.ErrNoRows) {
-		fmt.Println("driver is empty - ", err)
-		return nil
-	} else if err != nil {
+	if err != nil {
 		fmt.Println("error while selecting the driver_id and driver_name - ", err)
 		return nil
 	}
@@ -48,7 +44,6 @@ func Available_drivers() []models.AvailableDriver {
 			fmt.Println("error while checking existance of the driver in current_bus_route - ", err)
 			continue
 		}
-
 		if !is_driver_exists {
 			driver.Available = true
 		}
