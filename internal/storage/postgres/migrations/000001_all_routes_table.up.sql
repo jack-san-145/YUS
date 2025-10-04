@@ -1,7 +1,7 @@
 
 CREATE TABLE IF NOT EXISTS all_routes (
     route_id int NOT NULL,
-    name TEXT NOT NULL DEFAULT '',
+    route_name TEXT NOT NULL DEFAULT '',
     src TEXT NOT NULL DEFAULT '',
     dest TEXT NOT NULL DEFAULT '',
     direction text NOT NULL DEFAULT '',

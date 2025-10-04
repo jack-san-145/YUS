@@ -53,7 +53,7 @@ func Map_route_with_bus(route_id int, bus_id int) error {
 	} else {
 
 		// update the bus_route when the route_id is not exists
-		query := "update current_bus_route set route_id = $1 ,name = $2 ,src = $3 ,dest = $4 where bus_id = $5"
+		query := "update current_bus_route set route_id = $1 ,route_name = $2 ,src = $3 ,dest = $4 where bus_id = $5"
 		_, err = pool.Exec(context.Background(), query, route_id, route_name, src, dest, bus_id)
 		if err != nil {
 			fmt.Println("error while update the route_id for given bus_id - ", err)
@@ -70,10 +70,10 @@ func find_src_dest_name_by_routeId(route_id int) (string, string, string) {
 		src        string
 		dest       string
 	)
-	query := "select name,src,dest from all_routes where route_id = $1 and direction = 'UP' "
+	query := "select route_name,src,dest from all_routes where route_id = $1 and direction = 'UP' "
 	err := pool.QueryRow(context.Background(), query, route_id).Scan(&route_name, &src, &dest)
 	if err != nil {
-		fmt.Println("error while finding the name,src and dest - ", err)
+		fmt.Println("error while finding the route_name,src and dest - ", err)
 	}
 	return route_name, src, dest
 }
@@ -106,7 +106,7 @@ func find_driver_exists_CBR(driver_id int) (bool, error) {
 func update_bus_route(route_id int, route_name string, src string, dest string, bus_id int) error {
 
 	//set the already mapped other bus's route_id as 0
-	query := "update current_bus_route set route_id = 0,name ='',src ='',dest ='' where route_id = $1"
+	query := "update current_bus_route set route_id = 0,route_name ='',src ='',dest ='' where route_id = $1"
 	_, err := pool.Exec(context.Background(), query, route_id)
 	if err != nil {
 		fmt.Println("error while update the existing route as 0 - ", err)
@@ -114,7 +114,7 @@ func update_bus_route(route_id int, route_name string, src string, dest string, 
 	}
 
 	//map the new route with bus
-	query = "update current_bus_route set route_id = $1 ,name = $2 ,src = $3 ,dest = $4 where bus_id = $5"
+	query = "update current_bus_route set route_id = $1 ,route_name = $2 ,src = $3 ,dest = $4 where bus_id = $5"
 	_, err = pool.Exec(context.Background(), query, route_id, route_name, src, dest, bus_id)
 	if err != nil {
 		fmt.Println("error while update the route_id for given bus_id - ", err)
@@ -184,7 +184,7 @@ func cache_this_route(route_id int, route_name string, src string, dest string, 
 
 	// if it doesn't exists then add this bus_route to cached_bus_route otherwise do nothing
 	if !is_route_exists {
-		query = "insert into cached_bus_route(bus_id,route_id,name,src,dest) values($1,$2,$3,$4,$5)"
+		query = "insert into cached_bus_route(bus_id,route_id,route_name,src,dest) values($1,$2,$3,$4,$5)"
 		_, err = pool.Exec(context.Background(), query, bus_id, route_id, route_name, src, dest)
 		if err != nil {
 			fmt.Println("error while insert the route to the cached route - ", err)

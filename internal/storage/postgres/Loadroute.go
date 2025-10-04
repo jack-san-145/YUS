@@ -9,6 +9,7 @@ import (
 	"yus/internal/services"
 )
 
+/*
 func Load_routes_by_src_and_dest(src string, dest string) {
 	// var (
 	// 	All_Routes []models.Route
@@ -56,11 +57,12 @@ func Load_routes_by_src_and_dest(src string, dest string) {
 	}
 
 }
+*/
 
 // function to load all up_routes
 func Load_available_routes() []models.AvilableRoute {
 	var Available_routes []models.AvilableRoute
-	query := "select route_id,name,src,dest,direction from all_routes where direction = 'UP' "
+	query := "select route_id,route_name,src,dest,direction from all_routes where direction = 'UP' "
 	all_routes, err := pool.Query(context.Background(), query)
 	if err != nil {
 		fmt.Println("error while finding the the all_routes - ", err)

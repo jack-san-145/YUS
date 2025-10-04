@@ -9,7 +9,7 @@ import (
 )
 
 func Store_new_driver_to_DB(new_driver *models.Driver) bool {
-	query := "insert into drivers(name,mobile_no,email) values($1,$2,$3)"
+	query := "insert into drivers(driver_name,mobile_no,email) values($1,$2,$3)"
 	_, err := pool.Exec(context.Background(), query, new_driver.Name, new_driver.Mobile_no, new_driver.Email)
 	if err != nil {
 		fmt.Println("error while inserting the new driver - ", err)
@@ -24,13 +24,13 @@ func Available_drivers() []models.AvailableDriver {
 		all_available_drivers []models.AvailableDriver
 		is_driver_exists      bool
 	)
-	query := "select driver_id,name from drivers"
+	query := "select driver_id,driver_name from drivers"
 	all_drivers, err := pool.Query(context.Background(), query)
 	if errors.Is(err, sql.ErrNoRows) {
 		fmt.Println("driver is empty - ", err)
 		return nil
 	} else if err != nil {
-		fmt.Println("error while selecting the driver_id and name - ", err)
+		fmt.Println("error while selecting the driver_id and driver_name - ", err)
 		return nil
 	}
 

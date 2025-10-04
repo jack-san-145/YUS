@@ -1,6 +1,7 @@
 
 CREATE TABLE route_stops (
     route_id int NOT NULL,
+    route_name TEXT NOT NULL DEFAULT '',
     direction text NOT NULL,
     stop_name text NOT NULL DEFAULT '',
     is_stop boolean NOT NULL DEFAULT false,

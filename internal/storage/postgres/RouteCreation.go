@@ -84,7 +84,7 @@ func insert_route_to_db(route *models.Route) (int, error) {
 	}
 
 	//inserting route and route_stops
-	query := "insert into all_routes(route_id,name,src,dest,direction,departure_time,arrival_time) values($1,$2,$3,$4,$5,$6,$7);"
+	query := "insert into all_routes(route_id,route_name,src,dest,direction,departure_time,arrival_time) values($1,$2,$3,$4,$5,$6,$7);"
 	_, err = pool.Exec(context.Background(), query, route.Id, route_name, route.Src, route.Dest, route.Direction, departure_time, arrival_time)
 	if err != nil {
 		fmt.Println("error while inserting route to db - ", err)
@@ -92,8 +92,8 @@ func insert_route_to_db(route *models.Route) (int, error) {
 	}
 
 	for _, stop := range route.Stops {
-		query = "insert into route_stops(route_id,direction,stop_name,is_stop,lat,lon,arrival_time,departure_time) values($1,$2,$3,$4,$5,$6,$7,$8)"
-		_, err := pool.Exec(context.Background(), query, route.Id, route.Direction, stop.LocationName, stop.IsStop, stop.Lat, stop.Lon, stop.Arrival_time, stop.Departure_time)
+		query = "insert into route_stops(route_id,route_name,direction,stop_name,is_stop,lat,lon,arrival_time,departure_time) values($1,$2,$3,$4,$5,$6,$7,$8)"
+		_, err := pool.Exec(context.Background(), query, route.Id, route_name, route.Direction, stop.LocationName, stop.IsStop, stop.Lat, stop.Lon, stop.Arrival_time, stop.Departure_time)
 		if err != nil {
 			fmt.Println("error while inserting the route stops  - ", err)
 			return -1, fmt.Errorf("error")
