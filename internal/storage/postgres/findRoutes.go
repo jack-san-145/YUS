@@ -15,6 +15,7 @@ func FindRoutes_by_src_dest(src string, dest string) []models.CurrentRoute {
 	routes, err := pool.Query(context.Background(), query, src, dest)
 	if errors.Is(err, sql.ErrNoRows) {
 		fmt.Println("No routes available for this src and dest")
+
 	} else if err != nil {
 		fmt.Println("error while select the routes by src and dest from current_bus_route - ", err)
 	}
@@ -64,4 +65,24 @@ func findStops(route_id int, direction string) []models.RouteStops {
 		route_stops = append(route_stops, stop)
 	}
 	return route_stops
+}
+
+func check_reverseRoute_exists(src string, dest string) bool {
+	var reverse_route_exists bool
+	query := "select exists(select 1 from current_bus_route where src = $1 and dest = $2)"
+	err := pool.QueryRow(context.Background(), query, src, dest).Scan(&reverse_route_exists)
+	if err != nil {
+		fmt.Println("error while check the existance of reverse route - ", err)
+	}
+	return reverse_route_exists
+}
+
+func find_reverseRoute_by_routeId(route_id int, direction string) {
+
+	if direction == "UP" {
+		direction = "DOWN"
+	} else if direction == "DOWN" {
+		direction = "UP"
+	}
+
 }
