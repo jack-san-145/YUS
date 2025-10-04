@@ -28,8 +28,33 @@ func FindRoutes_by_src_dest(src string, dest string) []models.CurrentRoute {
 			&route.RouteName,
 			&route.Src,
 			&route.Dest)
-
+		route.Stops = findStops(route.RouteId, route.Direction)
 		All_routes = append(All_routes, route)
 	}
 	return All_routes
+}
+
+func findStops(route_id int, direction string) []models.RouteStops {
+	var route_stops []models.RouteStops
+	query := "select stop_name,is_stop,lat,lon,arrival_time,departure_time from route_stops where route_id = $1 and direction = $2"
+	all_stops, err := pool.Query(context.Background(), query, route_id, direction)
+	if errors.Is(err, sql.ErrNoRows) {
+		fmt.Println("no stops found for this route_id ")
+	} else if err != nil {
+		fmt.Println("error while finding the route stops - ", err)
+	}
+
+	defer all_stops.Close()
+	for all_stops.Next() {
+		var stop models.RouteStops
+		all_stops.Scan(&stop.LocationName,
+			&stop.IsStop,
+			&stop.Lat,
+			&stop.Lon,
+			&stop.Arrival_time,
+			&stop.Departure_time)
+
+		route_stops = append(route_stops, stop)
+	}
+	return route_stops
 }
