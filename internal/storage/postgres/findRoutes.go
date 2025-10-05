@@ -176,6 +176,7 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 		temp_src = original_stop //changed
 		filterWith = "src"
 	}
+	fmt.Println("filter with - ", filterWith)
 
 	query := "select exists(Select 1 from current_bus_route where direction = $1) "
 	err := pool.QueryRow(context.Background(), query, direction).Scan(&direction_exists)
@@ -184,9 +185,7 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 	}
 
 	if direction_exists {
-		query = `SELECT c.bus_id, c.driver_id, c.route_id, c.direction, c.route_name, c.src, c.dest,
-				rs_src.is_stop AS srcIsStop
-				rs_dest.is_stop AS destIsStop
+		query = `SELECT c.bus_id, c.driver_id, c.route_id, c.direction, c.route_name, c.src, c.dest
 				FROM current_bus_route c
 				JOIN route_stops rs_src
 					ON rs_src.route_id = c.route_id
@@ -198,14 +197,10 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 				AND rs_dest.stop_name LIKE $2
 				AND rs_src.stop_sequence < rs_dest.stop_sequence
 				ORDER BY
-				CASE 
-					WHEN $3 = 'src' AND rs_src.stop_name = c.src AND rs_src.is_stop = true THEN 0
-					WHEN $3 = 'dest' AND rs_dest.stop_name = c.dest AND rs_dest.is_stop = true THEN 0
-					ELSE 1
-				END,
+				rs_src.is_stop = true AND rs_dest.is_stop = true DESC,
 				rs_src.stop_sequence;`
 
-		rows, err := pool.Query(context.Background(), query, temp_src+"%", temp_dest+"%", filterWith)
+		rows, err := pool.Query(context.Background(), query, temp_src+"%", temp_dest+"%")
 		if err != nil {
 			fmt.Println("error while finding the route which present in current_bus_route - ", err)
 		}
@@ -223,6 +218,7 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 				&route.Dest)
 
 			findStops(&route)
+			fmt.Println("route - ", route)
 			Matched_routes = append(Matched_routes, route)
 		}
 
