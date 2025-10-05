@@ -202,7 +202,7 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 
 		rows, err := pool.Query(context.Background(), query, temp_src+"%", temp_dest+"%")
 		if err != nil {
-			fmt.Println("error while finding the route which present in current_bus_route - ", err)
+			fmt.Println("error while finding the active route which present in current_bus_route - ", err)
 		}
 
 		defer rows.Close()
@@ -218,7 +218,53 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 				&route.Dest)
 
 			findStops(&route)
-			fmt.Println("route - ", route)
+			fmt.Println("active route - ", route)
+			Matched_routes = append(Matched_routes, route)
+		}
+
+	} else {
+		query = `SELECT 
+					c.bus_id,
+					c.driver_id,
+					c.route_id,
+					CASE WHEN c.direction = 'UP' THEN 'DOWN' ELSE 'UP' END AS direction,
+					c.route_name,
+					c.src,
+					c.dest
+				FROM current_bus_route c
+				JOIN route_stops rs_src
+					ON rs_src.route_id = c.route_id
+					AND rs_src.direction = CASE WHEN c.direction = 'UP' THEN 'DOWN' ELSE 'UP' END
+				JOIN route_stops rs_dest
+					ON rs_dest.route_id = c.route_id
+					AND rs_dest.direction = CASE WHEN c.direction = 'UP' THEN 'DOWN' ELSE 'UP' END
+				WHERE rs_src.stop_name LIKE $1
+				AND rs_dest.stop_name LIKE $2
+				AND rs_src.stop_sequence < rs_dest.stop_sequence
+				ORDER BY
+					rs_src.is_stop = true AND rs_dest.is_stop = true DESC,
+					rs_src.stop_sequence;
+				`
+
+		rows, err := pool.Query(context.Background(), query, temp_src+"%", temp_dest+"%")
+		if err != nil {
+			fmt.Println("error while finding the inactive route which absent in current_bus_route - ", err)
+		}
+
+		defer rows.Close()
+
+		for rows.Next() {
+			var route models.CurrentRoute
+			rows.Scan(&route.BusId,
+				&route.DriverId,
+				&route.RouteId,
+				&route.Direction,
+				&route.RouteName,
+				&route.Dest,
+				&route.Src)
+
+			findStops(&route)
+			fmt.Println("inactive route - ", route)
 			Matched_routes = append(Matched_routes, route)
 		}
 
