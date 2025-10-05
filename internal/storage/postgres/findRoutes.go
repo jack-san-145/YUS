@@ -87,16 +87,6 @@ func findStops(route *models.CurrentRoute) {
 	route.Stops = route_stops
 }
 
-// func check_reverseRoute_exists(src string, dest string) bool {
-// 	var reverse_route_exists bool
-// 	query := "select exists(select 1 from current_bus_route where src = $1 and dest = $2)"
-// 	err := pool.QueryRow(context.Background(), query, src, dest).Scan(&reverse_route_exists)
-// 	if err != nil {
-// 		fmt.Println("error while check the existance of reverse route - ", err)
-// 	}
-// 	return reverse_route_exists
-// }
-
 func find_reverseRoute_by_routeId(src string, dest string) []models.CurrentRoute {
 
 	var (
@@ -146,4 +136,44 @@ func find_reverseRoute_by_routeId(src string, dest string) []models.CurrentRoute
 	}
 	return All_routes
 
+}
+
+// func check_reverseRoute_exists(src string, dest string) bool {
+// 	var reverse_route_exists bool
+// 	query := "select exists(select 1 from current_bus_route where src = $1 and dest = $2)"
+// 	err := pool.QueryRow(context.Background(), query, src, dest).Scan(&reverse_route_exists)
+// 	if err != nil {
+// 		fmt.Println("error while check the existance of reverse route - ", err)
+// 	}
+// 	return reverse_route_exists
+// }
+
+/*
+1. check the direction exists on db
+2. if exists check all the current routes with routestops
+3. if doesn't exists go for all_routes and then find the match with the routestops
+4. return the matched routes
+*/
+func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop string) {
+
+	var (
+		temp_src   string
+		temp_dest  string
+		filterWith string
+		direction  string
+	)
+
+	if original_src == "Kcet" {
+		direction = "DOWN"
+		temp_src = original_src
+		temp_dest = original_stop //changed
+		filterWith = "dest"
+	} else if original_dest == "Kcet" {
+		direction = "UP"
+		temp_dest = original_dest
+		temp_src = original_stop //changed
+		filterWith = "src"
+	}
+
+	query := "select route_id from current_bus_route where dest = $1 join to route_stops then find src = $1 with dest = $2 "
 }

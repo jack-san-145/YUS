@@ -11,6 +11,18 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+func Src_Dest_Stop_handler(w http.ResponseWriter, r *http.Request){
+	src := chi.URLParam(r, "source")
+	dest := chi.URLParam(r, "destination")
+	stop:=chi.URLParam(r,"stop")
+
+	src=services.Convert_to_CamelCase(src)
+	dest=services.Convert_to_CamelCase(dest)
+	stop=services.Convert_to_CamelCase(stop)
+
+	
+}
+
 func Src_Dest_handler(w http.ResponseWriter, r *http.Request) {
 	src := chi.URLParam(r, "source")
 	dest := chi.URLParam(r, "destination")
