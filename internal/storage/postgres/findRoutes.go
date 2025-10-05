@@ -154,13 +154,15 @@ func find_reverseRoute_by_routeId(src string, dest string) []models.CurrentRoute
 3. if doesn't exists go for all_routes and then find the match with the routestops
 4. return the matched routes
 */
-func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop string) {
+func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop string) []models.CurrentRoute {
 
 	var (
-		temp_src   string
-		temp_dest  string
-		filterWith string
-		direction  string
+		Matched_routes   []models.CurrentRoute
+		temp_src         string
+		temp_dest        string
+		filterWith       string
+		direction        string
+		direction_exists bool
 	)
 
 	if original_src == "Kcet" {
@@ -175,5 +177,55 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 		filterWith = "src"
 	}
 
-	query := "select route_id from current_bus_route where dest = $1 join to route_stops then find src = $1 with dest = $2 "
+	query := "select exists(Select 1 from current_bus_route where direction = $1) "
+	err := pool.QueryRow(context.Background(), query, direction).Scan(&direction_exists)
+	if err != nil {
+		fmt.Println("error while check the existance of direction - ", err)
+	}
+
+	if direction_exists {
+		query = `SELECT c.bus_id, c.driver_id, c.route_id, c.direction, c.route_name, c.src, c.dest,
+				rs_src.is_stop AS srcIsStop
+				rs_dest.is_stop AS destIsStop
+				FROM current_bus_route c
+				JOIN route_stops rs_src
+					ON rs_src.route_id = c.route_id
+					AND rs_src.direction = c.direction
+				JOIN route_stops rs_dest
+					ON rs_dest.route_id = c.route_id
+					AND rs_dest.direction = c.direction
+				WHERE rs_src.stop_name LIKE $1
+				AND rs_dest.stop_name LIKE $2
+				AND rs_src.stop_sequence < rs_dest.stop_sequence
+				ORDER BY
+				CASE 
+					WHEN $3 = 'src' AND rs_src.stop_name = c.src AND rs_src.is_stop = true THEN 0
+					WHEN $3 = 'dest' AND rs_dest.stop_name = c.dest AND rs_dest.is_stop = true THEN 0
+					ELSE 1
+				END,
+				rs_src.stop_sequence;`
+
+		rows, err := pool.Query(context.Background(), query, temp_src+"%", temp_dest+"%", filterWith)
+		if err != nil {
+			fmt.Println("error while finding the route which present in current_bus_route - ", err)
+		}
+
+		defer rows.Close()
+
+		for rows.Next() {
+			var route models.CurrentRoute
+			rows.Scan(&route.BusId,
+				&route.DriverId,
+				&route.RouteId,
+				&route.Direction,
+				&route.RouteName,
+				&route.Src,
+				&route.Dest)
+
+			findStops(&route)
+			Matched_routes = append(Matched_routes, route)
+		}
+
+	}
+	return Matched_routes
 }
