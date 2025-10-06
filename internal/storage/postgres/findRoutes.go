@@ -15,10 +15,10 @@ func Find_route_by_busID(bus_id int) models.CurrentRoute {
 	err := pool.QueryRow(context.Background(), query, bus_id).Scan(&route.BusId,
 		&route.DriverId,
 		&route.RouteId,
-		route.Direction,
-		route.RouteName,
-		route.Src,
-		route.Dest)
+		&route.Direction,
+		&route.RouteName,
+		&route.Src,
+		&route.Dest)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		fmt.Println("no route found for this bus_id ")

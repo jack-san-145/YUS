@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"yus/internal/handlers"
-	"yus/internal/models"
 	"yus/internal/storage/postgres"
 	"yus/internal/storage/redis"
 
