@@ -2,10 +2,34 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"yus/internal/models"
 	"yus/internal/services"
 )
+
+func Find_route_by_busID(bus_id int) models.CurrentRoute {
+	var route models.CurrentRoute
+	query := "select bus_id,driver_id,route_id,direction,route_name,src,dest from current_bus_route where bus_id = $1"
+	err := pool.QueryRow(context.Background(), query, bus_id).Scan(&route.BusId,
+		&route.DriverId,
+		&route.RouteId,
+		route.Direction,
+		route.RouteName,
+		route.Src,
+		route.Dest)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		fmt.Println("no route found for this bus_id ")
+		return route
+	} else if err != nil {
+		fmt.Println("error while finding the route with bus_id - ", err)
+		return route
+	}
+	findStops(&route)
+	return route
+}
 
 func FindRoutes_by_src_dest(src string, dest string) []models.CurrentRoute {
 	var (

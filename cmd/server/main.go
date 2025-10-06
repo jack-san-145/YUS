@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"yus/internal/handlers"
+	"yus/internal/models"
 	"yus/internal/storage/postgres"
 	"yus/internal/storage/redis"
 
@@ -32,6 +33,9 @@ func main() {
 	router.Get("/yus/src-{source}&dest-{destination}", handlers.Src_Dest_handler) //here i changed the endpoint format
 
 	router.Get("/yus/src-{source}&dest-{destination}&stop-{stop}", handlers.Src_Dest_Stop_handler)
+
+	//yus.kwscloud.in/yus/get-route?bus_id={bus_id}
+	router.Get("/yus/get-route", handlers.Get_rotue_by_busID)
 
 	router.Get("/yus/get-available-routes", handlers.Load_all_available_routes)
 
