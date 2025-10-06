@@ -20,6 +20,10 @@ func Find_route_by_busID(bus_id int) models.CurrentRoute {
 		&route.Src,
 		&route.Dest)
 
+	route.RouteName = services.Convert_to_Normal(route.RouteName)
+	route.Src = services.Convert_to_Normal(route.Src)
+	route.Dest = services.Convert_to_Normal(route.Dest)
+
 	if errors.Is(err, sql.ErrNoRows) {
 		fmt.Println("no route found for this bus_id ")
 		return route
