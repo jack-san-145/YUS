@@ -8,6 +8,7 @@ import (
 	"yus/internal/storage/redis"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
 )
 
@@ -18,7 +19,17 @@ func main() {
 		fmt.Println("error while loading .env file", err)
 		return
 	}
+
 	router := chi.NewRouter()
+
+	// ✅ Add CORS middleware
+	router.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"*"}, // or specific: []string{"http://localhost:3000"}
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		AllowCredentials: true,
+	}))
+
 	router.Get("/yus/admin-index-page", handlers.Serve_admin_index)
 
 	router.Post("/yus/save-new-route", handlers.Save_New_route_handler)
