@@ -79,4 +79,5 @@ type CurrentRoute struct {
 	Src       string       `json:"src"`
 	Dest      string       `json:"dest"`
 	Stops     []RouteStops `json:"stops"`
+	IsStop    bool         `json:"is_Stop"`
 }

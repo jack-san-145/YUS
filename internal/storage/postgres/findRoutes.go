@@ -198,11 +198,13 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 		temp_src = original_src
 		temp_dest = original_stop //changed
 		filterWith = "dest"
+		//find is stop for dest
 	} else if original_dest == "Kcet" {
 		direction = "UP"
 		temp_dest = original_dest
 		temp_src = original_stop //changed
 		filterWith = "src"
+		//find is stop for src
 	}
 	fmt.Println("filter with - ", filterWith)
 
@@ -213,7 +215,11 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 	}
 
 	if direction_exists {
-		query = `SELECT c.bus_id, c.driver_id, c.route_id, c.direction, c.route_name, c.src, c.dest
+		query = `SELECT c.bus_id, c.driver_id, c.route_id, c.direction, c.route_name, c.src, c.dest,
+					CASE 
+						WHEN c.direction = 'UP' THEN rs_src.is_stop
+						WHEN c.direction = 'DOWN' THEN rs_dest.is_stop
+					END AS is_stop
 				FROM current_bus_route c
 				JOIN route_stops rs_src
 					ON rs_src.route_id = c.route_id
@@ -225,7 +231,10 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 				AND rs_dest.stop_name LIKE $2
 				AND rs_src.stop_sequence < rs_dest.stop_sequence
 				ORDER BY
-				rs_src.is_stop = true AND rs_dest.is_stop = true DESC,
+				  CASE 
+						WHEN c.direction = 'UP' THEN rs_src.is_stop
+						WHEN c.direction = 'DOWN' THEN rs_dest.is_stop
+				  END DESC,
 				rs_src.stop_sequence;`
 
 		rows, err := pool.Query(context.Background(), query, temp_src+"%", temp_dest+"%")
@@ -243,7 +252,8 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 				&route.Direction,
 				&route.RouteName,
 				&route.Src,
-				&route.Dest)
+				&route.Dest,
+				&route.IsStop)
 
 			findStops(&route)
 			fmt.Println("active route - ", route)
@@ -258,7 +268,11 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 					CASE WHEN c.direction = 'UP' THEN 'DOWN' ELSE 'UP' END AS direction,
 					c.route_name,
 					c.src,
-					c.dest
+					c.dest,
+					CASE 
+						WHEN c.direction = 'UP' THEN rs_src.is_stop
+						WHEN c.direction = 'DOWN' THEN rs_dest.is_stop
+					END AS is_stop
 				FROM current_bus_route c
 				JOIN route_stops rs_src
 					ON rs_src.route_id = c.route_id
@@ -270,8 +284,11 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 				AND rs_dest.stop_name LIKE $2
 				AND rs_src.stop_sequence < rs_dest.stop_sequence
 				ORDER BY
-					rs_src.is_stop = true AND rs_dest.is_stop = true DESC,
-					rs_src.stop_sequence;
+					CASE 
+						WHEN c.direction = 'UP' THEN rs_src.is_stop
+						WHEN c.direction = 'DOWN' THEN rs_dest.is_stop
+				  	END DESC,
+				rs_src.stop_sequence;
 				`
 
 		rows, err := pool.Query(context.Background(), query, temp_src+"%", temp_dest+"%")
@@ -289,7 +306,8 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 				&route.Direction,
 				&route.RouteName,
 				&route.Dest,
-				&route.Src)
+				&route.Src,
+				&route.IsStop)
 
 			findStops(&route)
 			fmt.Println("inactive route - ", route)
