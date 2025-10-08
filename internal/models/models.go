@@ -81,3 +81,13 @@ type CurrentRoute struct {
 	Stops     []RouteStops `json:"stops"`
 	IsStop    bool         `json:"is_Stop"`
 }
+
+type BusRoute struct {
+	BusID     int          `json:"bus_id"`
+	RouteId   int          `json:"route_id"`
+	RouteName string       `json:"route_name"`
+	Src       string       `json:"src"`
+	Dest      string       `json:"dest"`
+	Stops     []RouteStops `json:"stops"`
+	Active    bool         `json:"active"`
+}

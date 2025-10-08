@@ -107,3 +107,42 @@ func Load_available_routes() []models.AvilableRoute {
 	}
 	return Available_routes
 }
+
+func Load_cached_route(bus_id int) []models.BusRoute {
+	var All_bus_routes []models.BusRoute
+	query := "select route_id,route_name,src,dest from cached_bus_route where bus_id = $1"
+	rows, err := pool.Query(context.Background(), query, bus_id)
+	if err != nil {
+		fmt.Println("error while fetching the cached routes - ", err)
+		return All_bus_routes
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var (
+			route     models.CurrentRoute
+			bus_route models.BusRoute
+		)
+
+		rows.Scan(&route.RouteId,
+			&route.RouteName,
+			&route.Src,
+			&route.Dest)
+		route.Direction = "UP"
+
+		findStops(&route)
+		bus_route.BusID = bus_id
+		bus_route.RouteId = route.RouteId
+		bus_route.RouteName = route.RouteName
+		bus_route.Src = route.Src
+		bus_route.Dest = route.Dest
+		bus_route.Stops = route.Stops
+
+		query = "select exists(select 1 from current_bus_route where bus_id = $1)"
+		err = pool.QueryRow(context.Background(), query).Scan(&bus_route.Active)
+		if err != nil {
+			fmt.Println("error while checking the existance of current route - ", err)
+		}
+		All_bus_routes = append(All_bus_routes, bus_route)
+	}
+	return All_bus_routes
+}

@@ -9,6 +9,17 @@ import (
 	"yus/internal/storage/postgres"
 )
 
+func Cached_route_handler(w http.ResponseWriter, r *http.Request) {
+	bus_id_string := r.URL.Query().Get("bus_id")
+	bus_id_int, err := strconv.Atoi(bus_id_string)
+	if err != nil {
+		fmt.Println("error while converting bus_id_int to bus_id_string - ", err)
+		return
+	}
+	cached_bus_routes := postgres.Load_cached_route(bus_id_int)
+	WriteJSON(w, r, cached_bus_routes)
+}
+
 func Load_all_available_routes(w http.ResponseWriter, r *http.Request) {
 
 	// if !FindAdminSession(r) {
