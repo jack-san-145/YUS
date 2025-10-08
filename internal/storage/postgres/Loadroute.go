@@ -137,12 +137,15 @@ func Load_cached_route(bus_id int) []models.BusRoute {
 		bus_route.Dest = route.Dest
 		bus_route.Stops = route.Stops
 
-		query = "select exists(select 1 from current_bus_route where bus_id = $1)"
-		err = pool.QueryRow(context.Background(), query).Scan(&bus_route.Active)
+		query = "select exists(select 1 from current_bus_route where bus_id = $1 and route_id = $2)"
+		err = pool.QueryRow(context.Background(), query, bus_id, bus_route.RouteId).Scan(&bus_route.Active)
 		if err != nil {
 			fmt.Println("error while checking the existance of current route - ", err)
 		}
-		All_bus_routes = append(All_bus_routes, bus_route)
+		if bus_route.RouteId != 0 && bus_route.RouteName != "" {
+			All_bus_routes = append(All_bus_routes, bus_route)
+		}
+
 	}
 	return All_bus_routes
 }

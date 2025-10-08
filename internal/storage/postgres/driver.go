@@ -17,6 +17,28 @@ func Store_new_driver_to_DB(new_driver *models.Driver) bool {
 	return true
 }
 
+func Check_Driver_exits(driver_id int) bool {
+	var exists bool
+	query := "select exists(select 1 from drivers where driver_id = $1)"
+	err := pool.QueryRow(context.Background(), query, driver_id).Scan(&exists)
+	if err != nil {
+		fmt.Println("error while checking the existance of driver - ", err)
+	}
+	return exists
+}
+
+func Set_driver_password(driver_id int, password string) bool {
+	if Check_Driver_exits(driver_id) {
+		query := "update drivers set password = $1 where driver_id = $2 "
+		_, err := pool.Exec(context.Background(), query, password, driver_id)
+		if err != nil {
+			fmt.Println("error while update the driver's password - ", err)
+			return false
+		}
+	}
+	return true
+}
+
 func Available_drivers() []models.AvailableDriver {
 	var (
 		all_available_drivers []models.AvailableDriver
