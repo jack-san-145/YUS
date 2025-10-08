@@ -262,34 +262,33 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 
 	} else {
 		query = `SELECT 
-					c.bus_id,
-					c.driver_id,
-					c.route_id,
-					CASE WHEN c.direction = 'UP' THEN 'DOWN' ELSE 'UP' END AS direction,
-					c.route_name,
-					c.src,
-					c.dest,
-					CASE 
-						WHEN c.direction = 'UP' THEN rs_src.is_stop
-						WHEN c.direction = 'DOWN' THEN rs_dest.is_stop
-					END AS is_stop
-				FROM current_bus_route c
-				JOIN route_stops rs_src
-					ON rs_src.route_id = c.route_id
-					AND rs_src.direction = CASE WHEN c.direction = 'UP' THEN 'DOWN' ELSE 'UP' END
-				JOIN route_stops rs_dest
-					ON rs_dest.route_id = c.route_id
-					AND rs_dest.direction = CASE WHEN c.direction = 'UP' THEN 'DOWN' ELSE 'UP' END
-				WHERE rs_src.stop_name LIKE $1
-				AND rs_dest.stop_name LIKE $2
-				AND rs_src.stop_sequence < rs_dest.stop_sequence
-				ORDER BY
-					CASE 
-						WHEN c.direction = 'UP' THEN rs_src.is_stop
-						WHEN c.direction = 'DOWN' THEN rs_dest.is_stop
-				  	END DESC,
-				rs_src.stop_sequence;
-				`
+				c.bus_id,
+				c.driver_id,
+				c.route_id,
+				CASE WHEN c.direction = 'UP' THEN 'DOWN' ELSE 'UP' END AS direction,
+				c.route_name,
+				c.src,
+				c.dest,
+				CASE 
+					WHEN c.direction = 'UP' THEN rs_dest.is_stop   -- swapped
+					WHEN c.direction = 'DOWN' THEN rs_src.is_stop  -- swapped
+				END AS is_stop
+			FROM current_bus_route c
+			JOIN route_stops rs_src
+				ON rs_src.route_id = c.route_id
+				AND rs_src.direction = CASE WHEN c.direction = 'UP' THEN 'DOWN' ELSE 'UP' END
+			JOIN route_stops rs_dest
+				ON rs_dest.route_id = c.route_id
+				AND rs_dest.direction = CASE WHEN c.direction = 'UP' THEN 'DOWN' ELSE 'UP' END
+			WHERE rs_src.stop_name LIKE $1
+			AND rs_dest.stop_name LIKE $2
+			AND rs_src.stop_sequence < rs_dest.stop_sequence
+			ORDER BY
+				CASE 
+					WHEN c.direction = 'UP' THEN rs_dest.is_stop   -- swapped
+					WHEN c.direction = 'DOWN' THEN rs_src.is_stop  -- swapped
+			  	END DESC,
+			rs_src.stop_sequence;`
 
 		rows, err := pool.Query(context.Background(), query, temp_src+"%", temp_dest+"%")
 		if err != nil {
