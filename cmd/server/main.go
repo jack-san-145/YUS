@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
+	"github.com/joho/godotenv"
 	"net/http"
 	"yus/internal/handlers"
 	"yus/internal/storage/postgres"
 	"yus/internal/storage/redis"
-
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/cors"
-	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -24,6 +23,7 @@ func main() {
 
 	// ✅ Add CORS middleware
 	router.Use(cors.Handler(cors.Options{
+
 		AllowedOrigins:   []string{"*"}, // or specific: []string{"http://localhost:3000"}
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},

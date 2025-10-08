@@ -26,7 +26,7 @@ func Create_Driver_Session(driver_id int) {
 	}
 }
 
-func Create_Admin_Session(admin_email string) {
+func Create_Admin_Session(admin_email string) string {
 	session_id := generate_sessionID()
 	var expiry time.Duration
 	err := rc.HSet(context.Background(), session_id, "category", "ADMIN", "admin_id", admin_email).Err()
@@ -39,14 +39,18 @@ func Create_Admin_Session(admin_email string) {
 	if err != nil {
 		fmt.Println("error while setting ttl to session - ", err)
 	}
+	return session_id
 }
 
-func Get_session(session_id string) string {
+func Check_session(session_id string) bool {
 	id, err := rc.HGet(context.Background(), session_id, "driver_id").Result()
 	if err != nil {
 		fmt.Println("error while getting the driver session from redis - ", err)
 	}
-	return id
+	if id != "" {
+		return true
+	}
+	return false
 
 }
 
