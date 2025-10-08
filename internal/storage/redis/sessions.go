@@ -13,7 +13,7 @@ func generate_sessionID() string {
 	return uuid.New().String()
 }
 
-func Create_Driver_Session(driver_id int) {
+func Create_Driver_Session(driver_id int) string {
 	session_id := generate_sessionID()
 	err := rc.HSet(context.Background(), session_id, "category", "DRIVER", "driver_id", driver_id).Err()
 	if err != nil {
@@ -25,6 +25,7 @@ func Create_Driver_Session(driver_id int) {
 	if err != nil {
 		fmt.Println("error while setting ttl to session - ", err)
 	}
+	return session_id
 }
 
 func Create_Admin_Session(admin_email string) string {

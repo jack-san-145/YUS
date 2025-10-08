@@ -99,7 +99,7 @@ func Driver_password_handler(w http.ResponseWriter, r *http.Request) {
 
 func Verify_driver_otp(w http.ResponseWriter, r *http.Request) {
 
-	var otp_status = make(map[string]string)
+	var pass_status = make(map[string]string)
 	err := r.ParseForm()
 	if err != nil {
 		fmt.Println("error while parsing form")
@@ -119,30 +119,35 @@ func Verify_driver_otp(w http.ResponseWriter, r *http.Request) {
 	if services.ValidateEmail(email) && services.ValidatePassword(password) {
 		if given_otp == redis.GetOtp(email) {
 			postgres.Set_driver_password(driver_id_int, password)
-			otp_status["status"] = "valid"
+			pass_status["status"] = "success"
 
 		} else {
-			otp_status["status"] = "invalid otp"
+			pass_status["status"] = "failed"
 		}
 
 	} else {
-		otp_status["status"] = "invalid data"
+		pass_status["status"] = "failed"
 	}
-	WriteJSON(w, r, otp_status)
+	WriteJSON(w, r, pass_status)
 }
 
 func Driver_login_handler(w http.ResponseWriter, r *http.Request) {
 	var login_status = make(map[string]string)
 	err := r.ParseForm()
 	if err != nil {
-		fmt.Println("error while parsing admin login form")
+		fmt.Println("error while parsing driver login form")
 		login_status["login_status"] = "invalid"
 	} else {
-		email := r.FormValue("email")
+		driver_id := r.FormValue("driver_id")
+
+		driver_id_int, err := strconv.Atoi(driver_id)
+		if err != nil {
+			fmt.Println("error while converting the driver_id string to driver_id_int - ", err)
+		}
 		password := r.FormValue("password")
-		if redis.Validate_Admin_login(email, password) {
+		if postgres.ValidateDriver(driver_id_int, password) {
 			login_status["login_status"] = "valid"
-			session_id := redis.Create_Admin_Session(email)
+			session_id := redis.Create_Driver_Session(driver_id_int)
 			login_status["session_id"] = session_id
 		} else {
 			login_status["login_status"] = "invalid"

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"yus/internal/models"
+	"yus/internal/services"
 )
 
 func Store_new_driver_to_DB(new_driver *models.Driver) bool {
@@ -28,15 +29,32 @@ func Check_Driver_exits(driver_id int) bool {
 }
 
 func Set_driver_password(driver_id int, password string) bool {
+	hashed_pass := services.Hash_this_password(password)
 	if Check_Driver_exits(driver_id) {
 		query := "update drivers set password = $1 where driver_id = $2 "
-		_, err := pool.Exec(context.Background(), query, password, driver_id)
+		_, err := pool.Exec(context.Background(), query, hashed_pass, driver_id)
 		if err != nil {
 			fmt.Println("error while update the driver's password - ", err)
 			return false
 		}
 	}
 	return true
+}
+
+func ValidateDriver(driver_id int, pass string) bool {
+
+	var DB_pass string
+	query := "select password from drivers where driver_id = $1"
+	err := pool.QueryRow(context.Background(), query, driver_id).Scan(DB_pass)
+	if err != nil {
+		fmt.Println("error while validate the driver - ", err)
+		return false
+	}
+
+	if services.Is_password_matched(DB_pass, pass) {
+		return true
+	}
+	return false
 }
 
 func Available_drivers() []models.AvailableDriver {
