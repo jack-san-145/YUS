@@ -86,8 +86,10 @@ func Admin_login_handler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
-		if redis.Validate_Admin_login(email, password) {
+		isValid, admin_email := redis.Validate_Admin_login(email, password)
+		if isValid {
 			login_status["login_status"] = "valid"
+			redis.Create_Admin_Session(admin_email)
 		} else {
 			login_status["login_status"] = "invalid"
 		}

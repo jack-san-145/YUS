@@ -33,29 +33,29 @@ func Check_admin_exist() bool {
 
 }
 
-func Validate_Admin_login(email string, password string) bool {
+func Validate_Admin_login(email string, password string) (bool, string) {
 	value, err := rc.HMGet(context.Background(), "Admin-data", "email", "password").Result() //to get the multiple values in a single query
 	if err != nil {
 		fmt.Println("error while accessing the Admin-data - ", err)
-		return false
+		return false, ""
 	}
 
 	if value[0] == nil || value[1] == nil {
 		fmt.Println("both are nil")
-		return false
+		return false, ""
 	}
 
 	rc_email, ok1 := value[0].(string)
 	rc_password, ok2 := value[1].(string)
 
 	if !ok1 || !ok2 {
-		return false
+		return false, ""
 	}
 
 	if rc_email == email && services.Is_password_matched(rc_password, password) {
-		return true
+		return true, rc_email
 	}
-	return false
+	return false, ""
 
 }
 
