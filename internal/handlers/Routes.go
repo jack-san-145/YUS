@@ -11,14 +11,23 @@ import (
 
 func Load_all_available_routes(w http.ResponseWriter, r *http.Request) {
 
+	if !FindAdminSession(r) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	//to load all the available routes
 	all_available_routes := postgres.Load_available_routes()
 	fmt.Println("avalaible routes - ", all_available_routes)
 	WriteJSON(w, r, all_available_routes)
 }
 
-
 func Add_New_Bus_handler(w http.ResponseWriter, r *http.Request) {
+
+	if !FindAdminSession(r) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	//to add a new bus
 	var status = make(map[string]string)
@@ -35,6 +44,11 @@ func Add_New_Bus_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Map_Route_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
+
+	if !FindAdminSession(r) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	//mapping route to the bus
 	var status = make(map[string]bool)
@@ -55,6 +69,11 @@ func Map_Route_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
+
+	if !FindAdminSession(r) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	//gets the driver and bus allocation array , after allocated it returns the results
 	var DriverAllocation_array []models.DriverAllocation
