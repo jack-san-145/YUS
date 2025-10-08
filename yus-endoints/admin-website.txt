@@ -3,7 +3,7 @@
 1. Sending otp to Admin for register :
 
 endpoint: "https://yus.kwscloud.in/yus/send-otp-admin"
-method : Post (body)
+method : Post (body -> x-www-form-urlencoded) 
 
 frontend -> backend(request):
 {
@@ -29,7 +29,7 @@ backend -> frontend (response):
 2. Verify Otp for Admin registration : 
 
 endpoint : "https://yus.kwscloud.in/yus/verify-otp-admin"
-method : Post (body)
+method : Post (body -> x-www-form-urlencoded) 
 
 frontend -> backend(request):
 {
@@ -58,7 +58,7 @@ backend -> frontend (response):
 3. Admin login : 
 
 endpoint : "https://yus.kwscloud.in/yus/admin-login"
-method : Post (body)
+method : Post (body -> x-www-form-urlencoded) 
 
 frontend -> backend(request):
 {
@@ -190,7 +190,7 @@ backend -> frontend (response):
 5. Driver Allocation:
 
 endpoint : "https://yus.kwscloud.in/yus/allocate-bus-driver"
-method : Post (Body)
+method : Post (Body-json)
 
 frontend -> backend (request):
 {
