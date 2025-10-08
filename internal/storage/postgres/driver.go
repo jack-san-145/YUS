@@ -8,8 +8,8 @@ import (
 )
 
 func Store_new_driver_to_DB(new_driver *models.Driver) bool {
-	query := "insert into drivers(driver_name,mobile_no,email) values($1,$2,$3)"
-	_, err := pool.Exec(context.Background(), query, new_driver.Name, new_driver.Mobile_no, new_driver.Email)
+	query := "insert into drivers(driver_name,mobile_no) values($1,$)"
+	_, err := pool.Exec(context.Background(), query, new_driver.Name, new_driver.Mobile_no)
 	if err != nil {
 		fmt.Println("error while inserting the new driver - ", err)
 		return false
@@ -28,11 +28,11 @@ func Check_Driver_exits(driver_id int) bool {
 	return exists
 }
 
-func Set_driver_password(driver_id int, password string) bool {
+func Set_driver_password(driver_id int, driver_email string, password string) bool {
 	hashed_pass := services.Hash_this_password(password)
 	if Check_Driver_exits(driver_id) {
-		query := "update drivers set password = $1 where driver_id = $2 "
-		_, err := pool.Exec(context.Background(), query, hashed_pass, driver_id)
+		query := "update drivers set password = $1,email = $2 where driver_id = $3 "
+		_, err := pool.Exec(context.Background(), query, hashed_pass, driver_email, driver_id)
 		if err != nil {
 			fmt.Println("error while update the driver's password - ", err)
 			return false

@@ -62,6 +62,12 @@ func main() {
 	//yus.kwscloud.in/yus/get-cached-routes?bus_id=10
 	router.Get("/yus/get-cached-routes", handlers.Cached_route_handler)
 
+	//driver
+
+	router.Post("/yus/send-otp-driver-password", handlers.Driver_Otp_handler)
+	router.Post("/yus/verify-otp-driver-password", handlers.Verify_driver_otp)
+	router.Post("/yus/driver-login", handlers.Driver_login_handler)
+
 	postgres.Connect()        //make a connection to postgres
 	redis.CreateRedisClient() //made a redis client
 

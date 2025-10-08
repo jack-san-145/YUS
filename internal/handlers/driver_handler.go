@@ -31,10 +31,9 @@ func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
 		var status models.DriverAddedStatus
 		status.Name = driver.Name
 		status.MobileNo = driver.Mobile_no
-		status.Email = driver.Email
 
 		fmt.Println("driver - ", driver)
-		if services.ValidateMobileNo(driver.Mobile_no) && services.ValidateName(driver.Name) && services.ValidateEmail(driver.Email) {
+		if services.ValidateMobileNo(driver.Mobile_no) && services.ValidateName(driver.Name) {
 			if postgres.Store_new_driver_to_DB(&driver) { //stores the new_driver to DB
 				status.IsAdded = true
 			} else {
@@ -64,7 +63,7 @@ func Load_all_available_drivers(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, r, all_available_drivers)
 }
 
-func Driver_password_handler(w http.ResponseWriter, r *http.Request) {
+func Driver_Otp_handler(w http.ResponseWriter, r *http.Request) {
 
 	var otp_status = make(map[string]bool)
 	err := r.ParseForm()
@@ -81,6 +80,7 @@ func Driver_password_handler(w http.ResponseWriter, r *http.Request) {
 	}
 	if !postgres.Check_Driver_exits(driver_id_int) {
 		WriteJSON(w, r, map[string]string{"status": "no driver found"})
+		return
 	}
 	if services.ValidateEmail(email) {
 		otp := services.GenerateOtp()
@@ -118,7 +118,7 @@ func Verify_driver_otp(w http.ResponseWriter, r *http.Request) {
 
 	if services.ValidateEmail(email) && services.ValidatePassword(password) {
 		if given_otp == redis.GetOtp(email) {
-			postgres.Set_driver_password(driver_id_int, password)
+			postgres.Set_driver_password(driver_id_int, email, password)
 			pass_status["status"] = "success"
 
 		} else {
