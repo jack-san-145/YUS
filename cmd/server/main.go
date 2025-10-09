@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/cors"
-	"github.com/joho/godotenv"
 	"net/http"
 	"yus/internal/handlers"
 	"yus/internal/storage/postgres"
 	"yus/internal/storage/redis"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -62,7 +63,7 @@ func main() {
 	//yus.kwscloud.in/yus/get-cached-routes?bus_id=10
 	router.Get("/yus/get-cached-routes", handlers.Cached_route_handler)
 
-	router.Get("/yus/get-current_schedule")
+	router.Get("/yus/get-current-schedule", handlers.Get_Schedule_handler)
 
 	//driver
 

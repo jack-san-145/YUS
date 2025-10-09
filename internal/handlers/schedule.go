@@ -1,6 +1,9 @@
 package handlers
 
-import "net/http"
+import (
+	"net/http"
+	"yus/internal/storage/postgres"
+)
 
 func Get_Schedule_handler(w http.ResponseWriter, r *http.Request) {
 	// if !FindAdminSession(r) {
@@ -8,5 +11,6 @@ func Get_Schedule_handler(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	
+	current_schedule:=postgres.Get_Current_schedule()
+	WriteJSON(w,r,current_schedule)
 }
