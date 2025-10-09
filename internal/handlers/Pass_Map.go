@@ -38,19 +38,19 @@ func Remove_PassConn(driverId int, conn *websocket.Conn) {
 	conns := value.([]*websocket.Conn)
 	for i, ws_conn := range conns {
 		if ws_conn == conn {
-			conns = append(conns[:i], conns[i+1:]...)
+			conns = append(conns[:i], conns[i+1:]...) //appending all the other passenger connections without the specified ones
 			break
 		}
 	}
-	PassengerMap.Store(driverId, conns)
+	PassengerMap.Store(driverId, conns) //store the remaining connections to the passengerMap
 }
 
 func Send_location_to_passenger(driver_id int, current_location models.Location) {
 	conn_arr, ok := PassengerMap.Load(driver_id)
 	if ok {
-		driverID_conns := conn_arr.([]*websocket.Conn) //passenger ws under specific driver_id
+		passenger_conns_for_driverID := conn_arr.([]*websocket.Conn) //passenger ws under specific driver_id
 
-		for _, pass_conn := range driverID_conns {
+		for _, pass_conn := range passenger_conns_for_driverID {
 			err := pass_conn.WriteJSON(current_location)
 			if err != nil {
 				fmt.Println("error while sending the current_location to passenger - ", err)

@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS drivers (
     driver_id SERIAL PRIMARY KEY,
     driver_name TEXT NOT NULL DEFAULT '',
     mobile_no TEXT UNIQUE NOT NULL DEFAULT '',
-    email TEXT UNIQUE NOT NULL DEFAULT '',
+    email TEXT NOT NULL DEFAULT '',
     password TEXT NOT NULL DEFAULT ''
 );
 
