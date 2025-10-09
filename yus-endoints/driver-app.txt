@@ -1,0 +1,83 @@
+// Driver Set password :
+
+1. send otp for set password :
+
+
+endpoint : "https://yus.kwscloud.in/yus/send-otp-driver-password"
+method : Post (body -> x-www-form-urlencoded) 
+
+frontend -> backend(request):
+{
+    "driver_id" : 1001,
+    "email"     : "driver@gmail.com"
+}
+
+backend -> frontend (response):
+{
+    "status": "no driver found" (or)
+    "otp_sent" : true (or)
+    "otp_sent" : false
+}
+
+
+
+
+
+
+2. verify otp for the driver password :
+
+
+endpoint : "https://yus.kwscloud.in/yus/verify-otp-driver-password"
+method : Post (body -> x-www-form-urlencoded) 
+
+frontend -> backend(request):
+{
+    "driver_id" : 1001,
+    "email"     : "driver@gmail.com"
+    "password"  :  "driver_password"
+    "otp"       : 000000
+}
+
+backend -> frontend (response):
+{
+    "status" = "failed" (or)
+    "status" = "success"
+}
+
+
+
+
+
+
+
+
+
+
+3. Driver login : 
+
+
+endpoint : "https://yus.kwscloud.in/yus/driver-login"
+method : Post (body -> x-www-form-urlencoded) 
+
+frontend -> backend(request):
+{
+    "driver_id" : 1001,
+    "password"  :  "driver_password"
+
+}
+
+backend -> frontend (response):
+
+if login invalid ,
+{
+    "login_status" : "invalid" 
+}
+
+if valid,
+{
+     "login_status" : "valid",
+     "session_id" : "fjsdfiughhq99-24rjhsfv-234rd"
+}
+
+
+

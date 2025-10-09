@@ -62,6 +62,8 @@ func main() {
 	//yus.kwscloud.in/yus/get-cached-routes?bus_id=10
 	router.Get("/yus/get-cached-routes", handlers.Cached_route_handler)
 
+	// router.Get("/yus/get-")
+
 	//driver
 
 	router.Post("/yus/send-otp-driver-password", handlers.Driver_Otp_handler)
