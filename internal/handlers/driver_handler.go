@@ -13,10 +13,10 @@ import (
 
 func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
 
-	if !FindAdminSession(r) {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	// if !FindAdminSession(r) {
+	// 	w.WriteHeader(http.StatusUnauthorized)
+	// 	return
+	// }
 
 	var (
 		Driver_array []models.Driver
@@ -52,10 +52,10 @@ func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
 
 func Load_all_available_drivers(w http.ResponseWriter, r *http.Request) {
 
-	if !FindAdminSession(r) {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	// if !FindAdminSession(r) {
+	// 	w.WriteHeader(http.StatusUnauthorized)
+	// 	return
+	// }
 
 	//to load all the available routes
 	all_available_drivers := postgres.Available_drivers()

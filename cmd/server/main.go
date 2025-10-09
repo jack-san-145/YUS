@@ -62,7 +62,7 @@ func main() {
 	//yus.kwscloud.in/yus/get-cached-routes?bus_id=10
 	router.Get("/yus/get-cached-routes", handlers.Cached_route_handler)
 
-	// router.Get("/yus/get-")
+	router.Get("/yus/get-current_schedule")
 
 	//driver
 

@@ -101,3 +101,8 @@ type AllotedBus struct {
 	Src       string `json:"src"`
 	Dest      string `json:"dest"`
 }
+
+type CurrentSchedule struct {
+	DriverId int `json:"driver_id"`
+	BusId    int `json:"bus_id"`
+}

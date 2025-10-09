@@ -59,6 +59,26 @@ func Load_routes_by_src_and_dest(src string, dest string) {
 }
 */
 
+func Get_Current_schedule() []models.CurrentSchedule {
+	var current_schedule []models.CurrentSchedule
+	query := "select bus_id,driver_id from current_bus_route"
+	rows, err := pool.Query(context.Background(), query)
+	if err != nil {
+		fmt.Println("error while finding the current bus route - ", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+
+		var bus_route models.CurrentSchedule
+		rows.Scan(&bus_route.BusId,
+			&bus_route.DriverId)
+
+		current_schedule = append(current_schedule, bus_route)
+	}
+	return current_schedule
+}
+
 // function to load all up_routes
 func Load_available_routes() []models.AvilableRoute {
 	var Available_routes []models.AvilableRoute
