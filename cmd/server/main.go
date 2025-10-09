@@ -72,7 +72,7 @@ func main() {
 	router.Get("/driver-ws", handlers.Driver_Ws_hanler)
 
 	//yus.kwscloud.in/yus/get-allotted-bus
-	router.Get("/yus/get-allotted-bus", handlers.Alloted_bus_handler)
+	router.Get("/yus/get-allotted-bus", handlers.Alloted_bus_handler) //by sessions
 
 	postgres.Connect()        //make a connection to postgres
 	redis.CreateRedisClient() //made a redis client

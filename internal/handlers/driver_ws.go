@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
 	// "sync"
 	"yus/internal/models"
 
@@ -11,8 +12,6 @@ import (
 
 	"github.com/gorilla/websocket"
 )
-
-// var ConnMap sync.Map[string]string
 
 // func ws_hanler(w http.ResponseWriter, r *http.Request) {
 // 	fmt.Println("working")
