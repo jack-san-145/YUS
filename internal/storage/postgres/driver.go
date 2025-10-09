@@ -20,6 +20,7 @@ func Get_Allotted_Bus(driver_id int) models.AllotedBus {
 		&alloted_bus.Direction,
 		&alloted_bus.Src,
 		&alloted_bus.Dest)
+	alloted_bus.DriverId = driver_id
 	if errors.Is(err, sql.ErrNoRows) {
 		fmt.Printf("no bus is allotted for driver_id - %v", driver_id)
 	} else if err != nil {

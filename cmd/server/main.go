@@ -69,7 +69,7 @@ func main() {
 	router.Post("/yus/driver-login", handlers.Driver_login_handler)
 
 	//yus.kwscloud.in/yus/get-allotted-bus?driver_id=10
-	router.Get("/yus/get-allotted-bus")
+	router.Get("/yus/get-allotted-bus", handlers.Alloted_bus_handler)
 
 	postgres.Connect()        //make a connection to postgres
 	redis.CreateRedisClient() //made a redis client
