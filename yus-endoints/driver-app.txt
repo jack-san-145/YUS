@@ -81,3 +81,36 @@ if valid,
 
 
 
+
+
+
+
+4. Get Allotted Bus for Driver : 
+
+endpoint : "https://yus.kwscloud.in/yus/get-allotted-bus"
+method : Get (Include 'Authorization' = session_id in request header )
+
+
+backend -> frontend (response):
+
+    if session_id valid ,
+
+{
+    "bus_id": 27,
+    "driver_id": 1004,
+    "route_id": 12,
+    "route_name": "Sattur To Kcet(testing)",
+    "direction": "UP",
+    "src": "Sattur",
+    "dest": "Kcet"
+}
+
+    if session_id invalid
+
+401:Unauthorized
+
+
+
+
+
+

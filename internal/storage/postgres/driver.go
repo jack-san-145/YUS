@@ -20,6 +20,11 @@ func Get_Allotted_Bus(driver_id int) models.AllotedBus {
 		&alloted_bus.Direction,
 		&alloted_bus.Src,
 		&alloted_bus.Dest)
+
+	alloted_bus.RouteName = services.Convert_to_Normal(alloted_bus.RouteName)
+	alloted_bus.Src = services.Convert_to_Normal(alloted_bus.Src)
+	alloted_bus.Dest = services.Convert_to_Normal(alloted_bus.Dest)
+
 	alloted_bus.DriverId = driver_id
 	if errors.Is(err, sql.ErrNoRows) {
 		fmt.Printf("no bus is allotted for driver_id - %v", driver_id)
