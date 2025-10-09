@@ -223,3 +223,43 @@ backend -> frontend (response):
 }
 
 
+
+
+6. Get Current Schedule :
+
+endpoint : "https://yus.kwscloud.in/yus/get-current-schedule"
+method : Get 
+
+backend -> frontend (response):
+{
+    [
+        {
+            "driver_id": 1000,
+            "bus_id": 35
+        },
+        {
+            "driver_id": 1000,
+            "bus_id": 26
+        },
+        {
+            "driver_id": 1001,
+            "bus_id": 6
+        },
+        {
+            "driver_id": 1004,
+            "bus_id": 27
+        },
+        {
+            "driver_id": 1003,
+            "bus_id": 10
+        },
+        {
+            "driver_id": 1000,
+            "bus_id": 15
+        },
+        {
+            "driver_id": 1002,
+            "bus_id": 4
+        }
+    ]
+}
