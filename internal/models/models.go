@@ -91,3 +91,13 @@ type BusRoute struct {
 	Stops     []RouteStops `json:"stops"`
 	Active    bool         `json:"active"`
 }
+
+type AllotedBus struct {
+	BusID     int    `json:"bus_id"`
+	DriverId  int    `json:"driver_id"`
+	RouteId   int    `json:"route_id"`
+	RouteName string `json:"route_name"`
+	Direction string `json:"direction"`
+	Src       string `json:"src"`
+	Dest      string `json:"dest"`
+}

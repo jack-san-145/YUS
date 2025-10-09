@@ -9,6 +9,8 @@ import (
 	"yus/internal/services"
 	"yus/internal/storage/postgres"
 	"yus/internal/storage/redis"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
@@ -154,4 +156,9 @@ func Driver_login_handler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	WriteJSON(w, r, login_status)
+}
+
+func Alloted_bus_handler(w http.ResponseWriter, r *http.Request) {
+	driver_id := chi.URLParam(r, "driver_id")
+
 }

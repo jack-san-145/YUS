@@ -2,10 +2,31 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"yus/internal/models"
 	"yus/internal/services"
 )
+
+func Get_Allotted_Bus(driver_id int) models.AllotedBus {
+
+	var alloted_bus models.AllotedBus
+	query := "select bus_id,route_id,route_name,direction,src,dest from current_bus_route where driver_id = $1"
+	err := pool.QueryRow(context.Background(), query, driver_id).Scan(&alloted_bus.BusID,
+
+		&alloted_bus.RouteId,
+		&alloted_bus.RouteName,
+		&alloted_bus.Direction,
+		&alloted_bus.Src,
+		&alloted_bus.Dest)
+	if errors.Is(err, sql.ErrNoRows) {
+		fmt.Printf("no bus is allotted for driver_id - %v", driver_id)
+	} else if err != nil {
+		fmt.Println("error while finding the allotted bus for driver - ", err)
+	}
+	return alloted_bus
+}
 
 func Store_new_driver_to_DB(new_driver *models.Driver) bool {
 	query := "insert into drivers(driver_name,mobile_no) values($1,$)"
@@ -45,7 +66,7 @@ func ValidateDriver(driver_id int, pass string) bool {
 
 	var DB_pass string
 	query := "select password from drivers where driver_id = $1"
-	err := pool.QueryRow(context.Background(), query, driver_id).Scan(DB_pass)
+	err := pool.QueryRow(context.Background(), query, driver_id).Scan(&DB_pass)
 	if err != nil {
 		fmt.Println("error while validate the driver - ", err)
 		return false
