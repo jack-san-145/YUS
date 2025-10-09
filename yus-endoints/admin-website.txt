@@ -266,3 +266,108 @@ backend -> frontend (response):
         }
     ]
 }
+
+
+
+7. Get Cached Route :
+
+endpoint : "https://yus.kwscloud.in/yus/get-cached-routes?bus_id=27"
+method : Get (Query Parameter)
+
+backend -> frontend (response):
+{
+    [
+        {
+            "bus_id": 27,
+            "route_id": 3,
+            "route_name": "Kovilpatti To Kcet",
+            "src": "Kovilpatti",
+            "dest": "Kamaraj-college",
+            "stops": [
+                {
+                    "stop_sequence": 1,
+                    "location_name": "Kovilpatti Bus Stand",
+                    "lat": "9.3540035",
+                    "lon": "77.9231079",
+                    "is_stop": true,
+                    "departure_time": "08:00",
+                    "arrival_time": "08:00"
+                },
+                {
+                    "stop_sequence": 2,
+                    "location_name": "Kovilpatti Railway Station",
+                    "lat": "9.3538361",
+                    "lon": "77.9231022",
+                    "is_stop": true,
+                    "departure_time": "08:16",
+                    "arrival_time": "08:15"
+                },
+                {
+                    "stop_sequence": 3,
+                    "location_name": "Sattur",
+                    "lat": "9.3538361",
+                    "lon": "77.9231022",
+                    "is_stop": false,
+                    "departure_time": "08:35",
+                    "arrival_time": "08:35"
+                },
+                {
+                    "stop_sequence": 4,
+                    "location_name": "Soolakrai",
+                    "lat": "9.3538361",
+                    "lon": "77.9231022",
+                    "is_stop": false,
+                    "departure_time": "08:35",
+                    "arrival_time": "08:35"
+                },
+                {
+                    "stop_sequence": 5,
+                    "location_name": "Kcet",
+                    "lat": "9.3538282",
+                    "lon": "77.9231091",
+                    "is_stop": true,
+                    "departure_time": "09:00",
+                    "arrival_time": "09:00"
+                }
+            ],
+            "active": false
+        },
+        {
+            "bus_id": 27,
+            "route_id": 9,
+            "route_name": "Madurai To Kcet",
+            "src": "Madurai",
+            "dest": "Kcet",
+            "stops": [
+                {
+                    "stop_sequence": 1,
+                    "location_name": "Madurai",
+                    "lat": "9.3564403",
+                    "lon": "77.9132807",
+                    "is_stop": true,
+                    "departure_time": "7:00",
+                    "arrival_time": "7:00"
+                },
+                {
+                    "stop_sequence": 2,
+                    "location_name": "Thirumangalam",
+                    "lat": "9.3564518",
+                    "lon": "77.9133299",
+                    "is_stop": true,
+                    "departure_time": "07:41",
+                    "arrival_time": "7:40"
+                },
+                {
+                    "stop_sequence": 3,
+                    "location_name": "Kcet",
+                    "lat": "9.3564565",
+                    "lon": "77.9133368",
+                    "is_stop": true,
+                    "departure_time": "9:00",
+                    "arrival_time": "9:00"
+                }
+            ],
+            "active": true
+        }
+    ]
+}
