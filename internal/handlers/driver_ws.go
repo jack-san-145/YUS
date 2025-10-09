@@ -4,13 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	// "sync"
 	"yus/internal/models"
+
 	// "yus/internal/service"
 
 	"github.com/gorilla/websocket"
 )
 
-// var ConnMap sync.Map
+// var ConnMap sync.Map[string]string
 
 // func ws_hanler(w http.ResponseWriter, r *http.Request) {
 // 	fmt.Println("working")
@@ -52,6 +54,7 @@ func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error while upgrading the websocket - ", err)
 		return
 	}
+
 	listen_for_location(conn)
 
 }

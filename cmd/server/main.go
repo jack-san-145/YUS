@@ -34,7 +34,6 @@ func main() {
 	router.Get("/yus/admin-index-page", handlers.Serve_admin_index)
 
 	router.Post("/yus/save-new-route", handlers.Save_New_route_handler)
-	router.Get("/driver-ws", handlers.Driver_Ws_hanler)
 	router.Post("/yus/add-new-driver", handlers.Add_new_driver_handler)
 	router.Post("/yus/send-otp-admin", handlers.Admin_otp_handler)
 	router.Post("/yus/verify-otp-admin", handlers.Verify_admin_otp)
@@ -70,8 +69,9 @@ func main() {
 	router.Post("/yus/send-otp-driver-password", handlers.Driver_Otp_handler)
 	router.Post("/yus/verify-otp-driver-password", handlers.Verify_driver_otp)
 	router.Post("/yus/driver-login", handlers.Driver_login_handler)
+	router.Get("/driver-ws", handlers.Driver_Ws_hanler)
 
-	//yus.kwscloud.in/yus/get-allotted-bus?driver_id=10
+	//yus.kwscloud.in/yus/get-allotted-bus
 	router.Get("/yus/get-allotted-bus", handlers.Alloted_bus_handler)
 
 	postgres.Connect()        //make a connection to postgres

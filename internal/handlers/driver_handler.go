@@ -157,13 +157,15 @@ func Driver_login_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Alloted_bus_handler(w http.ResponseWriter, r *http.Request) {
-	driver_id_string := r.URL.Query().Get("driver_id")
-	fmt.Println("driver_id_string - ", driver_id_string)
-	driver_id_int, err := strconv.Atoi(driver_id_string)
-	if err != nil {
-		fmt.Println("error while converting the driver_id string to driver_id_int - ", err)
+
+	isValid, driver_id := FindDriverSession(r)
+	if !isValid {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 	}
-	alloted_bus := postgres.Get_Allotted_Bus(driver_id_int)
+
+	fmt.Println("driver_id- ", driver_id)
+	alloted_bus := postgres.Get_Allotted_Bus(driver_id)
 	if alloted_bus.BusID != 0 && alloted_bus.RouteId != 0 {
 		WriteJSON(w, r, alloted_bus)
 	} else {
