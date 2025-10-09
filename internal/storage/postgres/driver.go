@@ -35,7 +35,7 @@ func Get_Allotted_Bus(driver_id int) models.AllotedBus {
 }
 
 func Store_new_driver_to_DB(new_driver *models.Driver) bool {
-	query := "insert into drivers(driver_name,mobile_no) values($1,$)"
+	query := "insert into drivers(driver_name,mobile_no) values($1,$2)"
 	_, err := pool.Exec(context.Background(), query, new_driver.Name, new_driver.Mobile_no)
 	if err != nil {
 		fmt.Println("error while inserting the new driver - ", err)

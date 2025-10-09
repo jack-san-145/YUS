@@ -1,11 +1,12 @@
 package handlers
 
 import (
-	"github.com/gorilla/websocket"
+	"fmt"
 	"sync"
+	"yus/internal/models"
+
+	"github.com/gorilla/websocket"
 )
-
-
 
 var PassengerMap sync.Map // key: int, value: []*websocket.Conn
 
@@ -42,4 +43,19 @@ func Remove_PassConn(driverId int, conn *websocket.Conn) {
 		}
 	}
 	PassengerMap.Store(driverId, conns)
+}
+
+func Send_location_to_passenger(driver_id int, current_location models.Location) {
+	conn_arr, ok := PassengerMap.Load(driver_id)
+	if ok {
+		driverID_conns := conn_arr.([]*websocket.Conn) //passenger ws under specific driver_id
+
+		for _, pass_conn := range driverID_conns {
+			err := pass_conn.WriteJSON(current_location)
+			if err != nil {
+				fmt.Println("error while sending the current_location to passenger - ", err)
+			}
+		}
+
+	}
 }

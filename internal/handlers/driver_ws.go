@@ -44,6 +44,13 @@ import (
 // }
 
 func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
+
+	isValid, driver_id := FindDriverSession(r)
+	if !isValid {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	fmt.Println("working")
 	var upgrader = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool {
 		return true
@@ -54,11 +61,11 @@ func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	listen_for_location(conn)
+	go listen_for_location(driver_id, conn)
 
 }
 
-func listen_for_location(conn *websocket.Conn) {
+func listen_for_location(driver_id int, conn *websocket.Conn) {
 	defer conn.Close()
 	fmt.Println("driver connected successfully ")
 	var current_location models.Location
@@ -73,7 +80,7 @@ func listen_for_location(conn *websocket.Conn) {
 			fmt.Println("error while unmarshaling the location - ", err)
 		}
 
-		send_location_to_passenger(&current_location)
+		Send_location_to_passenger(driver_id, current_location)
 		// fmt.Printf("lattitude - %s & longitude - %s & Speed - %s ", current_location.Latitude, current_location.Longitude, current_location.Speed)
 		// fmt.Println("\n\n")
 		// service.Reverse_Geocoding(current_location)
