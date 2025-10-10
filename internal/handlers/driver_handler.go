@@ -158,7 +158,7 @@ func Driver_login_handler(w http.ResponseWriter, r *http.Request) {
 
 func Alloted_bus_handler(w http.ResponseWriter, r *http.Request) {
 
-	isValid, driver_id := FindDriverSession(r)
+	isValid, driver_id := FindDriver_httpSession(r)
 	if !isValid {
 		w.WriteHeader(http.StatusUnauthorized)
 		return

@@ -68,7 +68,9 @@ func main() {
 	router.Post("/yus/send-otp-driver-password", handlers.Driver_Otp_handler)
 	router.Post("/yus/verify-otp-driver-password", handlers.Verify_driver_otp)
 	router.Post("/yus/driver-login", handlers.Driver_login_handler)
-	router.Get("/driver-ws", handlers.Driver_Ws_hanler)
+
+	//wss://yus.kwscloud.in/yus/driver-ws?session_id='23sdf-sdfsq-341'
+	router.Get("/yus/driver-ws", handlers.Driver_Ws_hanler)
 
 	//yus.kwscloud.in/yus/get-allotted-bus
 	router.Get("/yus/get-allotted-bus", handlers.Alloted_bus_handler) //by sessions

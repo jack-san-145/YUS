@@ -17,7 +17,20 @@ func FindAdminSession(r *http.Request) bool {
 	return false
 }
 
-func FindDriverSession(r *http.Request) (bool, int) {
+func FindDriver_httpSession(r *http.Request) (bool, int) {
+	session_id := r.Header.Get("Authorization")
+	if session_id == "" {
+		return false, 0
+	}
+
+	is_valid, driver_id := redis.Check_Driver_session(session_id)
+	if is_valid {
+		return true, driver_id
+	}
+	return false, 0
+}
+
+func FindDriver_wssSession(r *http.Request) (bool, int) {
 	session_id := r.URL.Query().Get("session_id")
 	if session_id == "" {
 		return false, 0

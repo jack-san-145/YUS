@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"time"
 	"yus/internal/models"
 	"yus/internal/storage/postgres"
 
@@ -28,6 +29,30 @@ func Passenger_Ws_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func listen_passenger_message(conn *websocket.Conn) {
+	const (
+		pongWait   = 60 * time.Second
+		pingPeriod = 50 * time.Second
+		writeWait  = 10 * time.Second
+	)
+
+	conn.SetReadDeadline(time.Now().Add(pongWait))
+	conn.SetPongHandler(func(string) error {
+		conn.SetReadDeadline(time.Now().Add(pongWait))
+		return nil
+	})
+
+	ticker := time.NewTicker(pingPeriod)
+	defer ticker.Stop()
+
+	go func() {
+		for range ticker.C {
+			conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+				fmt.Println("ping error:", err)
+				return
+			}
+		}
+	}()
 	var (
 		old_requested_bus_route models.PassengerWsRequest
 		requested_bus_route     models.PassengerWsRequest
@@ -37,19 +62,42 @@ func listen_passenger_message(conn *websocket.Conn) {
 		err := conn.ReadJSON(&requested_bus_route)
 		if err != nil {
 			fmt.Println("error reading the passenger ws message - ", err)
-		} else {
+			return
+		}
 
-			if postgres.Check_route_exits_for_pass_Ws(requested_bus_route) {
-				fmt.Printf("old driver - %v and new driver - %v - ", old_requested_bus_route.DriverId, requested_bus_route.DriverId)
-				Remove_PassConn(old_requested_bus_route.DriverId, conn)
-				Add_PassConn(requested_bus_route.DriverId, conn) //store the passenger ws to corresponding driver ws
-				old_requested_bus_route = requested_bus_route
-			}
-
+		if postgres.Check_route_exits_for_pass_Ws(requested_bus_route) {
+			fmt.Printf("old driver - %v and new driver - %v\n",
+				old_requested_bus_route.DriverId, requested_bus_route.DriverId)
+			Remove_PassConn(old_requested_bus_route.DriverId, conn)
+			Add_PassConn(requested_bus_route.DriverId, conn)
+			old_requested_bus_route = requested_bus_route
 		}
 	}
-
 }
+
+// func listen_passenger_message(conn *websocket.Conn) {
+// 	var (
+// 		old_requested_bus_route models.PassengerWsRequest
+// 		requested_bus_route     models.PassengerWsRequest
+// 	)
+
+// 	for {
+// 		err := conn.ReadJSON(&requested_bus_route)
+// 		if err != nil {
+// 			fmt.Println("error reading the passenger ws message - ", err)
+// 		} else {
+
+// 			if postgres.Check_route_exits_for_pass_Ws(requested_bus_route) {
+// 				fmt.Printf("old driver - %v and new driver - %v - ", old_requested_bus_route.DriverId, requested_bus_route.DriverId)
+// 				Remove_PassConn(old_requested_bus_route.DriverId, conn)
+// 				Add_PassConn(requested_bus_route.DriverId, conn) //store the passenger ws to corresponding driver ws
+// 				old_requested_bus_route = requested_bus_route
+// 			}
+
+// 		}
+// 	}
+
+// }
 
 // func send_location_to_passenger(current_location *models.Location) {
 

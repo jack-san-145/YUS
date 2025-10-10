@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	// "sync"
 	"yus/internal/models"
@@ -45,7 +46,7 @@ import (
 
 func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
 
-	isValid, driver_id := FindDriverSession(r)
+	isValid, driver_id := FindDriver_wssSession(r)
 	if !isValid {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
@@ -65,9 +66,62 @@ func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// func listen_for_location(driver_id int, conn *websocket.Conn) {
+// 	defer conn.Close()
+// 	conn.
+// 		fmt.Println("driver connected successfully ")
+// 	var current_location models.Location
+// 	for {
+// 		_, loc, err := conn.ReadMessage()
+// 		if err != nil {
+// 			fmt.Println("error while reading the websocket message - ", err)
+// 			return
+// 		}
+// 		err = json.Unmarshal(loc, &current_location)
+// 		if err != nil {
+// 			fmt.Println("error while unmarshaling the location - ", err)
+// 		}
+
+// 		Send_location_to_passenger(driver_id, current_location)
+// 		// fmt.Printf("lattitude - %s & longitude - %s & Speed - %s ", current_location.Latitude, current_location.Longitude, current_location.Speed)
+// 		// fmt.Println("\n\n")
+// 		// service.Reverse_Geocoding(current_location)
+// 		fmt.Printf("lattitude - %v & longitude - %v & speed - %v", current_location.Latitude, current_location.Longitude, current_location.Speed)
+// 	}
+// }
+
 func listen_for_location(driver_id int, conn *websocket.Conn) {
 	defer conn.Close()
-	fmt.Println("driver connected successfully ")
+
+	fmt.Println("driver connected successfully")
+
+	// Ping/pong settings
+	const (
+		pongWait   = 60 * time.Second
+		pingPeriod = 50 * time.Second
+		writeWait  = 10 * time.Second
+	)
+
+	conn.SetReadDeadline(time.Now().Add(pongWait))
+	conn.SetPongHandler(func(string) error {
+		conn.SetReadDeadline(time.Now().Add(pongWait))
+		return nil
+	})
+
+	// Start ping ticker
+	ticker := time.NewTicker(pingPeriod)
+	defer ticker.Stop()
+
+	go func() {
+		for range ticker.C {
+			conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+				fmt.Println("ping error:", err)
+				return
+			}
+		}
+	}()
+
 	var current_location models.Location
 	for {
 		_, loc, err := conn.ReadMessage()
@@ -78,12 +132,11 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 		err = json.Unmarshal(loc, &current_location)
 		if err != nil {
 			fmt.Println("error while unmarshaling the location - ", err)
+			continue
 		}
 
 		Send_location_to_passenger(driver_id, current_location)
-		// fmt.Printf("lattitude - %s & longitude - %s & Speed - %s ", current_location.Latitude, current_location.Longitude, current_location.Speed)
-		// fmt.Println("\n\n")
-		// service.Reverse_Geocoding(current_location)
-		fmt.Printf("lattitude - %v & longitude - %v & speed - %v", current_location.Latitude, current_location.Longitude, current_location.Speed)
+		fmt.Printf("latitude - %v & longitude - %v & speed - %v\n",
+			current_location.Latitude, current_location.Longitude, current_location.Speed)
 	}
 }
