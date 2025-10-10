@@ -106,3 +106,9 @@ type CurrentSchedule struct {
 	DriverId int `json:"driver_id"`
 	BusId    int `json:"bus_id"`
 }
+
+type PassengerWsRequest struct {
+	DriverId  int    `json:"driver_id"`
+	RouteId   int    `json:"route_id"`
+	Direction string `json:"direction"`
+}

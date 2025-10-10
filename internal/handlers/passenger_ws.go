@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"yus/internal/models"
 
 	"github.com/gorilla/websocket"
 )
@@ -27,17 +28,14 @@ func Passenger_Ws_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func listen_passenger_message(conn *websocket.Conn) {
-	_, driver_id_byte, err := conn.ReadMessage()
+	var requested_bus_route models.PassengerWsRequest
+
+	err := conn.ReadJSON(&requested_bus_route)
 	if err != nil {
 		fmt.Println("error reading the passenger ws message - ", err)
 	} else {
-		driver_id_string := string(driver_id_byte)           //converting byte to string
-		driver_id_int, err := strconv.Atoi(driver_id_string) //converting string to int
-		if err != nil {
-			fmt.Println("error while converting the driver_id_string to driver_id_int in passenger ws- ", err)
-		} else {
-			Add_PassConn(driver_id_int, conn) //store the passenger ws to corresponding driver ws
-		}
+
+		Add_PassConn(requested_bus_route.DriverId, conn) //store the passenger ws to corresponding driver ws
 
 	}
 
