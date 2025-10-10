@@ -15,8 +15,9 @@ var PassengerMap sync.Map // key: int, value: []*websocket.Conn
 // Store a connection
 func Add_PassConn(driverId int, conn *websocket.Conn) {
 	value, _ := PassengerMap.LoadOrStore(driverId, []*websocket.Conn{})
-	conns := value.([]*websocket.Conn)  //assings the passenger ws connections to the conns
-	conns = append(conns, conn)         //add the new passenger to the existing array and it mapped with driverId
+	conns := value.([]*websocket.Conn) //assings the passenger ws connections to the conns
+	conns = append(conns, conn)        //add the new passenger to the existing array and it mapped with driverId
+	// fmt.Println("after added the passenger ws conn - ", conn)
 	PassengerMap.Store(driverId, conns) //store the final conns to the ConnMap
 }
 
@@ -31,18 +32,22 @@ func Get_PassConns(driverId int) []*websocket.Conn {
 
 // Remove a connection
 func Remove_PassConn(driverId int, conn *websocket.Conn) {
-	value, ok := PassengerMap.Load(driverId)
-	if !ok {
-		return
-	}
-	conns := value.([]*websocket.Conn)
-	for i, ws_conn := range conns {
-		if ws_conn == conn {
-			conns = append(conns[:i], conns[i+1:]...) //appending all the other passenger connections without the specified ones
-			break
+	if driverId != 0 {
+
+		value, ok := PassengerMap.Load(driverId)
+		if !ok {
+			return
 		}
+		conns := value.([]*websocket.Conn)
+		for i, ws_conn := range conns {
+			if ws_conn == conn {
+				conns = append(conns[:i], conns[i+1:]...) //appending all the other passenger connections without the specified ones
+				break
+			}
+		}
+
+		PassengerMap.Store(driverId, conns) //store the remaining connections to the passengerMap
 	}
-	PassengerMap.Store(driverId, conns) //store the remaining connections to the passengerMap
 }
 
 func Send_location_to_passenger(driver_id int, current_location models.Location) {
@@ -50,9 +55,11 @@ func Send_location_to_passenger(driver_id int, current_location models.Location)
 	if ok {
 		passenger_conns_for_driverID := conn_arr.([]*websocket.Conn) //passenger ws under specific driver_id
 
+		fmt.Printf("no of users = %v connected with the driver = %v -", len(passenger_conns_for_driverID), driver_id)
 		for _, pass_conn := range passenger_conns_for_driverID {
 			err := pass_conn.WriteJSON(current_location)
 			if err != nil {
+				Remove_PassConn(driver_id, pass_conn)
 				fmt.Println("error while sending the current_location to passenger - ", err)
 			}
 		}

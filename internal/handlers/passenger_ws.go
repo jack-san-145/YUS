@@ -3,8 +3,8 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"yus/internal/models"
+	"yus/internal/storage/postgres"
 
 	"github.com/gorilla/websocket"
 )
@@ -28,15 +28,25 @@ func Passenger_Ws_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func listen_passenger_message(conn *websocket.Conn) {
-	var requested_bus_route models.PassengerWsRequest
+	var (
+		old_requested_bus_route models.PassengerWsRequest
+		requested_bus_route     models.PassengerWsRequest
+	)
 
-	err := conn.ReadJSON(&requested_bus_route)
-	if err != nil {
-		fmt.Println("error reading the passenger ws message - ", err)
-	} else {
+	for {
+		err := conn.ReadJSON(&requested_bus_route)
+		if err != nil {
+			fmt.Println("error reading the passenger ws message - ", err)
+		} else {
 
-		Add_PassConn(requested_bus_route.DriverId, conn) //store the passenger ws to corresponding driver ws
+			if postgres.Check_route_exits_for_pass_Ws(requested_bus_route) {
+				fmt.Printf("old driver - %v and new driver - %v - ", old_requested_bus_route.DriverId, requested_bus_route.DriverId)
+				Remove_PassConn(old_requested_bus_route.DriverId, conn)
+				Add_PassConn(requested_bus_route.DriverId, conn) //store the passenger ws to corresponding driver ws
+				old_requested_bus_route = requested_bus_route
+			}
 
+		}
 	}
 
 }
