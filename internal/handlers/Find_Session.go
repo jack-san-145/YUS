@@ -18,7 +18,7 @@ func FindAdminSession(r *http.Request) bool {
 }
 
 func FindDriverSession(r *http.Request) (bool, int) {
-	session_id := r.Header.Get("Authorization")
+	session_id := r.URL.Query().Get("session_id")
 	if session_id == "" {
 		return false, 0
 	}
