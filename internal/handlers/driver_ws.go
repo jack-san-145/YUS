@@ -62,6 +62,7 @@ func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	Add_Driver_to_passengerMap(driver_id)
 	go listen_for_location(driver_id, conn)
 
 }
@@ -91,8 +92,10 @@ func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
 // }
 
 func listen_for_location(driver_id int, conn *websocket.Conn) {
-	defer conn.Close()
-
+	defer func() {
+		Remove_Driver_from_passengerMap(driver_id)
+		conn.Close()
+	}()
 	fmt.Println("driver connected successfully")
 
 	// Ping/pong settings
@@ -126,7 +129,7 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 	for {
 		_, loc, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Println("error while reading the websocket message - ", err)
+			fmt.Println("error while reading the driver's websocket message - ", err)
 			return
 		}
 		err = json.Unmarshal(loc, &current_location)

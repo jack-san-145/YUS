@@ -59,15 +59,16 @@ func listen_passenger_message(conn *websocket.Conn) {
 	)
 
 	for {
+		fmt.Println("listing passenger")
 		err := conn.ReadJSON(&requested_bus_route)
 		if err != nil {
 			fmt.Println("error reading the passenger ws message - ", err)
 			return
 		}
 
+		fmt.Println("requested_bus_route - ", requested_bus_route)
 		if postgres.Check_route_exits_for_pass_Ws(requested_bus_route) {
-			fmt.Printf("old driver - %v and new driver - %v\n",
-				old_requested_bus_route.DriverId, requested_bus_route.DriverId)
+			fmt.Printf("old driver - %v and new driver - %v\n", old_requested_bus_route.DriverId, requested_bus_route.DriverId)
 			Remove_PassConn(old_requested_bus_route.DriverId, conn)
 			Add_PassConn(requested_bus_route.DriverId, conn)
 			old_requested_bus_route = requested_bus_route
