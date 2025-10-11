@@ -161,22 +161,26 @@ backend -> frontend (response):
         {
             "driver_id": 1001,
             "driver_name": "santhosh",
-            "available": true
+            "available": true,
+            "mobile_no":1382344937
         },
         {
             "driver_id": 1002,
             "driver_name": "jack",
-            "available": false
+            "available": false,
+            mobile_no":913847291
         },
         {
             "driver_id": 1003,
             "driver_name": "bharath",
             "available": false
+            mobile_no":0000000000
         },
         {
             "driver_id": 1004,
             "driver_name": "sanjai",
             "available": false
+            mobile_no":0000000000
         }
     ]
 }
@@ -371,3 +375,45 @@ backend -> frontend (response):
         }
     ]
 }
+
+
+
+8.
+
+endpoint : "https://yus.kwscloud.in/yus/add-new-driver"
+method : Post (body-json)
+frontend to backend:
+[
+  {"name":"santhosh","mobile_no":"7845941042"},
+  {"name":"jack","mobile_no":"8438137739"},
+  {"name":"harath","mobile_no":"9367841209'},
+  {"name":"sanjai","mobile_no":"7845941123"}
+]
+
+backend to frontend:
+[
+    {
+        "is_added": false,
+        "name": "santhosh",
+        "mobile_no": "7845941042",
+        "email": ""
+    },
+    {
+        "is_added": false,
+        "name": "jack",
+        "mobile_no": "8438137739",
+        "email": ""
+    },
+    {
+        "is_added": false,
+        "name": "harath",
+        "mobile_no": "9367841209",
+        "email": ""
+    },
+    {
+        "is_added": false,
+        "name": "sanjai",
+        "mobile_no": "7845941123",
+        "email": ""
+    }
+]

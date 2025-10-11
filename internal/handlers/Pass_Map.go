@@ -24,6 +24,7 @@ func Add_PassConn(driverId int, conn *websocket.Conn) {
 	if ok && value != nil { //to avoid the panic
 		conns = value.([]*websocket.Conn)
 	} else {
+		fmt.Println("slice is nil")
 		conns = []*websocket.Conn{} // initialize a new slice
 	}
 	PassengerMap.Store(driverId, conns) //store the final conns to the ConnMap
@@ -82,7 +83,8 @@ func Send_location_to_passenger(driver_id int, current_location models.Location)
 
 	var conn_arr []*websocket.Conn
 	value, ok := PassengerMap.Load(driver_id)
-	fmt.Printf("driver_id - %v & ok - %v ", driver_id, ok)
+	fmt.Println("")
+	fmt.Printf("driver_id - %v sending location", driver_id)
 
 	if ok && value != nil {
 		conn_arr = value.([]*websocket.Conn) // to avoid panic
@@ -93,7 +95,8 @@ func Send_location_to_passenger(driver_id int, current_location models.Location)
 	if ok {
 		passenger_conns_for_driverID := conn_arr //passenger ws under specific driver_id
 
-		fmt.Printf("no of users = %v connected with the driver = %v -", len(passenger_conns_for_driverID), driver_id)
+		fmt.Println("")
+		fmt.Printf(" users = %v connected driver = %v -", len(passenger_conns_for_driverID), driver_id)
 		for _, pass_conn := range passenger_conns_for_driverID {
 			err := pass_conn.WriteJSON(current_location)
 			if err != nil {

@@ -62,6 +62,7 @@ type AvilableRoute struct {
 type AvailableDriver struct {
 	Id        int    `json:"driver_id"`
 	Name      string `json:"driver_name"`
+	MobileNo  string `json:"mobile_no"`
 	Available bool   `json:"available"`
 }
 

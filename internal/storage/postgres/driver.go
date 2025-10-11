@@ -90,17 +90,17 @@ func Available_drivers() []models.AvailableDriver {
 		is_driver_exists      bool
 	)
 
-	query := "select driver_id,driver_name from drivers"
+	query := "select driver_id,driver_name,mobile_no from drivers"
 	all_drivers, err := pool.Query(context.Background(), query)
 	if err != nil {
-		fmt.Println("error while selecting the driver_id and driver_name - ", err)
+		fmt.Println("error while selecting the driver_id , driver_name and mobile no - ", err)
 		return nil
 	}
 
 	defer all_drivers.Close()
 	for all_drivers.Next() {
 		var driver models.AvailableDriver
-		err = all_drivers.Scan(&driver.Id, &driver.Name)
+		err = all_drivers.Scan(&driver.Id, &driver.Name,&driver.MobileNo)
 		if err != nil {
 			fmt.Println("error while scanning the driver from DB - ", err)
 			continue
