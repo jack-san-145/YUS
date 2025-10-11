@@ -29,44 +29,49 @@ func Passenger_Ws_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func listen_passenger_message(conn *websocket.Conn) {
-	const (
-		pongWait   = 60 * time.Second
-		pingPeriod = 50 * time.Second
-		writeWait  = 10 * time.Second
-	)
+	const pingPeriod = 50 * time.Second
 
-	conn.SetReadDeadline(time.Now().Add(pongWait))
-	conn.SetPongHandler(func(string) error {
-		conn.SetReadDeadline(time.Now().Add(pongWait))
-		return nil
-	})
-
+	// Ping ticker to keep connection alive
 	ticker := time.NewTicker(pingPeriod)
 	defer ticker.Stop()
 
+	done := make(chan struct{})
 	go func() {
-		for range ticker.C {
-			conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				fmt.Println("ping error:", err)
+		for {
+			select {
+			case <-ticker.C:
+				conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+				if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+					fmt.Println("ping error:", err)
+					close(done)
+					return
+				}
+			case <-done:
 				return
 			}
 		}
 	}()
+
 	var (
 		old_requested_bus_route models.PassengerWsRequest
 		requested_bus_route     models.PassengerWsRequest
 	)
 
 	for {
-		fmt.Println("listing passenger")
+		// Read passenger requests asynchronously
 		err := conn.ReadJSON(&requested_bus_route)
 		if err != nil {
-			fmt.Println("error reading the passenger ws message - ", err)
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				fmt.Println("passenger connection closed unexpectedly -", err)
+			} else {
+				fmt.Println("error reading passenger ws message -", err)
+			}
+			close(done)
+			Remove_PassConn(old_requested_bus_route.DriverId, conn)
 			return
 		}
 
-		fmt.Println("requested_bus_route - ", requested_bus_route)
+		fmt.Println("requested_bus_route -", requested_bus_route)
 		if postgres.Check_route_exits_for_pass_Ws(requested_bus_route) {
 			fmt.Printf("old driver - %v and new driver - %v\n", old_requested_bus_route.DriverId, requested_bus_route.DriverId)
 			Remove_PassConn(old_requested_bus_route.DriverId, conn)
@@ -77,6 +82,60 @@ func listen_passenger_message(conn *websocket.Conn) {
 }
 
 // func listen_passenger_message(conn *websocket.Conn) {
+// 	const (
+// 		pingPeriod = 50 * time.Second
+// 		writeWait  = 10 * time.Second
+// 	)
+
+// 	// Ping ticker to keep connection alive
+// 	ticker := time.NewTicker(pingPeriod)
+// 	defer ticker.Stop()
+
+// 	go func() {
+// 		for range ticker.C {
+// 			conn.SetWriteDeadline(time.Now().Add(writeWait))
+// 			if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+// 				fmt.Println("ping error:", err)
+// 				return
+// 			}
+// 		}
+// 	}()
+
+// 	var (
+// 		old_requested_bus_route models.PassengerWsRequest
+// 		requested_bus_route     models.PassengerWsRequest
+// 	)
+
+// 	for {
+
+// 		fmt.Println("listing passenger")
+// 		// ReadJSON blocks until a message comes from passenger
+// 		err := conn.ReadJSON(&requested_bus_route)
+// 		if err != nil {
+// 			// Only remove passenger on actual connection close
+// 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+// 				fmt.Println("passenger connection closed unexpectedly -", err)
+// 			} else {
+// 				fmt.Println("error reading the passenger ws message -", err)
+// 			}
+
+// 			return
+// 		}
+
+// 		fmt.Println("requested_bus_route -", requested_bus_route)
+// 		if postgres.Check_route_exits_for_pass_Ws(requested_bus_route) {
+// 			fmt.Printf("old driver - %v and new driver - %v\n", old_requested_bus_route.DriverId, requested_bus_route.DriverId)
+// 			Remove_PassConn(old_requested_bus_route.DriverId, conn)
+// 			Add_PassConn(requested_bus_route.DriverId, conn)
+// 			old_requested_bus_route = requested_bus_route
+// 		}
+// 	}
+// }
+
+// func
+//
+//
+// listen_passenger_message(conn *websocket.Conn) {
 // 	var (
 // 		old_requested_bus_route models.PassengerWsRequest
 // 		requested_bus_route     models.PassengerWsRequest
