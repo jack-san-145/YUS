@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>YUS - Email Verification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            color: #2d3748;
+        }
+
+        /* Background pattern */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Brand styling */
+        .brand {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #2d3748;
+        }
+
+        .brand h2 {
+            font-size: 2.4em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; 
+            background-clip: text;
+        }
+
+        .brand .tagline {
+            font-size: 0.95em;
+            color: #718096;
+            letter-spacing: 3px;
+            font-weight: 500;
+        }
+
+        /* OTP Box */
+        #otpbox {
+            background: rgba(248, 249, 250, 0.95);
+            padding: 40px 35px;
+            border-radius: 16px;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.08),
+                0 2px 8px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #otpbox:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 12px 40px rgba(0, 0, 0, 0.12),
+                0 4px 12px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        #otpbox h1 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 2.1em;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        #otpbox h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #FFD700, #FFB700);
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(255, 183, 0, 0.2);
+        }
+
+        #otpbox p {
+            color: #718096;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            font-size: 15px;
+        }
+
+        /* OTP Input Container */
+        .otp-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .otp-input {
+            width: 55px;
+            height: 60px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: #ffffff;
+            transition: all 0.3s ease;
+            outline: none;
+            color: #2d3748;
+        }
+
+        .otp-input:focus {
+            border-color: #FFD700;
+            background: #fefefe;
+            box-shadow:
+                0 0 0 4px rgba(255, 215, 0, 0.15),
+                0 2px 8px rgba(255, 215, 0, 0.1);
+            transform: scale(1.05);
+        }
+
+        .otp-input.filled {
+            border-color: #FFD700;
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        #btn {
+            margin: 30px 0 15px 0;
+        }
+
+        #btn button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFB700 100%);
+            border: none;
+            border-radius: 10px;
+            color: #2d3748;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #btn button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        #btn button:hover {
+            background: linear-gradient(135deg, #FFB700 0%, #FFA000 100%);
+            transform: translateY(-2px);
+            box-shadow:
+                0 6px 20px rgba(255, 183, 0, 0.25),
+                0 2px 6px rgba(255, 183, 0, 0.1);
+        }
+
+        #btn button:hover::before {
+            left: 100%;
+        }
+
+        #btn button:active {
+            transform: translateY(0);
+        }
+
+        .resend-otp {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .resend-otp a {
+            color: #D69E2E;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .resend-otp a:hover {
+            color: #B7791F;
+            background: rgba(255, 215, 0, 0.08);
+        }
+
+        /* Timer */
+        .timer {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            #otpbox {
+                margin: 20px;
+                padding: 35px 25px;
+            }
+
+            #otpbox h1 {
+                font-size: 1.9em;
+            }
+
+            .brand h2 {
+                font-size: 2em;
+            }
+
+            .brand {
+                top: 30px;
+            }
+
+            .otp-input {
+                width: 45px;
+                height: 55px;
+                font-size: 20px;
+            }
+        }
+
+        /* Focus states for accessibility */
+        .otp-input:focus {
+            border-color: #FFD700;
+        }
+
+        #btn button:focus {
+            outline: 2px solid #FFD700;
+            outline-offset: 2px;
+        }
+
+        /* Animation for OTP input */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .otp-input.pulse {
+            animation: pulse 0.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Brand Header -->
+    <div class="brand">
+        <h2>YELLOW BUS</h2>
+        <div class="tagline">- YUS -</div>
+    </div>
+
+    <!-- OTP Box -->
+    <div id="otpbox">
+        <h1>Email Verification</h1>
+        <form id="otpForm">
+            <p>The OTP has been sent to your email. Enter the OTP for email verification.</p>
+            <div class="otp-container">
+                <input type="number" class="otp-input" maxlength="1" data-index="0">
+                <input type="number" class="otp-input" maxlength="1" data-index="1">
+                <input type="number" class="otp-input" maxlength="1" data-index="2">
+                <input type="number" class="otp-input" maxlength="1" data-index="3">
+                <input type="number" class="otp-input" maxlength="1" data-index="4">
+                <input type="number" class="otp-input" maxlength="1" data-index="5">
+            </div>
+            <div id="btn">
+                <button type="submit">Verify</button>
+            </div>
+            <div class="resend-otp">
+                Didn't receive the code? <a href="#" id="resend-link">Resend OTP</a>
+                <span id="timer" class="timer"></span>
+            </div>
+        </form>
+    </div>
+
+<script src="combined.js"></script>
+</body>
+
+</html>

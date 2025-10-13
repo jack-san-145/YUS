@@ -68,21 +68,21 @@ func Remove_Driver_from_passengerMap(driver_id int) {
 }
 
 func Add_Driver_to_passengerMap(driver_id int) {
-	PassengerMap.Store(driver_id, []*websocket.Conn{})
+	PassengerMap.Store(driver_id, []*PassengerConn{})
 }
 
 // Get connections
-func Get_PassConns(driverId int) []*websocket.Conn {
-	var conns []*websocket.Conn
+func Get_PassConns(driverId int) []*PassengerConn {
+	var conns []*PassengerConn
 	value, ok := PassengerMap.Load(driverId)
 	if !ok {
 		return nil
 	}
 
 	if ok && value != nil { //to avoid the panic
-		conns = value.([]*websocket.Conn)
+		conns = value.([]*PassengerConn)
 	} else {
-		conns = []*websocket.Conn{} // initialize a new slice
+		conns = []*PassengerConn{} // initialize a new slice
 	}
 	return conns
 }

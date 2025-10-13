@@ -40,7 +40,6 @@ func listen_passenger_message(conn *websocket.Conn) {
 		for {
 			select {
 			case <-ticker.C:
-				conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
 				if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 					fmt.Println("ping error:", err)
 					close(done)

@@ -117,7 +117,6 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 
 	go func() {
 		for range ticker.C {
-			conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				fmt.Println("ping error:", err)
 				return

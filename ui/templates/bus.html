@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Schedule - Yellow Bus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        :root {
+            --primary: #f5b800;
+            --primary-light: #ffc933;
+            --primary-dark: #d9a500;
+            --light: #ffffff;
+            --muted: #666666;
+            --dark: #1a1a1a;
+            --gray: #808080;
+            --light-gray: #e5e5e5;
+            --sidebar-bg: #f8f8f8;
+            --border-radius: 12px;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #fafafa;
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            margin-bottom: 40px;
+            animation: slideDown 0.5s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header h1 i {
+            color: var(--primary);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .header p {
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        .send-schedule-btn {
+            background: var(--primary);
+            color: var(--dark);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .send-schedule-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 184, 0, 0.3);
+        }
+
+        .send-schedule-btn:disabled {
+            background: var(--light-gray);
+            color: var(--muted);
+            cursor: not-allowed;
+        }
+
+        .buses-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .bus-card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            animation: scaleIn 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .bus-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        }
+
+        .bus-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-8px);
+            box-shadow: 0 8px 24px rgba(245, 184, 0, 0.2);
+        }
+
+        .bus-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            transition: all 0.3s ease;
+        }
+
+        .bus-card:hover .bus-icon {
+            transform: rotate(360deg) scale(1.1);
+        }
+
+        .bus-icon i {
+            font-size: 30px;
+            color: var(--dark);
+        }
+
+        .bus-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .bus-label {
+            font-size: 12px;
+            color: var(--muted);
+            text-align: center;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .driver-info {
+            background: var(--sidebar-bg);
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .bus-card:hover .driver-info {
+            background: #fff9e6;
+        }
+
+        .driver-label {
+            font-size: 11px;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .driver-id {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark);
+            font-family: monospace;
+        }
+
+        .bus-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .bus-status:hover {
+            opacity: 0.8;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-maintenance {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-active .status-dot {
+            background: #28a745;
+        }
+
+        .status-inactive .status-dot {
+            background: #dc3545;
+        }
+
+        .status-maintenance .status-dot {
+            background: #ffc107;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn {
+            flex: 1 1 30%;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--dark);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--light-gray);
+        }
+
+        .btn-secondary:hover {
+            background: var(--sidebar-bg);
+            transform: translateY(-2px);
+        }
+
+        .btn-disabled {
+            background: var(--light-gray);
+            color: var(--muted);
+            cursor: not-allowed;
+        }
+
+        .add-bus-btn {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            border-radius: 50%;
+            color: var(--dark);
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(245, 184, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .add-bus-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 6px 16px rgba(245, 184, 0, 0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: scaleIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header h2 i {
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--dark);
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            color: var(--dark);
+            background: var(--light);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(245, 184, 0, 0.1);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: var(--dark);
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-cancel {
+            background: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--light-gray);
+        }
+
+        .btn-cancel:hover {
+            background: var(--sidebar-bg);
+        }
+
+        .btn-deselect {
+            background: #dc3545;
+            color: var(--light);
+        }
+
+        .btn-deselect:hover {
+            background: #c82333;
+        }
+
+        .driver-list, .route-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .driver-item, .route-item {
+            padding: 12px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .driver-item:hover, .route-item:hover {
+            background: #fff9e6;
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .driver-item.selected, .route-item.selected {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--dark);
+        }
+
+        .driver-item.selected .driver-name,
+        .driver-item.selected .driver-id-small,
+        .route-item.selected .route-name,
+        .route-item.selected .route-details-small {
+            color: var(--dark);
+        }
+
+        .driver-avatar, .route-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .driver-details, .route-details {
+            flex: 1;
+        }
+
+        .driver-name, .route-name {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 2px;
+        }
+
+        .driver-id-small, .route-details-small {
+            font-size: 12px;
+            color: var(--muted);
+            font-family: monospace;
+        }
+
+        .swal2-container {
+            z-index: 2000;
+        }
+
+        .swal2-html-container {
+            text-align: left !important;
+            font-size: 14px !important;
+            color: var(--dark) !important;
+        }
+
+        .swal2-title {
+            color: var(--dark) !important;
+        }
+
+        .route-details {
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .route-details h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+        }
+
+        .stop-item {
+            margin-bottom: 8px;
+            padding: 8px;
+            background: var(--sidebar-bg);
+            border-radius: 6px;
+        }
+
+        .stop-item strong {
+            color: var(--dark);
+        }
+
+        @media (max-width: 1200px) {
+            .buses-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .buses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .send-schedule-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .add-bus-btn {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-calendar-alt"></i> Bus Schedule</h1>
+                <p>Manage your bus schedule and assign drivers and routes</p>
+            </div>
+            <button class="send-schedule-btn" onclick="sendSchedule()">
+                <i class="fas fa-paper-plane"></i> Send Schedule
+            </button>
+        </div>
+
+        <div class="buses-grid" id="buses-grid">
+            <!-- Buses will be dynamically added here -->
+        </div>
+    </div>
+
+    <button class="add-bus-btn" onclick="openAddBusModal()">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Add Bus Modal -->
+    <div id="addBusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-bus"></i> Add New Bus</h2>
+                <button class="close-btn" onclick="closeAddBusModal()">&times;</button>
+            </div>
+            <form onsubmit="addNewBus(event)">
+                <div class="form-group">
+                    <label for="busNumber">Bus Number</label>
+                    <input type="number" id="busNumber" required placeholder="Enter bus number (e.g., 35)" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="busStatus">Status</label>
+                    <select id="busStatus" required>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeAddBusModal()">Cancel</button>
+                    <button type="submit" class="btn-submit">Add Bus</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Select Driver Modal -->
+    <div id="selectDriverModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-check"></i> Select Driver</h2>
+                <button class="close-btn" onclick="closeSelectDriverModal()">&times;</button>
+            </div>
+            <div class="driver-list" id="driverList">
+                <!-- Drivers will be listed here -->
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn-cancel" onclick="closeSelectDriverModal()">Cancel</button>
+                <button type="button" class="btn-deselect" onclick="deselectDriver()">Deselect Driver</button>
+                <button type="button" class="btn-submit" id="assignDriverBtn" onclick="assignDriver()">Assign Driver</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Select Route Modal -->
+    <div id="selectRouteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-route"></i> Select Route</h2>
+                <button class="close-btn" onclick="closeSelectRouteModal()">&times;</button>
+            </div>
+            <div class="route-list" id="routeList">
+                <!-- Routes will be listed here -->
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn-cancel" onclick="closeSelectRouteModal()">Cancel</button>
+                <button type="button" class="btn-deselect" onclick="deselectRoute()">Deselect Route</button>
+                <button type="button" class="btn-submit" id="assignRouteBtn" onclick="assignRoute()">Assign Route</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        let buses = [];
+        let driversCache = [];
+        let routesCache = [];
+        let selectedBusNumber = null;
+        let selectedDriverId = null;
+        let selectedRouteId = null;
+        const DEFAULT_DRIVER_ID = 1000;
+        const DEFAULT_ROUTE_ID = 1000;
+
+        async function fetchCurrentSchedule() {
+            try {
+                const response = await fetch('https://yus.kwscloud.in/yus/get-current-schedule', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                const schedule = await response.json();
+                buses = schedule.map(item => ({
+                    number: item.bus_id.toString(),
+                    driverId: item.driver_id.toString(),
+                    status: 'active',
+                }));
+                if (buses.length === 0) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'No Buses Found',
+                        text: 'No buses are available in the schedule.',
+                        confirmButtonColor: 'var(--primary)',
+                    });
+                }
+                await fetchDriversCache();
+                await fetchRoutesCache();
+                renderBuses();
+            } catch (error) {
+                console.error('Error fetching schedule:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to load bus schedule. Please try again.',
+                    confirmButtonColor: 'var(--primary)',
+                });
+                buses = [];
+                renderBuses();
+            }
+        }
+
+        async function fetchDriversCache() {
+            try {
+                const response = await fetch('https://yus.kwscloud.in/yus/get-available-drivers', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                driversCache = await response.json();
+            } catch (error) {
+                console.error('Error fetching drivers cache:', error);
+                driversCache = [];
+            }
+        }
+
+        async function fetchRoutesCache() {
+            try {
+                const response = await fetch('https://yus.kwscloud.in/yus/get-available-routes', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                routesCache = await response.json();
+            } catch (error) {
+                console.error('Error fetching routes cache:', error);
+                routesCache = [];
+            }
+        }
+
+        async function fetchAvailableDrivers() {
+            try {
+                const response = await fetch('https://yus.kwscloud.in/yus/get-available-drivers', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                const drivers = await response.json();
+                return drivers.filter(driver => driver.available);
+            } catch (error) {
+                console.error('Error fetching drivers:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to load drivers. Please try again.',
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return [];
+            }
+        }
+
+        async function fetchAvailableRoutes() {
+            try {
+                const response = await fetch('https://yus.kwscloud.in/yus/get-available-routes', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                const routes = await response.json();
+                return routes.filter(route => route.available);
+            } catch (error) {
+                console.error('Error fetching routes:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to load routes. Please try again.',
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return [];
+            }
+        }
+
+        function getStatusText(status) {
+            switch (status) {
+                case 'active': return 'Active';
+                case 'inactive': return 'Inactive';
+                case 'maintenance': return 'Maintenance';
+                default: return 'Unknown';
+            }
+        }
+
+        function getDriverName(driverId) {
+            const driver = driversCache.find(d => d.driver_id.toString() === driverId);
+            return driver ? driver.driver_name : 'Unknown';
+        }
+
+        function getRouteName(routeId) {
+            const route = routesCache.find(r => r.route_id.toString() === routeId);
+            return route ? route.route_name : 'Unknown';
+        }
+
+        function renderBuses() {
+            const busesGrid = document.getElementById('buses-grid');
+            busesGrid.innerHTML = '';
+
+            if (buses.length === 0) {
+                busesGrid.innerHTML = '<p>No buses available.</p>';
+                return;
+            }
+
+            buses.forEach((bus, index) => {
+                const busCard = document.createElement('div');
+                busCard.className = 'bus-card';
+                busCard.style.animationDelay = `${index * 0.1}s`;
+
+                busCard.innerHTML = `
+                    <div class="bus-icon">
+                        <i class="fas fa-bus"></i>
+                    </div>
+                    <div class="bus-number">Bus ${bus.number}</div>
+                    <div class="bus-label">Bus Number</div>
+                    <div class="driver-info">
+                        <div class="driver-label">Driver</div>
+                        <div class="driver-id">${bus.driverId ? bus.driverId + ' (' + getDriverName(bus.driverId) + ')' : 'None'}</div>
+                    </div>
+                    <div class="bus-status status-${bus.status}" onclick="changeBusStatus('${bus.number}')">
+                        <div class="status-dot"></div>
+                        ${getStatusText(bus.status)}
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="viewBus('${bus.number}')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="btn btn-secondary" onclick="openSelectDriverModal('${bus.number}')">
+                            <i class="fas fa-user-check"></i> Select Driver
+                        </button>
+                        <button class="btn btn-secondary" onclick="openSelectRouteModal('${bus.number}')">
+                            <i class="fas fa-route"></i> Select Route
+                        </button>
+                    </div>
+                `;
+
+                busesGrid.appendChild(busCard);
+            });
+        }
+
+        async function sendSchedule() {
+            const sendButton = document.querySelector('.send-schedule-btn');
+            sendButton.disabled = true;
+            sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            // Prepare the payload
+            const payload = buses
+                .filter(bus => bus.driverId && bus.driverId !== DEFAULT_DRIVER_ID.toString() && bus.status === 'active')
+                .map(bus => ({
+                    driver_id: parseInt(bus.driverId),
+                    bus_id: parseInt(bus.number),
+                }));
+
+            if (payload.length === 0) {
+                sendButton.disabled = false;
+                sendButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send Schedule';
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Valid Assignments',
+                    text: 'No active buses with valid driver assignments to send.',
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return;
+            }
+
+            try {
+                const response = await fetch('https://yus.kwscloud.in/yus/allocate-bus-driver', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                const result = await response.json();
+
+                // Assuming the backend returns an object where keys are bus_ids and values indicate success
+                const successCount = Object.values(result).filter(status => status).length;
+                const failureCount = payload.length - successCount;
+
+                sendButton.disabled = false;
+                sendButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send Schedule';
+
+                if (successCount === payload.length) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: `Schedule sent successfully for ${successCount} bus${successCount > 1 ? 'es' : ''}!`,
+                        confirmButtonColor: 'var(--primary)',
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Partial Success',
+                        text: `Successfully sent schedule for ${successCount} bus${successCount > 1 ? 'es' : ''}. Failed for ${failureCount} bus${failureCount > 1 ? 'es' : ''}.`,
+                        confirmButtonColor: 'var(--primary)',
+                    });
+                }
+            } catch (error) {
+                console.error('Error sending schedule:', error);
+                sendButton.disabled = false;
+                sendButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send Schedule';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to send schedule. Please try again.',
+                    confirmButtonColor: 'var(--primary)',
+                });
+            }
+        }
+
+        async function changeBusStatus(busNumber) {
+            const bus = buses.find(b => b.number === busNumber);
+            if (!bus) return;
+
+            const { value: newStatus } = await Swal.fire({
+                title: `Change Status for Bus ${busNumber}`,
+                input: 'select',
+                inputOptions: {
+                    active: 'Active',
+                    inactive: 'Inactive',
+                    maintenance: 'Maintenance',
+                },
+                inputValue: bus.status,
+                showCancelButton: true,
+                confirmButtonText: 'Change',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: 'var(--primary)',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Please select a status!';
+                    }
+                },
+            });
+
+            if (newStatus) {
+                bus.status = newStatus;
+                if (newStatus === 'inactive' || newStatus === 'maintenance') {
+                    try {
+                        const response = await fetch(`https://yus.kwscloud.in/yus/allocate-bus-route?route_id=0&bus_id=${busNumber}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        });
+                        const result = await response.json();
+
+                        if (result.route_mapped) {
+                            await fetchRoutesCache();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: `Bus ${busNumber} status changed to ${getStatusText(newStatus)} and route unassigned (route_id=0).`,
+                                confirmButtonColor: 'var(--primary)',
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `Bus ${busNumber} status changed to ${getStatusText(newStatus)}, but failed to unassign route (route_id=0).`,
+                                confirmButtonColor: 'var(--primary)',
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error unassigning route:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `Bus ${busNumber} status changed to ${getStatusText(newStatus)}, but error unassigning route (route_id=0). Please try again.`,
+                            confirmButtonColor: 'var(--primary)',
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Status Updated',
+                        text: `Bus ${busNumber} status changed to ${getStatusText(newStatus)}.`,
+                        confirmButtonColor: 'var(--primary)',
+                    });
+                }
+                renderBuses();
+            }
+        }
+
+        async function viewBus(busNumber) {
+            const bus = buses.find(b => b.number === busNumber);
+            if (!bus) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Bus ${busNumber} not found.`,
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://yus.kwscloud.in/yus/get-cached-routes?bus_id=${busNumber}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                const routes = await response.json();
+
+                let routeDetails = routes.length > 0 ? '' : '<p>No routes assigned.</p>';
+                if (routes.length > 0) {
+                    routes.forEach(route => {
+                        const stopsHtml = route.stops.map(stop => `
+                            <div class="stop-item">
+                                <strong>${stop.location_name}</strong> (Stop: ${stop.is_stop ? 'Yes' : 'No'})<br>
+                                Arrival: ${stop.arrival_time}, Departure: ${stop.departure_time}<br>
+                                Lat: ${stop.lat}, Lon: ${stop.lon}
+                            </div>
+                        `).join('');
+                        routeDetails += `
+                            <div class="route-details">
+                                <h3>${route.route_name} (${route.active ? 'Active' : 'Inactive'})</h3>
+                                <p><strong>Source:</strong> ${route.src}</p>
+                                <p><strong>Destination:</strong> ${route.dest}</p>
+                                <p><strong>Stops:</strong></p>
+                                ${stopsHtml}
+                            </div>
+                        `;
+                    });
+                }
+
+                Swal.fire({
+                    title: `Bus ${busNumber} Details`,
+                    html: `
+                        <p><strong>Driver ID:</strong> ${bus.driverId ? bus.driverId + ' (' + getDriverName(bus.driverId) + ')' : 'None'}</p>
+                        <p><strong>Status:</strong> ${getStatusText(bus.status)}</p>
+                        <p><strong>Routes:</strong></p>
+                        ${routeDetails}
+                    `,
+                    icon: 'info',
+                    confirmButtonText: 'Close',
+                    confirmButtonColor: 'var(--primary)',
+                    width: '600px',
+                    customClass: { popup: 'swal2-popup' },
+                });
+            } catch (error) {
+                console.error('Error fetching routes:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: `Bus ${busNumber} Details`,
+                    html: `
+                        <p><strong>Driver ID:</strong> ${bus.driverId ? bus.driverId + ' (' + getDriverName(bus.driverId) + ')' : 'None'}</p>
+                        <p><strong>Status:</strong> ${getStatusText(bus.status)}</p>
+                        <p><strong>Routes:</strong> Unable to fetch routes</p>
+                    `,
+                    confirmButtonColor: 'var(--primary)',
+                });
+            }
+        }
+
+        function openAddBusModal() {
+            document.getElementById('addBusModal').classList.add('show');
+        }
+
+        function closeAddBusModal() {
+            document.getElementById('addBusModal').classList.remove('show');
+            document.getElementById('busNumber').value = '';
+            document.getElementById('busStatus').value = 'active';
+        }
+
+        async function addNewBus(event) {
+            event.preventDefault();
+
+            const busNumber = document.getElementById('busNumber').value;
+            const status = document.getElementById('busStatus').value;
+            const driverId = DEFAULT_DRIVER_ID;
+
+            if (!/^\d+$/.test(busNumber) || parseInt(busNumber) <= 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Bus number must be a positive integer!',
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return;
+            }
+
+            if (buses.find(b => b.number === busNumber)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Bus ${busNumber} already exists!`,
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://yus.kwscloud.in/yus/add-new-bus?bus_id=${busNumber}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                });
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    const driverResponse = await fetch('https://yus.kwscloud.in/yus/allocate-bus-driver', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify([{ driver_id: driverId, bus_id: parseInt(busNumber) }]),
+                    });
+                    const driverResult = await driverResponse.json();
+
+                    if (driverResult[busNumber]) {
+                        buses.push({
+                            number: busNumber,
+                            driverId: driverId.toString(),
+                            status: status,
+                        });
+                        await fetchDriversCache();
+                        renderBuses();
+                        closeAddBusModal();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: `Bus ${busNumber} added successfully with driver ${driverId} (${getDriverName(driverId.toString())})!`,
+                            confirmButtonColor: 'var(--primary)',
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `Failed to assign driver ${driverId} to bus ${busNumber}.`,
+                            confirmButtonColor: 'var(--primary)',
+                        });
+                    }
+                } else if (result.status === 'bus already exists') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `Bus ${busNumber} already exists in the database!`,
+                        confirmButtonColor: 'var(--primary)',
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `Failed to add bus ${busNumber}.`,
+                        confirmButtonColor: 'var(--primary)',
+                    });
+                }
+            } catch (error) {
+                console.error('Error adding bus:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Error adding bus ${busNumber}. Please try again.`,
+                    confirmButtonColor: 'var(--primary)',
+                });
+            }
+        }
+
+        async function openSelectDriverModal(busNumber) {
+            const bus = buses.find(b => b.number === busNumber);
+            if (!bus) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Bus ${busNumber} not found.`,
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return;
+            }
+            if (bus.status !== 'active') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: `Cannot assign driver to bus ${busNumber} with status ${getStatusText(bus.status)}. Only active buses can be assigned drivers.`,
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return;
+            }
+
+            selectedBusNumber = busNumber;
+            selectedDriverId = null;
+            const driverList = document.getElementById('driverList');
+            driverList.innerHTML = '';
+
+            const drivers = await fetchAvailableDrivers();
+
+            if (drivers.length === 0) {
+                driverList.innerHTML = '<p>No available drivers found.</p>';
+                document.getElementById('assignDriverBtn').classList.add('btn-disabled');
+                document.getElementById('assignDriverBtn').disabled = true;
+                document.getElementById('selectDriverModal').classList.add('show');
+                return;
+            }
+
+            drivers.forEach(driver => {
+                const driverItem = document.createElement('div');
+                driverItem.className = 'driver-item';
+                driverItem.onclick = () => selectDriver(driver.driver_id, driverItem);
+
+                driverItem.innerHTML = `
+                    <div class="driver-avatar">${driver.driver_id}</div>
+                    <div class="driver-details">
+                        <div class="driver-name">${driver.driver_name}</div>
+                        <div class="driver-id-small">${driver.driver_id}</div>
+                    </div>
+                    <i class="fas fa-check" style="color: var(--primary); display: none;"></i>
+                `;
+
+                driverList.appendChild(driverItem);
+            });
+
+            document.getElementById('assignDriverBtn').classList.remove('btn-disabled');
+            document.getElementById('assignDriverBtn').disabled = false;
+            document.getElementById('selectDriverModal').classList.add('show');
+        }
+
+        function closeSelectDriverModal() {
+            document.getElementById('selectDriverModal').classList.remove('show');
+            selectedBusNumber = null;
+            selectedDriverId = null;
+        }
+
+        function selectDriver(driverId, element) {
+            document.querySelectorAll('.driver-item').forEach(item => {
+                item.classList.remove('selected');
+                item.querySelector('i').style.display = 'none';
+            });
+
+            element.classList.add('selected');
+            element.querySelector('i').style.display = 'block';
+            selectedDriverId = driverId;
+            document.getElementById('assignDriverBtn').classList.remove('btn-disabled');
+            document.getElementById('assignDriverBtn').disabled = false;
+        }
+
+        async function deselectDriver() {
+            console.log('Assigning default driver...');
+            if (!selectedBusNumber) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'No bus selected for driver assignment.',
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return;
+            }
+
+            const bus = buses.find(b => b.number === selectedBusNumber);
+            if (!bus) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Bus ${selectedBusNumber} not found.`,
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return;
+            }
+
+            try {
+                const response = await fetch('https://yus.kwscloud.in/yus/allocate-bus-driver', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify([{ driver_id: DEFAULT_DRIVER_ID, bus_id: parseInt(selectedBusNumber) }]),
+                });
+                const result = await response.json();
+
+                if (result[selectedBusNumber]) {
+                    document.querySelectorAll('.driver-item').forEach(item => {
+                        item.classList.remove('selected');
+                        item.querySelector('i').style.display = 'none';
+                    });
+                    selectedDriverId = null;
+                    bus.driverId = DEFAULT_DRIVER_ID.toString();
+                    await fetchDriversCache();
+                    renderBuses();
+                    closeSelectDriverModal();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: `Default driver ${DEFAULT_DRIVER_ID} (${getDriverName(DEFAULT_DRIVER_ID.toString())}) assigned to Bus ${selectedBusNumber}.`,
+                        confirmButtonColor: 'var(--primary)',
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `Failed to assign default driver ${DEFAULT_DRIVER_ID} to Bus ${selectedBusNumber}.`,
+                        confirmButtonColor: 'var(--primary)',
+                    });
+                }
+            } catch (error) {
+                console.error('Error assigning default driver:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Error assigning default driver ${DEFAULT_DRIVER_ID} to Bus ${selectedBusNumber}. Please try again.`,
+                    confirmButtonColor: 'var(--primary)',
+                });
+            }
+        }
+
+        async function assignDriver() {
+            if (!selectedDriverId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Please select a driver!',
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return;
+            }
+
+            const bus = buses.find(b => b.number === selectedBusNumber);
+            if (bus) {
+                try {
+                    const response = await fetch('https://yus.kwscloud.in/yus/allocate-bus-driver', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify([{ driver_id: parseInt(selectedDriverId), bus_id: parseInt(selectedBusNumber) }]),
+                    });
+                    const result = await response.json();
+
+                    if (result[selectedBusNumber]) {
+                        bus.driverId = selectedDriverId.toString();
+                        await fetchDriversCache();
+                        renderBuses();
+                        closeSelectDriverModal();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: `Driver ${selectedDriverId} (${getDriverName(selectedDriverId.toString())}) assigned to Bus ${selectedBusNumber} successfully!`,
+                            confirmButtonColor: 'var(--primary)',
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `Failed to assign driver ${selectedDriverId} to bus ${selectedBusNumber}.`,
+                            confirmButtonColor: 'var(--primary)',
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error assigning driver:', error);
+
+                }
+            }
+        }
+
+        async function openSelectRouteModal(busNumber) {
+            const bus = buses.find(b => b.number === busNumber);
+            if (!bus) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Bus ${busNumber} not found.`,
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return;
+            }
+            if (bus.status !== 'active') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: `Cannot assign route to bus ${busNumber} with status ${getStatusText(bus.status)}. Only active buses can be assigned routes.`,
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return;
+            }
+
+            selectedBusNumber = busNumber;
+            selectedRouteId = null;
+            const routeList = document.getElementById('routeList');
+            routeList.innerHTML = '';
+
+            const routes = await fetchAvailableRoutes();
+
+            if (routes.length === 0) {
+                routeList.innerHTML = '<p>No available routes found.</p>';
+                document.getElementById('assignRouteBtn').classList.add('btn-disabled');
+                document.getElementById('assignRouteBtn').disabled = true;
+                document.getElementById('selectRouteModal').classList.add('show');
+                return;
+            }
+
+            routes.forEach(route => {
+                const routeItem = document.createElement('div');
+                routeItem.className = 'route-item';
+                routeItem.onclick = () => selectRoute(route.route_id, routeItem);
+
+                routeItem.innerHTML = `
+                    <div class="route-avatar">${route.route_id}</div>
+                    <div class="route-details">
+                        <div class="route-name">${route.route_name}</div>
+                        <div class="route-details-small">${route.src} to ${route.dest}</div>
+                    </div>
+                    <i class="fas fa-check" style="color: var(--primary); display: none;"></i>
+                `;
+
+                routeList.appendChild(routeItem);
+            });
+
+            document.getElementById('assignRouteBtn').classList.remove('btn-disabled');
+            document.getElementById('assignRouteBtn').disabled = false;
+            document.getElementById('selectRouteModal').classList.add('show');
+        }
+
+        function closeSelectRouteModal() {
+            document.getElementById('selectRouteModal').classList.remove('show');
+            selectedBusNumber = null;
+            selectedRouteId = null;
+        }
+
+        function selectRoute(routeId, element) {
+            document.querySelectorAll('.route-item').forEach(item => {
+                item.classList.remove('selected');
+                item.querySelector('i').style.display = 'none';
+            });
+
+            element.classList.add('selected');
+            element.querySelector('i').style.display = 'block';
+            selectedRouteId = routeId;
+            document.getElementById('assignRouteBtn').classList.remove('btn-disabled');
+            document.getElementById('assignRouteBtn').disabled = false;
+        }
+
+        async function deselectRoute() {
+            console.log('Assigning default route...');
+            if (!selectedBusNumber) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'No bus selected for route assignment.',
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return;
+            }
+
+            const bus = buses.find(b => b.number === selectedBusNumber);
+            if (!bus) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Bus ${selectedBusNumber} not found.`,
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://yus.kwscloud.in/yus/allocate-bus-route?route_id=${DEFAULT_ROUTE_ID}&bus_id=${selectedBusNumber}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                });
+                const result = await response.json();
+
+                if (result.route_mapped) {
+                    document.querySelectorAll('.route-item').forEach(item => {
+                        item.classList.remove('selected');
+                        item.querySelector('i').style.display = 'none';
+                    });
+                    selectedRouteId = null;
+                    await fetchRoutesCache();
+                    closeSelectRouteModal();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: `Default route ${DEFAULT_ROUTE_ID} (${getRouteName(DEFAULT_ROUTE_ID.toString())}) assigned to Bus ${selectedBusNumber}.`,
+                        confirmButtonColor: 'var(--primary)',
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `Failed to assign default route ${DEFAULT_ROUTE_ID} to Bus ${selectedBusNumber}.`,
+                        confirmButtonColor: 'var(--primary)',
+                    });
+                }
+            } catch (error) {
+                console.error('Error assigning default route:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Error assigning default route ${DEFAULT_ROUTE_ID} to Bus ${selectedBusNumber}. Please try again.`,
+                    confirmButtonColor: 'var(--primary)',
+                });
+            }
+        }
+
+        async function assignRoute() {
+            if (!selectedRouteId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Please select a route!',
+                    confirmButtonColor: 'var(--primary)',
+                });
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://yus.kwscloud.in/yus/allocate-bus-route?route_id=${selectedRouteId}&bus_id=${selectedBusNumber}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                });
+                const result = await response.json();
+
+                if (result.route_mapped) {
+                    await fetchRoutesCache();
+                    closeSelectRouteModal();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: `Route ${selectedRouteId} (${getRouteName(selectedRouteId)}) assigned to Bus ${selectedBusNumber} successfully!`,
+                        confirmButtonColor: 'var(--primary)',
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `Failed to assign route ${selectedRouteId} to bus ${selectedBusNumber}.`,
+                        confirmButtonColor: 'var(--primary)',
+                    });
+                }
+            } catch (error) {
+                console.error('Error assigning route:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Error assigning route ${selectedRouteId} to bus ${selectedBusNumber}. Please try again.`,
+                    confirmButtonColor: 'var(--primary)',
+                });
+            }
+        }
+
+        fetchCurrentSchedule();
+    </script>
+</body>
+</html>

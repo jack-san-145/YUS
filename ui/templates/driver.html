@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yellow Bus - Driver Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        :root {
+            --primary: #f5b800;
+            --primary-light: #ffc933;
+            --primary-dark: #d9a500;
+            --accent: #f5b800;
+            --accent-dark: #d9a500;
+            --secondary: #fff9e6;
+            --light: #ffffff;
+            --muted: #666666;
+            --dark: #1a1a1a;
+            --gray: #808080;
+            --light-gray: #e5e5e5;
+            --sidebar-bg: #f8f8f8;
+            --sidebar-width: 280px;
+            --border-radius: 12px;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background-color: #fafafa;
+            color: var(--dark);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+            animation: slideInLeft 0.5s ease;
+        }
+        
+        @keyframes slideInLeft {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .page-header h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .page-header h2 i {
+            color: var(--primary);
+        }
+        
+        .page-description {
+            color: var(--muted);
+            font-size: 16px;
+        }
+        
+        /* Dashboard */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--light-gray);
+            animation: slideUp 0.5s ease;
+            transition: all 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-5px);
+        }
+        
+        .card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h3 i {
+            color: var(--dark);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover h3 i {
+            transform: rotate(360deg);
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 14px;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            color: var(--dark);
+            background: var(--light);
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(245, 184, 0, 0.1);
+            transform: scale(1.02);
+        }
+        
+        button {
+            padding: 12px 20px;
+            background: var(--dark);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .btn-success {
+            background: var(--primary);
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .btn-success:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(245, 184, 0, 0.3);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--dark);
+            border: 1px solid var(--light-gray);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--sidebar-bg);
+            border-color: var(--primary);
+        }
+        
+        /* Drivers Table */
+        .drivers-table-container {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--light-gray);
+            animation: slideUp 0.5s ease;
+        }
+        
+        .drivers-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        
+        .drivers-table th {
+            background: var(--secondary);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .drivers-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--light-gray);
+            color: var(--dark);
+        }
+        
+        .drivers-table tr {
+            transition: all 0.3s ease;
+        }
+        
+        .drivers-table tr:hover {
+            background: var(--secondary);
+            transform: translateX(5px);
+        }
+        
+        .driver-id {
+            background: var(--primary);
+            color: var(--dark);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .status-available {
+            color: green;
+            font-weight: 600;
+        }
+        
+        .status-assigned {
+            color: orange;
+            font-weight: 600;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border-left: 4px solid transparent;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .notification i {
+            font-size: 20px;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .notification.success {
+            border-left-color: var(--primary);
+        }
+        
+        .notification.success i {
+            color: var(--primary);
+        }
+        
+        .notification.error {
+            border-left-color: #ef4444;
+        }
+        
+        .notification.error i {
+            color: #ef4444;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 24px;
+            color: var(--light-gray);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .empty-state p {
+            margin-bottom: 24px;
+            font-size: 16px;
+        }
+        
+        /* Search Box */
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--sidebar-bg);
+            border-radius: 8px;
+            padding: 10px 16px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--light-gray);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .search-box:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(245, 184, 0, 0.1);
+            transform: scale(1.02);
+        }
+        
+        .search-box i {
+            color: var(--muted);
+            margin-right: 12px;
+            transition: color 0.3s ease;
+        }
+        
+        .search-box:focus-within i {
+            color: var(--primary);
+        }
+        
+        .search-box input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            outline: none;
+            color: var(--dark);
+            font-size: 14px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .page-header h2 {
+                font-size: 28px;
+            }
+            
+            .drivers-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .search-box {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h2><i class="fas fa-users"></i> Driver Management</h2>
+            <p class="page-description">Add new drivers and manage existing ones</p>
+        </div>
+
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="search-input" placeholder="Search drivers...">
+        </div>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h3><i class="fas fa-user-plus"></i> Add New Driver</h3>
+                
+                <div class="input-group">
+                    <label for="driver-name">Driver Name</label>
+                    <input type="text" id="driver-name" placeholder="Enter driver name">
+                </div>
+                
+                <div class="input-group">
+                    <label for="driver-mobile">Mobile Number</label>
+                    <input type="text" id="driver-mobile" placeholder="Enter mobile number">
+                </div>
+                
+                <button id="add-driver" class="btn-success">
+                    <i class="fas fa-plus-circle"></i> Add Driver
+                </button>
+            </div>
+            
+            <div class="card">
+                <h3><i class="fas fa-info-circle"></i> Driver Information</h3>
+                <p style="margin-bottom: 16px; color: var(--muted); font-size: 14px;">
+                    All drivers will be assigned a unique ID automatically.
+                </p>
+                
+                <div class="input-group">
+                    <label>Total Drivers</label>
+                    <div style="font-size: 24px; font-weight: 700; color: var(--primary);" id="total-drivers">0</div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Available Drivers</label>
+                    <div style="font-size: 24px; font-weight: 700; color: var(--primary);" id="available-drivers">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="drivers-table-container">
+            <h3><i class="fas fa-list"></i> Driver List</h3>
+            
+            <table class="drivers-table">
+                <thead>
+                    <tr>
+                        <th>Driver ID</th>
+                        <th>Name</th>
+                        <th>Mobile Number</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="drivers-list">
+                    <!-- Drivers will be loaded here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <div class="notification-content">Driver added successfully!</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Initialize drivers array
+        let drivers = [];
+
+        // Fetch drivers from backend
+        async function fetchDrivers() {
+            try {
+                const response = await fetch('https://yus.kwscloud.in/yus/get-available-drivers', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                // Map backend response to frontend format
+                drivers = data.map(driver => ({
+                    id: `D${String(driver.driver_id).padStart(3, '0')}`,
+                    name: driver.driver_name,
+                    mobile: String(driver.mobile_no),
+                    status: driver.available ? 'Available' : 'Assigned'
+                }));
+
+                // Save to localStorage for persistence
+                localStorage.setItem('drivers', JSON.stringify(drivers));
+                renderDrivers();
+            } catch (error) {
+                console.error('Error fetching drivers:', error);
+                showNotification('Failed to fetch drivers from server', 'error');
+                // Fallback to localStorage if available
+                const savedDrivers = localStorage.getItem('drivers');
+                if (savedDrivers) {
+                    drivers = JSON.parse(savedDrivers);
+                    renderDrivers();
+                }
+            }
+        }
+        
+        // Load drivers on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchDrivers();
+            initEventListeners();
+        });
+        
+        // Initialize event listeners
+        function initEventListeners() {
+            // Add driver button
+            document.getElementById('add-driver').addEventListener('click', addDriver);
+            
+            // Search functionality
+            document.getElementById('search-input').addEventListener('input', function() {
+                filterDrivers(this.value);
+            });
+        }
+        
+        // Add a new driver
+        async function addDriver() {
+            const name = document.getElementById('driver-name').value.trim();
+            const mobile = document.getElementById('driver-mobile').value.trim();
+            
+            if (!name || !mobile) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please fill all fields',
+                    confirmButtonColor: '#f5b800'
+                });
+                return;
+            }
+            
+            // Validate mobile number
+            if (!/^\d{10}$/.test(mobile)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please enter a valid 10-digit mobile number',
+                    confirmButtonColor: '#f5b800'
+                });
+                return;
+            }
+            
+            try {
+                const response = await fetch('https://yus.kwscloud.in/yus/add-new-driver', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify([{ name: name, mobile_no: mobile }])
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const driver = result[0];
+
+                if (driver.is_added) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: `Driver ${driver.name} added successfully!`,
+                        confirmButtonColor: '#f5b800'
+                    }).then(() => {
+                        // Clear form
+                        document.getElementById('driver-name').value = '';
+                        document.getElementById('driver-mobile').value = '';
+                        // Refresh driver list
+                        fetchDrivers();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `Failed to add driver ${driver.name}`,
+                        confirmButtonColor: '#f5b800'
+                    });
+                }
+            } catch (error) {
+                console.error('Error adding driver:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to add driver due to server error',
+                    confirmButtonColor: '#f5b800'
+                });
+            }
+        }
+        
+        // Render drivers in the table
+        function renderDrivers() {
+            const driversList = document.getElementById('drivers-list');
+            driversList.innerHTML = '';
+            
+            if (drivers.length === 0) {
+                driversList.innerHTML = `
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-state">
+                                <i class="fas fa-users"></i>
+                                <p>No drivers added yet</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            drivers.forEach(driver => {
+                const statusClass = driver.status === 'Available' ? 'status-available' : 'status-assigned';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><span class="driver-id">${driver.id}</span></td>
+                    <td>${driver.name}</td>
+                    <td>${driver.mobile}</td>
+                    <td><span class="${statusClass}">${driver.status}</span></td>
+                `;
+                driversList.appendChild(row);
+            });
+            
+            // Update driver counts
+            const totalDrivers = drivers.length;
+            const availableDrivers = drivers.filter(d => d.status === 'Available').length;
+            
+            document.getElementById('total-drivers').textContent = totalDrivers;
+            document.getElementById('available-drivers').textContent = availableDrivers;
+        }
+        
+        // Filter drivers based on search input
+        function filterDrivers(query) {
+            const rows = document.querySelectorAll('#drivers-list tr');
+            
+            rows.forEach(row => {
+                const name = row.cells[1].textContent.toLowerCase();
+                const mobile = row.cells[2].textContent.toLowerCase();
+                
+                if (name.includes(query.toLowerCase()) || 
+                    mobile.includes(query.toLowerCase())) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        // Show notification (for non-SweetAlert cases)
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            const notificationContent = notification.querySelector('.notification-content');
+            
+            notification.className = `notification ${type}`;
+            notificationContent.textContent = message;
+            
+            // Set appropriate icon
+            const icon = notification.querySelector('i');
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+            } else {
+                icon.className = 'fas fa-exclamation-circle';
+            }
+            
+            notification.classList.add('show');
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

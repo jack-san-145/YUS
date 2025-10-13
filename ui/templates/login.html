@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>YUS - Yellow Bus Tracking</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* style.css */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Background pattern */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        #logbox {
+            background: rgba(248, 249, 250, 0.95);
+            padding: 45px 35px;
+            border-radius: 16px;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.08),
+                0 2px 8px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #logbox:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 12px 40px rgba(0, 0, 0, 0.12),
+                0 4px 12px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        #logbox h1 {
+            color: #2d3748;
+            margin-bottom: 35px;
+            font-size: 2.1em;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        #logbox h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #FFD700, #FFB700);
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(255, 183, 0, 0.2);
+        }
+
+        #inputbox {
+            margin-bottom: 22px;
+            position: relative;
+        }
+
+        #inputbox input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            background: #ffffff;
+            transition: all 0.3s ease;
+            outline: none;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        #inputbox input:focus {
+            border-color: #FFD700;
+            background: #fefefe;
+            box-shadow:
+                0 0 0 4px rgba(255, 215, 0, 0.15),
+                0 2px 8px rgba(255, 215, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        #inputbox input::placeholder {
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        #btn {
+            margin: 30px 0 25px 0;
+        }
+
+        #btn button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFB700 100%);
+            border: none;
+            border-radius: 10px;
+            color: #2d3748;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #btn button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        #btn button:hover {
+            background: linear-gradient(135deg, #FFB700 0%, #FFA000 100%);
+            transform: translateY(-2px);
+            box-shadow:
+                0 6px 20px rgba(255, 183, 0, 0.25),
+                0 2px 6px rgba(255, 183, 0, 0.1);
+        }
+
+        #btn button:hover::before {
+            left: 100%;
+        }
+
+        #btn button:active {
+            transform: translateY(0);
+        }
+
+        #register {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        #register a {
+            color: #718096;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        #register a:hover {
+            color: #D69E2E;
+            background: rgba(255, 215, 0, 0.08);
+            transform: translateY(-1px);
+        }
+
+        #register a::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #FFD700, #FFB700);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        #register a:hover::after {
+            width: 80%;
+        }
+
+        /* Brand styling */
+        .brand {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #2d3748;
+        }
+
+        .brand h2 {
+            font-size: 2.4em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand .tagline {
+            font-size: 0.95em;
+            color: #718096;
+            letter-spacing: 3px;
+            font-weight: 500;
+        }
+
+        /* Subtle floating animation */
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .brand h2 {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            #logbox {
+                margin: 20px;
+                padding: 35px 25px;
+            }
+
+            #logbox h1 {
+                font-size: 1.9em;
+            }
+
+            .brand h2 {
+                font-size: 2em;
+            }
+
+            .brand {
+                top: 30px;
+            }
+        }
+
+        /* Focus states for accessibility */
+        #inputbox input:focus {
+            border-color: #FFD700;
+        }
+
+        #btn button:focus {
+            outline: 2px solid #FFD700;
+            outline-offset: 2px;
+        }
+
+        #register a:focus {
+            outline: 2px solid #FFD700;
+            outline-offset: 2px;
+        }
+
+        #pvalid {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Brand Header -->
+    <div class="brand">
+        <h2>YELLOW BUS</h2>
+        <div class="tagline">- YUS -</div>
+    </div>
+
+    <!-- Login Box -->
+    <div id="logbox">
+        <h1>Login</h1>
+        <form>
+            <div id="inputbox" class="email">
+                <input type="email" name="email" placeholder="Enter your email" required>
+                <p id="evalid"></p>
+            </div>
+            <div id="inputbox" class="email">
+                <input type="password" name="password" placeholder="Password" required>
+                <p id="pvalid"></p>
+            </div>
+            <div id="btn">
+                <button type="submit" class="logbtn">Login</button>
+            </div>
+            <div id="register">
+                <a href="registerform.html">Register Now</a>
+            </div>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            const emailInput = document.querySelector('input[name="email"]');
+            const passwordInput = document.querySelector('input[name="password"]');
+            const evalid = document.getElementById('evalid');
+            const pvalid = document.getElementById('pvalid');
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                // Clear previous messages
+                evalid.textContent = '';
+                pvalid.textContent = '';
+
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                // Basic client-side validation
+                if (!email || !password) {
+                    pvalid.textContent = 'Please fill in all fields';
+                    return;
+                }
+
+                try {
+                    // ✅ Send data as x-www-form-urlencoded
+                    const formData = new URLSearchParams();
+                    formData.append('email', email);
+                    formData.append('password', password);
+
+                    const response = await fetch('https://yus.kwscloud.in/yus/admin-login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: formData
+                    });
+
+                    // Parse JSON response
+                    const data = await response.json();
+
+                    // ✅ Handle backend response
+                    if (data.login_status === 'valid') {
+                        localStorage.setItem('isLoggedIn', 'true'); // Set login flag
+                        alert("ok");
+                        window.location.href = "admin.html"; // Redirect or handle success
+                    } else {
+                        pvalid.textContent = 'Invalid email or password';
+                        passwordInput.value = ''; // Clear password field
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    pvalid.textContent = 'Login failed. Please try again.';
+                }
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>

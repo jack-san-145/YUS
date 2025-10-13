@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YUS to YELLOH BUS Animation</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #ffffff;
+      overflow: hidden;
+      font-family: 'Black Ops One', cursive;
+    }
+
+    .container {
+      text-align: center;
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .bus-container {
+      position: absolute;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+    }
+
+    .bus-image {
+      width: 450px;
+      height: auto;
+      filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.3));
+    }
+
+    .bus-container.show {
+      animation: busEntry 2.2s ease-out forwards;
+    }
+
+    @keyframes busEntry {
+      0% {
+        transform: translateX(-100vw);
+        opacity: 0;
+      }
+      100% {
+        transform: translateX(200px);
+        opacity: 1;
+      }
+    }
+
+    @keyframes yusIntro {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+        filter: blur(10px);
+      }
+      60% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+        filter: blur(4px);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        filter: blur(0px);
+      }
+    }
+
+    .text-animation-container {
+      position: relative;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .yus-text {
+      font-size: 110px;
+      font-weight: 800;
+      letter-spacing: 5px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      display: flex;
+      font-family: 'Black Ops One', sans-serif;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: yusIntro 1s ease-out forwards;
+      z-index: 2;
+    }
+
+    .yus-text span {
+      display: inline-block;
+    }
+
+    .y-letter-initial {
+      color: #ffd700;
+      text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2),
+        6px 6px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .us-letters-initial {
+      color: #ffd700;
+      text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2),
+        6px 6px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .yus-text.splitting span:nth-child(1) {
+      animation: moveLeftY 1.5s ease-in-out forwards;
+    }
+
+    .yus-text.splitting span:nth-child(2) {
+      animation: moveRightUS 1.5s ease-in-out forwards;
+    }
+
+    @keyframes moveLeftY {
+      0% {
+        transform: translate(0, 0);
+        opacity: 1;
+      }
+      60% {
+        transform: translate(-180px, 0);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-200px, 0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes moveRightUS {
+      0% {
+        transform: translate(0, 0);
+        opacity: 1;
+      }
+      60% {
+        transform: translate(180px, 0);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(200px, 0);
+        opacity: 1;
+      }
+    }
+
+    .final-text {
+      font-size: 85px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      gap: 25px;
+      white-space: nowrap;
+      font-family: 'Black Ops One', sans-serif;
+      text-transform: uppercase;
+      opacity: 0;
+      z-index: 1;
+      transition: opacity 0.5s ease-out;
+    }
+
+    .final-text.show {
+      opacity: 1;
+    }
+
+    .word {
+      display: flex;
+    }
+
+    .word span {
+      display: inline-block;
+    }
+
+    .yelloh-y {
+      color: #ffd700;
+      animation: expandFromY 0.8s ease-out 0s backwards;
+      text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2),
+        6px 6px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .yelloh-e,
+    .yelloh-l1,
+    .yelloh-l2,
+    .yelloh-o,
+    .yelloh-h,
+    .bus-b {
+      color: #000000;
+      text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+      font-weight: 700;
+      animation: expandLetter 0.6s ease-out backwards;
+    }
+
+    .yelloh-e { animation-delay: 0.5s; }
+    .yelloh-l1 { animation-delay: 0.9s; }
+    .yelloh-l2 { animation-delay: 1.3s; }
+    .yelloh-o { animation-delay: 1.7s; }
+    .yelloh-h { animation-delay: 2.1s; }
+    .bus-b { animation-delay: 2.5s; }
+
+    .bus-us {
+      color: #ffd700;
+      animation: expandFromUS 0.8s ease-out 2.9s backwards;
+      text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2),
+        6px 6px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    @keyframes expandFromY {
+      0% {
+        opacity: 0;
+        transform: scale(0);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes expandFromUS {
+      0% {
+        opacity: 0;
+        transform: scale(0);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes expandLetter {
+      0% {
+        opacity: 0;
+        transform: scale(0);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Media Queries (unchanged) */
+    /* ... (all media queries from original logo.html) ... */
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="bus-container" id="busContainer">
+      <img src="bus_logo.png" alt="Yellow Bus" class="bus-image" />
+    </div>
+
+    <div class="text-animation-container">
+      <div class="yus-text" id="yusText">
+        <span class="y-letter-initial">Y</span>
+        <span class="us-letters-initial">US</span>
+      </div>
+
+      <div class="final-text" id="finalText">
+        <div class="word yelloh-word">
+          <span class="yelloh-y">Y</span><span class="yelloh-e">E</span
+          ><span class="yelloh-l1">L</span><span class="yelloh-l2">L</span
+          ><span class="yelloh-o">O</span><span class="yelloh-h">H</span>
+        </div>
+        <div class="word bus-word">
+          <span class="bus-b">B</span><span class="bus-us">US</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      document.getElementById('yusText').classList.add('splitting');
+      document.getElementById('busContainer').classList.add('show');
+    }, 1000);
+
+    setTimeout(() => {
+      document.getElementById('yusText').classList.add('hidden');
+      document.getElementById('finalText').classList.add('show');
+    }, 2500);
+
+    setTimeout(() => {
+      document.querySelector('.container').classList.add('final-animation');
+    }, 7500);
+
+    // Redirect to login.html after animation completes
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 8000); // Adjust timing if needed to match animation duration
+  </script>
+</body>
+</html>

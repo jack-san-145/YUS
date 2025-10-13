@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>YUS - Yellow Bus Tracking</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            color: #2d3748;
+        }
+
+        /* Background pattern */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Brand styling */
+        .brand {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #2d3748;
+        }
+
+        .brand h2 {
+            font-size: 2.4em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand .tagline {
+            font-size: 0.95em;
+            color: #718096;
+            letter-spacing: 3px;
+            font-weight: 500;
+        }
+
+        /* Registration box */
+        #registerbox {
+            background: rgba(248, 249, 250, 0.95);
+            padding: 40px 35px;
+            border-radius: 16px;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.08),
+                0 2px 8px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #registerbox:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 12px 40px rgba(0, 0, 0, 0.12),
+                0 4px 12px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        #registerbox h1 {
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-size: 2.1em;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        #registerbox h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #FFD700, #FFB700);
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(255, 183, 0, 0.2);
+        }
+
+        #inputbox {
+            margin-bottom: 22px;
+            position: relative;
+            text-align: left;
+        }
+
+        #inputbox label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        #inputbox input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            background: #ffffff;
+            transition: all 0.3s ease;
+            outline: none;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        #inputbox input:focus {
+            border-color: #FFD700;
+            background: #fefefe;
+            box-shadow:
+                0 0 0 4px rgba(255, 215, 0, 0.15),
+                0 2px 8px rgba(255, 215, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        #inputbox input::placeholder {
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        #btn {
+            margin: 30px 0 25px 0;
+        }
+
+        #btn button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFB700 100%);
+            border: none;
+            border-radius: 10px;
+            color: #2d3748;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #btn button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        #btn button:hover {
+            background: linear-gradient(135deg, #FFB700 0%, #FFA000 100%);
+            transform: translateY(-2px);
+            box-shadow:
+                0 6px 20px rgba(255, 183, 0, 0.25),
+                0 2px 6px rgba(255, 183, 0, 0.1);
+        }
+
+        #btn button:hover::before {
+            left: 100%;
+        }
+
+        #btn button:active {
+            transform: translateY(0);
+        }
+
+        #goback {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(226, 232, 240, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        #goback p {
+            color: #718096;
+        }
+
+        #goback a {
+            color: #D69E2E;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        #goback a:hover {
+            color: #B7791F;
+            background: rgba(255, 215, 0, 0.08);
+            transform: translateY(-1px);
+        }
+
+        #goback a::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #FFD700, #FFB700);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        #goback a:hover::after {
+            width: 80%;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            #registerbox {
+                margin: 20px;
+                padding: 35px 25px;
+            }
+
+            #registerbox h1 {
+                font-size: 1.9em;
+            }
+
+            .brand h2 {
+                font-size: 2em;
+            }
+
+            .brand {
+                top: 30px;
+            }
+
+            #goback {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+
+        /* Focus states for accessibility */
+        #inputbox input:focus {
+            border-color: #FFD700;
+        }
+
+        #btn button:focus {
+            outline: 2px solid #FFD700;
+            outline-offset: 2px;
+        }
+
+        #goback a:focus {
+            outline: 2px solid #FFD700;
+            outline-offset: 2px;
+        }
+
+        /* Password strength indicator */
+        .password-strength {
+            margin-top: 8px;
+            height: 4px;
+            border-radius: 2px;
+            background: #e2e8f0;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        .strength-weak {
+            width: 33%;
+            background: #e53e3e;
+        }
+
+        .strength-medium {
+            width: 66%;
+            background: #dd6b20;
+        }
+
+        .strength-strong {
+            width: 100%;
+            background: #38a169;
+        }
+
+        #evalid,
+        #nvalid,
+        #pvalid {
+            color: red;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- Brand Header -->
+    <div class="brand">
+        <h2>YELLOW BUS</h2>
+        <div class="tagline">- YUS -</div>
+    </div>
+
+    <!-- Registration Box -->
+    <div id="registerbox">
+        <h1>Registration</h1>
+        <form action="https://yus.kwscloud.in/yus/send-otp-admin" method="post">
+            <div id="inputbox">
+                <label for="email">Enter your email</label>
+                <input type="email" id="email" name="email" placeholder="EX:xxx@kamarajengg.edu.in" required>
+                <p id="evalid"></p>
+            </div>
+            <div id="inputbox">
+                <label for="username">Set User Name</label>
+                <input type="text" id="username" name="username" placeholder="First letter should be caps" required>
+                <p id="nvalid"></p>
+            </div>
+            <div id="inputbox">
+                <label for="password">Set your password</label>
+                <input type="password" id="password" name="password" placeholder="At least 6 characters" required>
+                <p id="pvalid"></p>
+                <div class="password-strength">
+                    <div class="password-strength-bar" id="password-strength-bar"></div>
+                </div>
+            </div>
+            <div id="btn">
+                <button type="submit" a class="regisbtn">Register</button>
+            </div>
+            <div id="goback">
+                <p>Go back to login page →</p>
+                <a href="login.html">Login</a>
+            </div>
+        </form>
+    </div>
+    <script src="combined.js"></script>
+
+</body>
+
+</html>
