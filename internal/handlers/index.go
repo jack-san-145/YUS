@@ -6,16 +6,16 @@ import (
 	"net/http"
 )
 
-func Serve_admin_index(w http.ResponseWriter, r *http.Request) {
+func Serve_admin_login(w http.ResponseWriter, r *http.Request) {
 
 	// if !FindAdminSession(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)
 	// 	return
 	// }
 
-	templ, err := template.ParseFiles("../../ui/templates/admin_index.html")
+	templ, err := template.ParseFiles("../../ui/templates/logo.html")
 	if err != nil {
-		fmt.Println("admin_index.html not found - ", err)
+		fmt.Println("logo.html not found - ", err)
 		return
 	}
 

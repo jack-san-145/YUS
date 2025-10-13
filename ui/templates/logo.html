@@ -222,45 +222,269 @@
 
     @keyframes expandFromY {
       0% {
-        opacity: 0;
-        transform: scale(0);
+        transform: translateX(0);
+        opacity: 1;
       }
       100% {
+        transform: translateX(0);
         opacity: 1;
-        transform: scale(1);
       }
     }
 
     @keyframes expandFromUS {
       0% {
-        opacity: 0;
-        transform: scale(0);
+        transform: translateX(0);
+        opacity: 1;
       }
       100% {
+        transform: translateX(0);
         opacity: 1;
-        transform: scale(1);
       }
     }
 
     @keyframes expandLetter {
       0% {
-        opacity: 0;
         transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.7;
       }
       100% {
-        opacity: 1;
         transform: scale(1);
+        opacity: 1;
       }
     }
 
-    /* Media Queries (unchanged) */
-    /* ... (all media queries from original logo.html) ... */
+    .final-animation .bus-image {
+      animation: pulse 2s ease-in-out 7.5s infinite;
+    }
+
+    .final-animation .final-text {
+      animation: gentlePulse 3s ease-in-out 7.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    @keyframes gentlePulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.03);
+      }
+    }
+
+    .yus-text.hidden {
+      display: none;
+    }
+
+    @media (min-width: 1200px) {
+      .container {
+        max-width: 1100px;
+      }
+      .bus-image {
+        width: 500px;
+      }
+      .yus-text {
+        font-size: 120px;
+      }
+      .final-text {
+        font-size: 95px;
+      }
+    }
+
+    @media (max-width: 1199px) and (min-width: 992px) {
+      .container {
+        max-width: 900px;
+      }
+      .bus-image {
+        width: 450px;
+      }
+      .yus-text {
+        font-size: 110px;
+      }
+      .final-text {
+        font-size: 85px;
+      }
+    }
+
+    @media (max-width: 991px) and (min-width: 768px) {
+      .container {
+        max-width: 700px;
+      }
+      .bus-image {
+        width: 380px;
+      }
+      .yus-text {
+        font-size: 90px;
+      }
+      .final-text {
+        font-size: 70px;
+        gap: 20px;
+      }
+      .text-animation-container {
+        height: 250px;
+      }
+      @keyframes moveLeftY {
+        0% { transform: translate(0, 0); opacity: 1; }
+        60% { transform: translate(-150px, 0); opacity: 1; }
+        100% { transform: translate(-170px, 0); opacity: 1; }
+      }
+      @keyframes moveRightUS {
+        0% { transform: translate(0, 0); opacity: 1; }
+        60% { transform: translate(150px, 0); opacity: 1; }
+        100% { transform: translate(170px, 0); opacity: 1; }
+      }
+    }
+
+    @media (max-width: 767px) and (min-width: 576px) {
+      .container {
+        max-width: 540px;
+      }
+      .bus-image {
+        width: 300px;
+        position: absolute;
+        right: -50px;
+        bottom: -100px;
+
+      }
+      .yus-text {
+        font-size: 75px;
+        letter-spacing: 3px;
+      }
+      .final-text {
+        font-size: 60px;
+        gap: 15px;
+        letter-spacing: 3px;
+        white-space: nowrap;
+      }
+      .text-animation-container {
+        height: 200px;
+      }
+      @keyframes moveLeftY {
+        0% { transform: translate(0, 0); opacity: 1; }
+        60% { transform: translate(-120px, 0); opacity: 1; }
+        100% { transform: translate(-140px, 0); opacity: 1; }
+      }
+      @keyframes moveRightUS {
+        0% { transform: translate(0, 0); opacity: 1; }
+        60% { transform: translate(120px, 0); opacity: 1; }
+        100% { transform: translate(140px, 0); opacity: 1; }
+      }
+      @keyframes busEntry {
+        0% { transform: translateX(-100vw); opacity: 0; }
+        100% { transform: translateX(100px); opacity: 1; }
+      }
+    }
+
+    @media (max-width: 575px) {
+      .container {
+        max-width: 100%;
+        padding: 0 15px;
+      }
+      .bus-image {
+        width: 250px;
+        position: absolute;
+        right: -30px;
+        bottom: -60px;
+      }
+      .yus-text {
+        font-size: 60px;
+        letter-spacing: 2px;
+      }
+      .final-text {
+        font-size: 50px;
+        gap: 10px;
+        letter-spacing: 2px;
+        white-space: nowrap;
+      }
+      .text-animation-container {
+        height: 180px;
+      }
+      @keyframes moveLeftY {
+        0% { transform: translate(0, 0); opacity: 1; }
+        60% { transform: translate(-20px, 0); opacity: 1; }
+        100% { transform: translate(-50px, 0); opacity: 1; }
+      }
+      @keyframes moveRightUS {
+        0% { transform: translate(0, 0); opacity: 1; }
+        60% { transform: translate(20px, 0); opacity: 1; }
+        100% { transform: translate(50px, 0); opacity: 1; }
+      }
+      @keyframes busEntry {
+        0% { transform: translateX(-100vw); opacity: 0; }
+        100% { transform: translateX(190px); opacity: 1; }
+      }
+      .y-letter-initial,
+      .us-letters-initial,
+      .yelloh-y,
+      .bus-us {
+        text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2),
+          4px 4px 0px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    @media (max-width: 360px) {
+      .bus-image {
+        width: 200px;
+        position: absolute;
+        right: -20px;
+        bottom: 10%;
+      }
+      .yus-text {
+        font-size: 50px;
+        letter-spacing: 1px;
+      }
+      .final-text {
+        font-size: 40px;
+        gap: 8px;
+        letter-spacing: 1px;
+      }
+      .text-animation-container {
+        height: 150px;
+      }
+      @keyframes moveLeftY {
+        0% { transform: translate(0, 0); opacity: 1; }
+        60% { transform: translate(-70px, 0); opacity: 1; }
+        100% { transform: translate(-80px, 0); opacity: 1; }
+      }
+      @keyframes moveRightUS {
+        0% { transform: translate(0, 0); opacity: 1; }
+        60% { transform: translate(70px, 0); opacity: 1; }
+        100% { transform: translate(80px, 0); opacity: 1; }
+      }
+      @keyframes busEntry {
+        0% { transform: translateX(-100vw); opacity: 0; }
+        100% { transform: translateX(-20px); opacity: 1; }
+      }
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      .container {
+        transform: scale(0.8);
+      }
+      .text-animation-container {
+        height: 150px;
+      }
+      .bus-container {
+        bottom: 0;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="bus-container" id="busContainer">
-      <img src="bus_logo.png" alt="Yellow Bus" class="bus-image" />
+      <!-- <img src="/yus/bus_logo.png" alt="Yellow Bus" class="bus-image" /> -->
     </div>
 
     <div class="text-animation-container">
@@ -297,7 +521,7 @@
       document.querySelector('.container').classList.add('final-animation');
     }, 7500);
 
-    // Redirect to login.html after animation completes
+     // Redirect to login.html after animation completes
     setTimeout(() => {
       window.location.href = "login.html";
     }, 8000); // Adjust timing if needed to match animation duration

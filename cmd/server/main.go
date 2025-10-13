@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
+
 	"yus/internal/handlers"
 	"yus/internal/storage/postgres"
 	"yus/internal/storage/redis"
@@ -31,8 +33,17 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	router.Get("/yus/admin-index-page", handlers.Serve_admin_index)
+	// Serve static files under /yus/
+	staticPath := "/home/Jack_145/YUS/ui/templates"
+	router.Handle("/yus/*", http.StripPrefix("/yus/", http.FileServer(http.Dir(staticPath))))
 
+	// Dedicated handler for bus_logo.png
+	router.Get("/yus/bus_logo.png", func(w http.ResponseWriter, r *http.Request) {
+		file := filepath.Join(staticPath, "bus_logo.png")
+		http.ServeFile(w, r, file)
+	})
+
+	router.Get("/yus/admin-login-page", handlers.Serve_admin_login)
 	router.Post("/yus/save-new-route", handlers.Save_New_route_handler)
 	router.Post("/yus/add-new-driver", handlers.Add_new_driver_handler)
 	router.Post("/yus/send-otp-admin", handlers.Admin_otp_handler)
@@ -74,6 +85,8 @@ func main() {
 
 	//yus.kwscloud.in/yus/get-allotted-bus
 	router.Get("/yus/get-allotted-bus", handlers.Alloted_bus_handler) //by sessions
+
+	router.Handle("/yus/*", http.StripPrefix("/yus/", http.FileServer(http.Dir("../../ui/templates"))))
 
 	postgres.Connect()        //make a connection to postgres
 	redis.CreateRedisClient() //made a redis client
