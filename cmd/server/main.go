@@ -43,6 +43,7 @@ func main() {
 		http.ServeFile(w, r, file)
 	})
 
+	router.Put("/yus/change-route/{direction}", handlers.ChangeRoute_direction_handler)
 	router.Get("/yus/admin-login-page", handlers.Serve_admin_login)
 	router.Post("/yus/save-new-route", handlers.Save_New_route_handler)
 	router.Post("/yus/add-new-driver", handlers.Add_new_driver_handler)

@@ -316,3 +316,28 @@ func FindRoutes_by_src_dest_stop(original_src, original_dest, original_stop stri
 	}
 	return Matched_routes
 }
+
+func Change_route_direction(direction string) bool {
+	query := `
+				UPDATE current_bus_route AS cbr
+				SET 
+					direction = ar.direction,
+					route_name = ar.route_name,
+					src = ar.src,
+					dest = ar.dest,
+					route_id = ar.route_id
+				FROM all_routes AS ar
+				WHERE 
+					ar.route_id = cbr.route_id
+					AND ar.direction = $1
+					AND cbr.direction <> $1;
+			`
+	_, err := pool.Exec(context.Background(), query, direction)
+
+	if err != nil {
+		fmt.Println("error while changing the routes - ", err)
+		return false
+	}
+	return true
+
+}

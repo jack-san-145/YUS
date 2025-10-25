@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"yus/internal/models"
 	"yus/internal/storage/postgres"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func Cached_route_handler(w http.ResponseWriter, r *http.Request) {
@@ -107,4 +109,17 @@ func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	WriteJSON(w, r, status)
+}
+
+func ChangeRoute_direction_handler(w http.ResponseWriter, r *http.Request) {
+	direction := chi.URLParam(r, "direction")
+	if direction != "" {
+		if postgres.Change_route_direction(direction) {
+			WriteJSON(w, r, map[string]bool{"changed": true})
+		} else {
+			WriteJSON(w, r, map[string]bool{"changed": false})
+		}
+	} else {
+		WriteJSON(w, r, map[string]bool{"changed": false})
+	}
 }

@@ -11,7 +11,7 @@ import (
 // here I calculates departure_time for each stop -> calculated by arrival_time
 func Calculate_Uproute_departure(upRoute *models.Route) {
 	upStops := upRoute.Stops
-
+	fmt.Println("upStops - ", upStops)
 	//convert the normal names to camel-case to store in DB
 	upRoute.UpRouteName = Convert_to_CamelCase(upRoute.UpRouteName)
 	upRoute.Src = Convert_to_CamelCase(upRoute.Src)
@@ -28,7 +28,9 @@ func Calculate_Uproute_departure(upRoute *models.Route) {
 			// Other stops: departure = arrival + 1 min if IsStop
 			arrival := string_to_Gotime(upStops[i].Arrival_time)
 			if upStops[i].IsStop {
+				fmt.Println("before add one sec - ", arrival)
 				upStops[i].Departure_time = goTime_to_string(arrival.Add(1 * time.Minute))
+				fmt.Println("after added one sec - ", upStops[i].Departure_time)
 			} else {
 				upStops[i].Departure_time = upStops[i].Arrival_time
 			}
@@ -123,7 +125,9 @@ func calculate_down_routeStops(down_route *models.Route) {
 		downStops[i+1].Arrival_time = goTime_to_string(currentTime)
 		// Add 1-min halt if stop
 		if downStops[i+1].IsStop {
+
 			currentTime = currentTime.Add(1 * time.Minute)
+
 		}
 
 		// Departure = arrival + 1 min if IsStop else same as arrival
