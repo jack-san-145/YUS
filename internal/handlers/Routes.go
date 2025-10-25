@@ -113,7 +113,7 @@ func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 
 func ChangeRoute_direction_handler(w http.ResponseWriter, r *http.Request) {
 	direction := chi.URLParam(r, "direction")
-	if direction != "" {
+	if direction == "UP" || direction == "DOWN" {
 		if postgres.Change_route_direction(direction) {
 			WriteJSON(w, r, map[string]bool{"changed": true})
 		} else {
