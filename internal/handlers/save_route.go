@@ -12,11 +12,11 @@ import (
 
 func Save_New_route_handler(w http.ResponseWriter, r *http.Request) {
 
-		if !FindAdminSession(r) {
+	if !FindAdminSession_mobile(r) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	
+
 	var NewRoute models.Route
 	err := json.NewDecoder(r.Body).Decode(&NewRoute)
 	if err != nil {

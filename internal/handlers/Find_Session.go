@@ -5,13 +5,25 @@ import (
 	"yus/internal/storage/redis"
 )
 
-func FindAdminSession(r *http.Request) bool {
+func FindAdminSession_mobile(r *http.Request) bool {
 	session_id := r.Header.Get("Authorization")
 	if session_id == "" {
 		return false
 	}
 
 	if redis.Check_Admin_session(session_id) {
+		return true
+	}
+	return false
+}
+
+func FindAdminSession_web(r *http.Request) bool {
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		return false
+	}
+
+	if redis.Check_Admin_session(cookie.Value) {
 		return true
 	}
 	return false
