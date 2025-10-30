@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"time"
 	"yus/internal/services"
 	"yus/internal/storage/redis"
 )
@@ -90,6 +91,17 @@ func Admin_login_handler(w http.ResponseWriter, r *http.Request) {
 			login_status["login_status"] = "valid"
 			session_id := redis.Create_Admin_Session(email)
 			login_status["session_id"] = session_id
+
+			cookie := &http.Cookie{
+				Name:     "session_id",
+				Value:    session_id,
+				Path:     "/",
+				Expires:  time.Now().Add(3 * time.Hour),
+				HttpOnly: false,
+				Secure:   true,
+				SameSite: http.SameSiteLaxMode,
+			}
+			http.SetCookie(w, cookie)
 		} else {
 			login_status["login_status"] = "invalid"
 		}
