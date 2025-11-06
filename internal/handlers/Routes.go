@@ -30,10 +30,10 @@ func Cached_route_handler(w http.ResponseWriter, r *http.Request) {
 
 func Load_all_available_routes(w http.ResponseWriter, r *http.Request) {
 
-	// if !FindAdminSession(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
+	if !FindAdminSession_web(r) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	//to load all the available routes
 	all_available_routes := postgres.Load_available_routes()

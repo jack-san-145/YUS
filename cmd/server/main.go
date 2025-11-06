@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"path/filepath"
+
+	// "path/filepath"
 
 	"yus/internal/handlers"
 	"yus/internal/storage/postgres"
@@ -33,18 +34,22 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// Serve static files under /yus/
-	staticPath := "/home/Jack_145/YUS/ui/templates"
-	router.Handle("/yus/*", http.StripPrefix("/yus/", http.FileServer(http.Dir(staticPath))))
+	// Serve static files (CSS, JS, images)
+	fileServer := http.FileServer(http.Dir("../../ui/static"))
+	router.Handle("/static/*", http.StripPrefix("/static/", fileServer))
 
-	// Dedicated handler for bus_logo.png
-	router.Get("/yus/bus_logo.png", func(w http.ResponseWriter, r *http.Request) {
-		file := filepath.Join(staticPath, "bus_logo.png")
-		http.ServeFile(w, r, file)
-	})
+	//html pages
+	router.Get("/yus/serve-index-page", handlers.Serve_index_page)
+	router.Get("/", handlers.Serve_logo_page)
+	router.Get("/yus/serve-login-page", handlers.Serve_login_page)
+
+	router.Get("/yus/serve-bus-schedule-page", handlers.Serve_bus_schedule_page)
+	router.Get("/yus/serve-driver-page", handlers.Serve_driver_page)
+	router.Get("/yus/serve-register-page", handlers.Serve_register_page)
+	router.Get("/yus/serve-otp-verify-page", handlers.Serve_otp_verify_page)
 
 	router.Put("/yus/change-route/{direction}", handlers.ChangeRoute_direction_handler)
-	router.Get("/yus/admin-login-page", handlers.Serve_admin_login)
+
 	router.Post("/yus/save-new-route", handlers.Save_New_route_handler)
 	router.Post("/yus/add-new-driver", handlers.Add_new_driver_handler)
 	router.Post("/yus/send-otp-admin", handlers.Admin_otp_handler)
@@ -86,8 +91,6 @@ func main() {
 
 	//yus.kwscloud.in/yus/get-allotted-bus
 	router.Get("/yus/get-allotted-bus", handlers.Alloted_bus_handler) //by sessions
-
-	router.Handle("/yus/*", http.StripPrefix("/yus/", http.FileServer(http.Dir("../../ui/templates"))))
 
 	postgres.Connect()        //make a connection to postgres
 	redis.CreateRedisClient() //made a redis client

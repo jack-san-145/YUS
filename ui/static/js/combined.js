@@ -92,7 +92,7 @@ if (document.getElementById('registerbox')) {
                     sessionStorage.setItem('adminPassword', passwordInput.value.trim());
 
                     alert("OTP sent successfully! Please check your email.");
-                    window.location.href = "otpverify.html";
+                    window.location.href = "/yus/serve-otp-verify-page";
                 } else if (data.otp_sent === "Admin already exists") {
                     alert("Admin already exists with this email.");
                 } else if (data.otp_sent === false) {
@@ -192,7 +192,7 @@ if (document.getElementById('otpbox')) {
                 if (data.status === "successfully added admin") {
                     alert("Registration successful! Welcome to YUS.");
                     sessionStorage.clear();
-                    window.location.href = "admin.html";
+                    window.location.href = "/yus/serve-index-page";
                 } else if (data.status === "invalid otp") {
                     alert("Invalid OTP. Please try again.");
                     otpInputs.forEach(input => { input.value = ''; input.classList.remove('filled'); });

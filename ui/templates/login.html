@@ -291,7 +291,7 @@
 <body>
     <!-- Brand Header -->
     <div class="brand">
-        <h2>YELLOW BUS</h2>
+        <h2>YELLOH BUS</h2>
         <div class="tagline">- YUS -</div>
     </div>
 
@@ -311,7 +311,7 @@
                 <button type="submit" class="logbtn">Login</button>
             </div>
             <div id="register">
-                <a href="registerform.html">Register Now</a>
+                <a href="/yus/serve-register-page">Register Now</a>
             </div>
         </form>
     </div>
@@ -360,7 +360,7 @@
                     if (data.login_status === 'valid') {
                         localStorage.setItem('isLoggedIn', 'true'); // Set login flag
                         alert("ok");
-                        window.location.href = "admin.html"; // Redirect or handle success
+                        window.location.href = "https://yus.kwscloud.in/yus/serve-index-page"; // Redirect or handle success
                     } else {
                         pvalid.textContent = 'Invalid email or password';
                         passwordInput.value = ''; // Clear password field
