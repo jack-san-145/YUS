@@ -6,11 +6,12 @@ import (
 )
 
 func Get_Schedule_handler(w http.ResponseWriter, r *http.Request) {
-	// if !FindAdminSession(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
 
-	current_schedule:=postgres.Get_Current_schedule()
-	WriteJSON(w,r,current_schedule)
+	if !FindAdminSession_web(r) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	current_schedule := postgres.Get_Current_schedule()
+	WriteJSON(w, r, current_schedule)
 }

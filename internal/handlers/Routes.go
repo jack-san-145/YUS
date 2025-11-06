@@ -12,6 +12,12 @@ import (
 )
 
 func Cached_route_handler(w http.ResponseWriter, r *http.Request) {
+
+	if !FindAdminSession_web(r) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	bus_id_string := r.URL.Query().Get("bus_id")
 	bus_id_int, err := strconv.Atoi(bus_id_string)
 	if err != nil {
@@ -37,10 +43,10 @@ func Load_all_available_routes(w http.ResponseWriter, r *http.Request) {
 
 func Add_New_Bus_handler(w http.ResponseWriter, r *http.Request) {
 
-	// if !FindAdminSession(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
+	if !FindAdminSession_web(r) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	//to add a new bus
 	var status = make(map[string]string)
@@ -58,10 +64,10 @@ func Add_New_Bus_handler(w http.ResponseWriter, r *http.Request) {
 
 func Map_Route_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 
-	// if !FindAdminSession(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
+	if !FindAdminSession_web(r) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	//mapping route to the bus
 	var status = make(map[string]bool)
@@ -83,10 +89,10 @@ func Map_Route_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 
 func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 
-	// if !FindAdminSession(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
+	if !FindAdminSession_web(r) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	//gets the driver and bus allocation array , after allocated it returns the results
 	var DriverAllocation_array []models.DriverAllocation
@@ -112,6 +118,12 @@ func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ChangeRoute_direction_handler(w http.ResponseWriter, r *http.Request) {
+
+	if !FindAdminSession_web(r) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	direction := chi.URLParam(r, "direction")
 	if direction == "UP" || direction == "DOWN" {
 		if postgres.Change_route_direction(direction) {

@@ -24,7 +24,7 @@ func main() {
 
 	router := chi.NewRouter()
 
-	// ✅ Add CORS middleware
+	// Add CORS middleware
 	router.Use(cors.Handler(cors.Options{
 
 		AllowedOrigins:   []string{"*"}, // or specific: []string{"http://localhost:3000"}
