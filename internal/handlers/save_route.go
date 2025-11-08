@@ -24,6 +24,7 @@ func Save_New_route_handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	NewRoute.Direction = "UP"
+	fmt.Printf("actual route - %+v", NewRoute)
 	status := postgres.SaveRoute_to_DB(&NewRoute)
 	WriteJSON(w, r, status)
 	// All_Bus_Routes = append(All_Bus_Routes, NewRoute)
