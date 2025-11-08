@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"yus/internal/storage/postgres"
 
 	"github.com/robfig/cron/v3"
@@ -20,6 +21,8 @@ func Automate_route_scheduling() {
 		postgres.Change_route_direction("DOWN")
 	})
 	c.Start()
+
+	fmt.Println("Route scheduling started..")
 
 	select {} //it blocks the go routiune exit and run forever
 }
