@@ -19,12 +19,3 @@ func Add_DriverConn(driverId int, conn *websocket.Conn) {
 func Remove_DriverConn(conn *websocket.Conn) {
 	DriverMap.Delete(conn)
 }
-
-// Get connections
-// func Get_DriverConns(driverId int) []*websocket.Conn {
-// 	value, ok := PassengerMap.Load(driverId)
-// 	if !ok {
-// 		return nil
-// 	}
-// 	return value.([]*websocket.Conn)
-// }

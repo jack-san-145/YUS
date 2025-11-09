@@ -50,20 +50,3 @@ func Save_New_route_handler(w http.ResponseWriter, r *http.Request) {
 	*/
 }
 
-/* //function to provide the new routes
-
-async function send_route_to_server(new_route) {
-	const response = await fetch("https://yus.kwscloud.in/yus/save-new-route", {
-	method: "POST",
-	headers: { "Content-Type": "application/json" },
-	body: JSON.stringify(new_route),
-	});
-}
-*/
-
-// func display_all_routes() {
-// 	for _, bus_routes := range All_Bus_Routes {
-// 		fmt.Println("bus route - ", bus_routes)
-// 		fmt.Println("\n")
-// 	}
-// }
