@@ -9,6 +9,7 @@ import (
 	"yus/internal/models"
 	"yus/internal/services"
 	"yus/internal/storage/postgres"
+	"yus/internal/storage/redis"
 
 	"github.com/gorilla/websocket"
 )
@@ -38,17 +39,24 @@ func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
 }
 
 func listen_for_location(driver_id int, conn *websocket.Conn) {
+	//bus_status
+	var Arrival_status = make(map[int]string)
+
 	defer func() {
+		redis.Store_ArrivalStatus(driver_id, Arrival_status)
 		Remove_Driver_from_passengerMap(driver_id)
 		conn.Close()
 	}()
-	fmt.Println("driver connected successfully")
+
+	redis_as, err := redis.Get_ArrivalStatus(driver_id)
+	if err == nil {
+		Arrival_status = redis_as
+	}
 
 	Ongoing_route := postgres.Find_route_by_busID(driver_id, "DRIVER").Stops
-	fmt.Println("ongping route - ", Ongoing_route)
+	fmt.Println("ongoing route - ", Ongoing_route)
 
-	//bus_status
-	var Arrival_status = make(map[int]string)
+	fmt.Println("driver connected successfully")
 
 	// Ping/pong settings
 	const (
