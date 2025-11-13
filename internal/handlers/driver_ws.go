@@ -3,16 +3,12 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"math"
 	"net/http"
-	"strconv"
 	"time"
 
-	// "sync"
 	"yus/internal/models"
+	"yus/internal/services"
 	"yus/internal/storage/postgres"
-
-	// "yus/internal/service"
 
 	"github.com/gorilla/websocket"
 )
@@ -52,7 +48,7 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 	fmt.Println("ongping route - ", Ongoing_route)
 
 	//bus_status
-	// var Arrival_status map[int]string
+	var Arrival_status = make(map[int]string)
 
 	// Ping/pong settings
 	const (
@@ -93,51 +89,13 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 			continue
 		}
 
+		stop_sequence, reached_time, is_reached := services.FindNearestStop(current_location.Latitude, current_location.Longitude, Ongoing_route)
+		if is_reached {
+			Arrival_status[stop_sequence] = reached_time
+			current_location.ArrivalStatus = Arrival_status
+		}
 		Send_location_to_passenger(driver_id, current_location)
 		fmt.Printf("latitude - %v & longitude - %v & speed - %v\n",
 			current_location.Latitude, current_location.Longitude, current_location.Speed)
 	}
-}
-
-// Haversine returns distance (in km) between two GPS coordinates
-func Haversine(lat1, lon1, lat2, lon2 float64) float64 {
-	const R = 6371 // Earth's radius in km
-	dLat := (lat2 - lat1) * math.Pi / 180
-	dLon := (lon2 - lon1) * math.Pi / 180
-
-	a := math.Sin(dLat/2)*math.Sin(dLat/2) +
-		math.Cos(lat1*math.Pi/180)*math.Cos(lat2*math.Pi/180)*
-			math.Sin(dLon/2)*math.Sin(dLon/2)
-
-	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
-	return R * c // distance in km
-}
-
-// FindNearestStop finds the stop closest to driver’s current location
-func FindNearestStop(driverLat string, driverLon string, stops []models.RouteStops) (int, string, bool) {
-	var nearest models.RouteStops
-	minDistance := math.MaxFloat64
-	const threshold = 0.05 // 50 meters
-
-	driver_lat_float, _ := strconv.ParseFloat(driverLat, 64)
-	driver_lon_float, _ := strconv.ParseFloat(driverLon, 64)
-
-	for _, stop := range stops {
-		stop_lat_float, _ := strconv.ParseFloat(stop.Lat, 64)
-		stop_lon_float, _ := strconv.ParseFloat(stop.Lon, 64)
-
-		distance := Haversine(driver_lat_float, driver_lon_float, stop_lat_float, stop_lon_float)
-		if distance < minDistance {
-			minDistance = distance
-			nearest = stop
-		}
-	}
-
-	is_reached := minDistance <= threshold
-	var reachedTime string
-	if is_reached {
-		reachedTime = time.Now().Format("15:04")
-	}
-	return nearest.StopSequence, reachedTime, is_reached
-
 }
