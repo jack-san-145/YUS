@@ -16,8 +16,13 @@ run-forever :
  
 #to show the cuurently running process of yus application
 stop : 
-	ps aux | grep yus
-
+	@pid=$$(ps aux | grep '[y]us' | awk '{print $$2}'); \
+	if [ -n "$$pid" ]; then \
+		kill $$pid; \
+		echo "✅ Process stopped."; \
+	else \
+		echo "⚠️ No YUS process running."; \
+	fi
 
 
 #to automate the sql migrations
