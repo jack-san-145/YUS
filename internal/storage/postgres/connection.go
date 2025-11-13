@@ -3,10 +3,12 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5/pgxpool"
-	_ "github.com/lib/pq"
 	"os"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+	// "github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 var pool *pgxpool.Pool
@@ -16,6 +18,12 @@ func Connect() {
 		config *pgxpool.Config
 		err    error
 	)
+
+	// err = godotenv.Load("../../../.env") // adjust path as needed
+	// if err != nil {
+	// 	fmt.Println("⚠️ Warning: .env file not loaded:", err)
+	// }
+
 	//get the connection string from the .env file
 	username := os.Getenv("POSTGRES_DB_USERNAME")
 	pass := os.Getenv("POSTGRES_DB_PASSWORD")

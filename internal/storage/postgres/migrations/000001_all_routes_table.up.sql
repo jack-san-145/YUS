@@ -12,3 +12,7 @@ CREATE TABLE IF NOT EXISTS all_routes (
 );
 
 CREATE INDEX idx_src_dest ON all_routes(src, dest);
+
+ALTER TABLE all_routes
+ADD CONSTRAINT unique_name_src_dest_direction 
+UNIQUE (route_name, src, dest, direction);

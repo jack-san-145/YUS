@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 	"yus/internal/handlers"
 	"yus/internal/storage/postgres"
 	"yus/internal/storage/postgres/service"
@@ -31,6 +32,8 @@ func main() {
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		AllowCredentials: true,
 	}))
+
+	router.Use(TimeoutMiddleware(5 * time.Second)) // 5-second timeout
 
 	// Serve static files (CSS, JS, images)
 	fileServer := http.FileServer(http.Dir("../../ui/static"))
@@ -131,5 +134,11 @@ func main() {
 	err = http.ListenAndServe("0.0.0.0:8090", router)
 	if err != nil {
 		fmt.Println("server failure - ", err)
+	}
+}
+
+func TimeoutMiddleware(timeout time.Duration) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.TimeoutHandler(next, timeout, "request timed out")
 	}
 }

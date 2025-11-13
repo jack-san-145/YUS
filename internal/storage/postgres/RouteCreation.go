@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 	"yus/internal/models"
 	"yus/internal/services"
 )
@@ -60,6 +61,9 @@ func find_route_id() (int, error) {
 
 func insert_route_to_db(route *models.Route) (int, error) {
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	var (
 		arrival_time   string
 		departure_time string
@@ -85,7 +89,7 @@ func insert_route_to_db(route *models.Route) (int, error) {
 
 	//inserting route and route_stops
 	query := "insert into all_routes(route_id,route_name,src,dest,direction,departure_time,arrival_time) values($1,$2,$3,$4,$5,$6,$7);"
-	_, err = pool.Exec(context.Background(), query, route.Id, route_name, route.Src, route.Dest, route.Direction, departure_time, arrival_time)
+	_, err = pool.Exec(ctx, query, route.Id, route_name, route.Src, route.Dest, route.Direction, departure_time, arrival_time)
 	if err != nil {
 		fmt.Println("error while inserting route to db - ", err)
 		return -1, fmt.Errorf("error")
@@ -93,7 +97,7 @@ func insert_route_to_db(route *models.Route) (int, error) {
 
 	for _, stop := range route.Stops {
 		query = "insert into route_stops(route_id,route_name,direction,stop_sequence,stop_name,is_stop,lat,lon,arrival_time,departure_time) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)"
-		_, err := pool.Exec(context.Background(), query, route.Id, route_name, route.Direction, stop.StopSequence, stop.LocationName, stop.IsStop, stop.Lat, stop.Lon, stop.Arrival_time, stop.Departure_time)
+		_, err := pool.Exec(ctx, query, route.Id, route_name, route.Direction, stop.StopSequence, stop.LocationName, stop.IsStop, stop.Lat, stop.Lon, stop.Arrival_time, stop.Departure_time)
 		if err != nil {
 			fmt.Println("error while inserting the route stops  - ", err)
 			return -1, fmt.Errorf("error")
@@ -105,11 +109,13 @@ func insert_route_to_db(route *models.Route) (int, error) {
 
 // to check if the route is exist on DB or not
 func check_if_route_exist(src string, dest string, stops []models.RouteStops) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	var is_match_found_inthis_routes bool
 
 	query := "select route_id from all_routes where src = $1 and dest = $2 ;"
-	route_id_rows, err_error := pool.Query(context.Background(), query, src, dest)
+	route_id_rows, err_error := pool.Query(ctx, query, src, dest)
 	if err_error != nil {
 		fmt.Println("error while finding the route id - ", err_error)
 	}
@@ -125,7 +131,7 @@ func check_if_route_exist(src string, dest string, stops []models.RouteStops) er
 			return nil
 		}
 		query = "select stop_name,is_stop from route_stops where route_id = $1"
-		rows, err := pool.Query(context.Background(), query, route_id)
+		rows, err := pool.Query(ctx, query, route_id)
 		if err != nil {
 			fmt.Println("error while accesing the stopname - ", err)
 		}
