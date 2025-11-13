@@ -24,5 +24,5 @@ func Automate_route_scheduling() {
 
 	fmt.Println("Route scheduling started..")
 
-	select {} //it blocks the go routiune exit and run forever
+	select {} //it blocks the go routiune and run forever
 }

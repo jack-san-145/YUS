@@ -8,6 +8,7 @@ import (
 
 	// "sync"
 	"yus/internal/models"
+	"yus/internal/storage/postgres"
 
 	// "yus/internal/service"
 
@@ -33,6 +34,10 @@ func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	Add_Driver_to_passengerMap(driver_id)
+
+	Ongoing_route := postgres.Find_route_by_busID(driver_id, "DRIVER").Stops
+	fmt.Println("ongping route - ", Ongoing_route)
+
 	go listen_for_location(driver_id, conn)
 
 }
@@ -43,6 +48,9 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 		conn.Close()
 	}()
 	fmt.Println("driver connected successfully")
+
+	//bus_status
+	// var Arrival_status map[int]string
 
 	// Ping/pong settings
 	const (

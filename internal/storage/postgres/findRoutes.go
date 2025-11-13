@@ -9,7 +9,15 @@ import (
 	"yus/internal/services"
 )
 
-func Find_route_by_busID(bus_id int) models.CurrentRoute {
+func Find_route_by_busID(bus_id int,requestFrom string) models.CurrentRoute {
+	if requestFrom=="DRIVER"{
+		driver_id:=&bus_id
+		query:="select bus_id from current_bus_route where driver_id = $1"
+		err:=pool.QueryRow(context.Background(),query,driver_id).Scan(&bus_id)
+		if err!=nil{
+			fmt.Println("error while finding bus_id by driver_id - ",err)
+		}
+	}
 	var route models.CurrentRoute
 	query := "select bus_id,driver_id,route_id,direction,route_name,src,dest from current_bus_route where bus_id = $1"
 	err := pool.QueryRow(context.Background(), query, bus_id).Scan(&route.BusId,
