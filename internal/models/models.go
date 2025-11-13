@@ -3,9 +3,10 @@ package models
 import "time"
 
 type Location struct {
-	Latitude  string `json:"latitude"`
-	Longitude string `json:"longitude"`
-	Speed     string `json:"speed"`
+	Latitude      string         `json:"latitude"`
+	Longitude     string         `json:"longitude"`
+	Speed         string         `json:"speed"`
+	ArrivalStatus map[int]string `json:"arrival_status"`
 }
 
 type Route struct {
