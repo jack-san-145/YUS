@@ -41,8 +41,11 @@ func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
 func listen_for_location(driver_id int, conn *websocket.Conn) {
 	//bus_status
 	var Arrival_status = make(map[int]string)
+	var done = make(chan struct{}) // using to shutdown the unwanted ticker goroutine
+	// this struct{} doesn't create any buffer and assign value , so simply the select will wait to receive the value on done bcz now done is empty or zero , it doesn't consider struct{} as a value
 
 	defer func() {
+		close(done) // to close the ticker goroutine when the driver disconnects
 		redis.Store_ArrivalStatus(driver_id, Arrival_status)
 		Remove_Driver_from_passengerMap(driver_id)
 		conn.Close()
@@ -76,12 +79,18 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 	defer ticker.Stop()
 
 	go func() {
-		for range ticker.C {
-			if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				fmt.Println("ping error:", err)
+		for {
+			select {
+			case <-ticker.C:
+				if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+					fmt.Println("ping error:", err)
+					return
+				}
+			case <-done: // this runs immediately when the done channel gets closed
 				return
 			}
 		}
+
 	}()
 
 	var current_location models.Location

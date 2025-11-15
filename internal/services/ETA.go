@@ -25,7 +25,7 @@ func Haversine(lat1, lon1, lat2, lon2 float64) float64 {
 func FindNearestStop(driverLat string, driverLon string, stops []models.RouteStops) (int, string, bool) {
 	var nearest models.RouteStops
 	minDistance := math.MaxFloat64
-	const threshold = 0.05 // 50 meters
+	const threshold = 0.001 // 1 meters
 
 	driver_lat_float, _ := strconv.ParseFloat(driverLat, 64)
 	driver_lon_float, _ := strconv.ParseFloat(driverLon, 64)
