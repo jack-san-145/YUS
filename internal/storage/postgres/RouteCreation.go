@@ -120,6 +120,8 @@ func check_if_route_exist(src string, dest string, stops []models.RouteStops) er
 		fmt.Println("error while finding the route id - ", err_error)
 	}
 
+	defer route_id_rows.Close()
+
 	for route_id_rows.Next() {
 		var (
 			route_id int
@@ -139,6 +141,7 @@ func check_if_route_exist(src string, dest string, stops []models.RouteStops) er
 			fmt.Println("no rows")
 			continue
 		}
+		defer rows.Close()
 
 		for _, stop := range stops {
 			var (
@@ -162,11 +165,9 @@ func check_if_route_exist(src string, dest string, stops []models.RouteStops) er
 			}
 
 		}
-		rows.Close()
 		if is_match_found_inthis_routes {
 			return fmt.Errorf("root already exists")
 		}
 	}
-	route_id_rows.Close()
 	return nil
 }
