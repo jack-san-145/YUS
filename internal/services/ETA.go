@@ -45,7 +45,7 @@ func FindNearestStop(driverLat string, driverLon string, stops []models.RouteSto
 	is_reached := minDistance <= threshold
 	var reachedTime string
 	if is_reached {
-		reachedTime = time.Now().Format("15:04")
+		reachedTime = time.Now().Add(3 * time.Minute).Format("15:04")
 		fmt.Println("reached time - ", reachedTime)
 	}
 	return nearest.StopSequence, reachedTime, is_reached
