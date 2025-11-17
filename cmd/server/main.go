@@ -6,7 +6,7 @@ import (
 	// "time"
 	"yus/internal/handlers"
 	"yus/internal/storage/postgres"
-	"yus/internal/storage/postgres/service"
+	// "yus/internal/storage/postgres/service"
 	"yus/internal/storage/redis"
 
 	"github.com/go-chi/chi/v5"
@@ -129,7 +129,7 @@ func main() {
 	postgres.Connect()        //make a connection to postgres
 	redis.CreateRedisClient() //made a redis client
 
-	go service.Automate_route_scheduling() //change the route direction on-runtime
+	// go service.Automate_route_scheduling() //change the route direction on-runtime
 	fmt.Println("Server listening on :8090")
 	err = http.ListenAndServe("0.0.0.0:8090", router)
 	if err != nil {

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 	"time"
@@ -25,7 +26,7 @@ func Haversine(lat1, lon1, lat2, lon2 float64) float64 {
 func FindNearestStop(driverLat string, driverLon string, stops []models.RouteStops) (int, string, bool) {
 	var nearest models.RouteStops
 	minDistance := math.MaxFloat64
-	const threshold = 0.001 // 1 meters
+	const threshold = 0.006 // 6 meters
 
 	driver_lat_float, _ := strconv.ParseFloat(driverLat, 64)
 	driver_lon_float, _ := strconv.ParseFloat(driverLon, 64)
@@ -45,6 +46,7 @@ func FindNearestStop(driverLat string, driverLon string, stops []models.RouteSto
 	var reachedTime string
 	if is_reached {
 		reachedTime = time.Now().Format("15:04")
+		fmt.Println("reached time - ", reachedTime)
 	}
 	return nearest.StopSequence, reachedTime, is_reached
 
