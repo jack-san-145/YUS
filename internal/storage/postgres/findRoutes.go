@@ -9,13 +9,13 @@ import (
 	"yus/internal/services"
 )
 
-func Find_route_by_busID(bus_id int,requestFrom string) models.CurrentRoute {
-	if requestFrom=="DRIVER"{
-		driver_id:=&bus_id
-		query:="select bus_id from current_bus_route where driver_id = $1"
-		err:=pool.QueryRow(context.Background(),query,driver_id).Scan(&bus_id)
-		if err!=nil{
-			fmt.Println("error while finding bus_id by driver_id - ",err)
+func Find_route_by_bus_or_driver_ID(bus_id int, requestFrom string) models.CurrentRoute {
+	if requestFrom == "DRIVER" {
+		driver_id := &bus_id
+		query := "select bus_id from current_bus_route where driver_id = $1"
+		err := pool.QueryRow(context.Background(), query, driver_id).Scan(&bus_id)
+		if err != nil {
+			fmt.Println("error while finding bus_id by driver_id - ", err)
 		}
 	}
 	var route models.CurrentRoute

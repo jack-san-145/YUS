@@ -79,6 +79,27 @@ func Get_Current_schedule() []models.CurrentSchedule {
 	return current_schedule
 }
 
+func Current_bus_routes() {
+
+	query := "select bus_id from current_bus_route where driver_id!=1000 and route_id!=0"
+	bus_id_rows, _ := pool.Query(context.Background(), query)
+
+	defer bus_id_rows.Close()
+
+	var Current_Buses []int
+	for bus_id_rows.Next() {
+		var bus_id int
+		err := bus_id_rows.Scan(&bus_id)
+		if err != nil {
+			fmt.Println("error while scanning bus_id - ", err)
+		} else {
+
+			Current_Buses = append(Current_Buses, bus_id)
+		}
+	}
+
+}
+
 // function to load all up_routes
 func Load_available_routes() []models.AvilableRoute {
 	var Available_routes []models.AvilableRoute

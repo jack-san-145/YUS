@@ -378,7 +378,7 @@ backend -> frontend (response):
 
 
 
-8.
+8. Add new driver :
 
 endpoint : "https://yus.kwscloud.in/yus/add-new-driver"
 method : Post (body-json)

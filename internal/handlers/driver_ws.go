@@ -107,7 +107,8 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 		}
 
 		stop_sequence, reached_time, is_reached := services.FindNearestStop(current_location.Latitude, current_location.Longitude, Ongoing_route)
-		if is_reached {
+		_, ok := Arrival_status[stop_sequence] //returns true only if the key exists otherwise returns false
+		if is_reached && !ok {
 			Arrival_status[stop_sequence] = reached_time
 			fmt.Println("arrival status - ", Arrival_status)
 			current_location.ArrivalStatus = Arrival_status
