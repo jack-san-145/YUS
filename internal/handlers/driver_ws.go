@@ -56,7 +56,7 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 		Arrival_status = redis_as
 	}
 
-	Ongoing_route := postgres.Find_route_by_busID(driver_id, "DRIVER").Stops
+	Ongoing_route := postgres.Find_route_by_bus_or_driver_ID(driver_id, "DRIVER").Stops
 	fmt.Println("ongoing route - ", Ongoing_route)
 
 	fmt.Println("driver connected successfully")

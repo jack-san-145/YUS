@@ -100,7 +100,7 @@ func main() {
 	//yus.kwscloud.in/yus/get-route?bus_id={bus_id}
 	router.Get("/yus/get-route", handlers.Get_rotue_by_busID)
 
-	// router.Get("/yus/get-current-bus-routes")
+	router.Get("/yus/get-current-bus-routes", handlers.Get_Current_bus_routes_handler)
 
 	/*
 

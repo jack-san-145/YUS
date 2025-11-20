@@ -47,5 +47,10 @@ func Src_Dest_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Get_Current_bus_routes_handler(w http.ResponseWriter, r *http.Request) {
-
+	bus_routes := postgres.Current_bus_routes()
+	if len(bus_routes) != 0 {
+		WriteJSON(w, r, bus_routes)
+		return
+	}
+	WriteJSON(w, r, map[string]string{"bus_routes": "null"})
 }

@@ -79,24 +79,25 @@ func Get_Current_schedule() []models.CurrentSchedule {
 	return current_schedule
 }
 
-func Current_bus_routes() {
+func Current_bus_routes() []models.CurrentRoute {
 
 	query := "select bus_id from current_bus_route where driver_id!=1000 and route_id!=0"
 	bus_id_rows, _ := pool.Query(context.Background(), query)
 
 	defer bus_id_rows.Close()
 
-	var Current_Buses []int
+	var Current_Bus_route []models.CurrentRoute
 	for bus_id_rows.Next() {
 		var bus_id int
 		err := bus_id_rows.Scan(&bus_id)
 		if err != nil {
 			fmt.Println("error while scanning bus_id - ", err)
 		} else {
-
-			Current_Buses = append(Current_Buses, bus_id)
+			route := Find_route_by_bus_or_driver_ID(bus_id, "PASSENGER")
+			Current_Bus_route = append(Current_Bus_route, route)
 		}
 	}
+	return Current_Bus_route
 
 }
 
