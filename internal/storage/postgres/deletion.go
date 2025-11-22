@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func Delete_route(route_id int) map[string]bool {
+func Remove_route(route_id int) map[string]bool {
 	query := fmt.Sprintf(`update current_bus_route set route_id=0, direction='', route_name='', src='', dest='' where route_id = %d;
 							delete from route_stops where route_id = %d;  
 							delete from all_routes where route_id = %d; 

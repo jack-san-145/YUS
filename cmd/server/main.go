@@ -75,7 +75,10 @@ func main() {
 	router.Get("/yus/get-cached-routes", handlers.Cached_route_handler)
 	router.Get("/yus/get-current-schedule", handlers.Get_Schedule_handler)
 
-	router.Delete("/yus/del-route/{route-id}", handlers.Del_route_handler)
+	//removal operations
+	router.Delete("/yus/remove-route/{route-id}", handlers.Remove_route_handler)
+	router.Delete("/yus/remove-bus/{bus-id}", handlers.Remove_bus_handler)
+	router.Delete("/yus/remove-driver/{driver-id}", handlers.Remove_driver_handler)
 
 	/*
 

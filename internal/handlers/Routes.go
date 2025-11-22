@@ -28,25 +28,6 @@ func Cached_route_handler(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, r, cached_bus_routes)
 }
 
-// to delele the given route from DB
-func Del_route_handler(w http.ResponseWriter, r *http.Request) {
-	if !FindAdminSession_web(r) {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-	route_id_string := chi.URLParam(r, "route-id")
-	route_id_int, err := strconv.Atoi(route_id_string)
-	if err != nil {
-		fmt.Println("error while converting string to int - ", err)
-		WriteJSON(w, r, map[string]bool{"deleted": false})
-		return
-	}
-
-	status := postgres.Delete_route(route_id_int)
-	WriteJSON(w, r, status)
-
-}
-
 func Load_all_available_routes(w http.ResponseWriter, r *http.Request) {
 
 	if !FindAdminSession_web(r) {
