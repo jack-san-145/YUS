@@ -2,6 +2,8 @@ package service
 
 import (
 	"fmt"
+	"time"
+
 	"yus/internal/storage/postgres"
 
 	"github.com/robfig/cron/v3"
@@ -9,7 +11,9 @@ import (
 
 func Automate_route_scheduling() {
 
-	c := cron.New()
+	c := cron.New(
+		cron.WithSeconds(),
+		cron.WithLocation(time.Local))
 
 	//for 12 AM
 	c.AddFunc("0 0 0 * * *", func() {
