@@ -42,7 +42,7 @@ func Map_route_with_bus(route_id int, bus_id int) error {
 
 	route_name, src, dest := find_src_dest_name_by_routeId(route_id)
 
-	if is_route_present {
+	if is_route_present && route_id != 0 {
 
 		// update the bus_route when the route_id is exists
 		err := update_bus_route(route_id, route_name, src, dest, bus_id)
@@ -60,7 +60,9 @@ func Map_route_with_bus(route_id int, bus_id int) error {
 			return err
 		}
 	}
-	go cache_this_route(route_id, route_name, src, dest, bus_id)
+	if route_id != 0 {
+		go cache_this_route(route_id, route_name, src, dest, bus_id)
+	}
 	return nil
 }
 
