@@ -19,7 +19,7 @@ func Find_route_by_bus_or_driver_ID(bus_id int, requestFrom string) models.Curre
 		}
 	}
 	var route models.CurrentRoute
-	query := "select bus_id,driver_id,route_id,direction,route_name,src,dest from current_bus_route where bus_id = $1"
+	query := "select bus_id,driver_id,route_id,direction,route_name,src,dest from current_bus_route where bus_id = $1 "
 	err := pool.QueryRow(context.Background(), query, bus_id).Scan(&route.BusId,
 		&route.DriverId,
 		&route.RouteId,

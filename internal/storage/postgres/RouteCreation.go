@@ -10,6 +10,18 @@ import (
 	"yus/internal/services"
 )
 
+func Delete_route(route_id int) map[string]bool {
+	query := fmt.Sprintf(`update current_bus_route set route_id=0, direction='', route_name='', src='', dest='' where route_id = %d;
+							delete from route_stops where route_id = %d;  
+							delete from all_routes where route_id = %d; 
+						`, route_id, route_id, route_id)
+	_, err := pool.Exec(context.Background(), query)
+	if err != nil {
+		fmt.Println("error while deleting route - ", err)
+		return map[string]bool{"deleted": false}
+	}
+	return map[string]bool{"deleted": true}
+}
 func SaveRoute_to_DB(up_route *models.Route) map[string]string {
 
 	up_route.Direction = "UP"

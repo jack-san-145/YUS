@@ -75,6 +75,8 @@ func main() {
 	router.Get("/yus/get-cached-routes", handlers.Cached_route_handler)
 	router.Get("/yus/get-current-schedule", handlers.Get_Schedule_handler)
 
+	router.Delete("/yus/del-route/{route-id}", handlers.Del_route_handler)
+
 	/*
 
 
