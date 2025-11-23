@@ -11,6 +11,7 @@ import (
 	"yus/internal/storage/redis"
 )
 
+// To add many drivers in one request
 func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
 
 	if !FindAdminSession_web(r) {
