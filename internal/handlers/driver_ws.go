@@ -32,7 +32,13 @@ func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Add_Driver_to_passengerMap(driver_id)
+	//check if the driver exists on the passenger map
+	_, ok := PassengerMap.Load(driver_id)
+	if !ok {
+
+		//if driver doesn't exists add him to the passengerMap
+		Add_Driver_to_passengerMap(driver_id)
+	}
 
 	go listen_for_location(driver_id, conn)
 

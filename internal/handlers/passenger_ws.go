@@ -78,6 +78,16 @@ func listen_passenger_message(conn *websocket.Conn) {
 		if postgres.Check_route_exits_for_pass_Ws(requested_bus_route) {
 			fmt.Printf("old driver - %v and new driver - %v\n", old_requested_bus_route.DriverId, requested_bus_route.DriverId)
 			Remove_PassConn(old_requested_bus_route.DriverId, conn)
+
+			//check if the driver exists on the passenger map
+			_, ok := PassengerMap.Load(requested_bus_route.DriverId)
+			if !ok {
+
+				//if driver doesn't exists add him to the passengerMap
+				Add_Driver_to_passengerMap(requested_bus_route.DriverId)
+			}
+
+			//after that add passenger to the PassengerMap under that driver
 			Add_PassConn(requested_bus_route.DriverId, conn)
 			old_requested_bus_route = requested_bus_route
 		} else {
