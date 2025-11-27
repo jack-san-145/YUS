@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"yus/internal/services"
 )
 
 func Map_driver_with_bus(driver_id int, bus_id int) error {
@@ -41,6 +42,7 @@ func Map_route_with_bus(route_id int, bus_id int) error {
 	}
 
 	route_name, src, dest := find_src_dest_name_by_routeId(route_id)
+	current_direction := services.Find_current_direction()
 
 	if is_route_present && route_id != 0 {
 
@@ -53,8 +55,8 @@ func Map_route_with_bus(route_id int, bus_id int) error {
 	} else {
 
 		// update the bus_route when the route_id is not exists
-		query := "update current_bus_route set route_id = $1 ,route_name = $2 ,src = $3 ,dest = $4 where bus_id = $5"
-		_, err = pool.Exec(context.Background(), query, route_id, route_name, src, dest, bus_id)
+		query := "update current_bus_route set route_id = $1 ,route_name = $2 ,src = $3 ,dest = $4 ,direction = $5 where bus_id = $6"
+		_, err = pool.Exec(context.Background(), query, route_id, route_name, src, dest, current_direction, bus_id)
 		if err != nil {
 			fmt.Println("error while update the route_id for given bus_id - ", err)
 			return err

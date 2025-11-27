@@ -72,9 +72,9 @@ func calculate_down_routeStops(down_route *models.Route) {
 	copy(downStops, down_route.Stops)
 
 	//convert the normal names to camel-case to store in DB
-	down_route.DownRouteName = Convert_to_CamelCase(down_route.DownRouteName)
-	down_route.Src = Convert_to_CamelCase(down_route.Src)
-	down_route.Dest = Convert_to_CamelCase(down_route.Dest)
+	// down_route.DownRouteName = Convert_to_CamelCase(down_route.DownRouteName)
+	// down_route.Src = Convert_to_CamelCase(down_route.Src)
+	// down_route.Dest = Convert_to_CamelCase(down_route.Dest)
 
 	// Step 2: Calculate segment durations from Up route
 	segmentDurations := []time.Duration{}
@@ -152,7 +152,7 @@ func calculate_down_routeStops(down_route *models.Route) {
 		*/
 
 		//convert the stop names(normal names )to camel-case to store in DB
-		downStops[i].LocationName = Convert_to_CamelCase(downStops[i].LocationName)
+		// downStops[i].LocationName = Convert_to_CamelCase(downStops[i].LocationName)
 
 		//adding stop sequence
 		downStops[i].StopSequence = i + 1
