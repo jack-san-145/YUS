@@ -13,7 +13,7 @@ func Serve_index_page(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	templ, err := template.ParseFiles("../../ui/templates/index.html")
+	templ, err := template.ParseFiles("../../ui/Admin-website/templates/index.html")
 	if err != nil {
 		fmt.Println("index.html not found - ", err)
 		return
@@ -24,7 +24,7 @@ func Serve_index_page(w http.ResponseWriter, r *http.Request) {
 
 func Serve_logo_page(w http.ResponseWriter, r *http.Request) {
 
-	templ, err := template.ParseFiles("../../ui/templates/logo.html")
+	templ, err := template.ParseFiles("../../ui/Admin-website/templates/logo.html")
 	if err != nil {
 		fmt.Println("logo.html not found - ", err)
 		return
@@ -37,7 +37,7 @@ func Serve_logo_page(w http.ResponseWriter, r *http.Request) {
 
 func Serve_login_page(w http.ResponseWriter, r *http.Request) {
 
-	templ, err := template.ParseFiles("../../ui/templates/login.html")
+	templ, err := template.ParseFiles("../../ui/Admin-website/templates/login.html")
 	if err != nil {
 		fmt.Println("login.html not found - ", err)
 		return
@@ -50,7 +50,7 @@ func Serve_login_page(w http.ResponseWriter, r *http.Request) {
 
 func Serve_otp_verify_page(w http.ResponseWriter, r *http.Request) {
 
-	templ, err := template.ParseFiles("../../ui/templates/otpverify.html")
+	templ, err := template.ParseFiles("../../ui/Admin-website/templates/otpverify.html")
 	if err != nil {
 		fmt.Println("otpverify.html not found - ", err)
 		return
@@ -61,7 +61,7 @@ func Serve_otp_verify_page(w http.ResponseWriter, r *http.Request) {
 
 func Serve_register_page(w http.ResponseWriter, r *http.Request) {
 
-	templ, err := template.ParseFiles("../../ui/templates/registerform.html")
+	templ, err := template.ParseFiles("../../ui/Admin-website/templates/registerform.html")
 	if err != nil {
 		fmt.Println("registerform.html not found - ", err)
 		return
@@ -77,7 +77,7 @@ func Serve_bus_schedule_page(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	templ, err := template.ParseFiles("../../ui/templates/bus_schedule.html")
+	templ, err := template.ParseFiles("../../ui/Admin-website/templates/bus_schedule.html")
 	if err != nil {
 		fmt.Println("bus_schedule.html not found - ", err)
 		return
@@ -93,7 +93,7 @@ func Serve_driver_page(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	templ, err := template.ParseFiles("../../ui/templates/driver.html")
+	templ, err := template.ParseFiles("../../ui/Admin-website/templates/driver.html")
 	if err != nil {
 		fmt.Println("driver.html not found - ", err)
 		return

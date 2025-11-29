@@ -21,11 +21,9 @@ func NewRouter() *chi.Mux {
 		AllowCredentials: true,
 	}))
 
-	// router.Use(TimeoutMiddleware(5 * time.Second)) // 5-second timeout
-
-	// Serve static files (CSS, JS, images)
-	fileServer := http.FileServer(http.Dir("../../ui/static"))
-	router.Handle("/static/*", http.StripPrefix("/static/", fileServer))
+	// Serve static files for admin website (CSS, JS, images)
+	fileServer := http.FileServer(http.Dir("../../ui/Admin-website/static"))
+	router.Handle("/admin-static/*", http.StripPrefix("/admin-static/", fileServer))
 
 	//web pages
 	router.Get("/", handlers.Serve_logo_page)
