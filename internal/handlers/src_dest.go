@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"yus/internal/services"
 	"yus/internal/storage/postgres"
+	"yus/internal/storage/redis"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -47,7 +48,15 @@ func Src_Dest_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Get_Current_bus_routes_handler(w http.ResponseWriter, r *http.Request) {
-	bus_routes := postgres.Current_bus_routes()
+	// bus_routes := postgres.Current_bus_routes()
+
+	bus_routes := redis.Get_cached_route()
+
+	if bus_routes == nil {
+		bus_routes = postgres.Current_bus_routes()
+		go redis.Cache_Bus_Route(bus_routes)
+	}
+
 	if len(bus_routes) != 0 {
 		WriteJSON(w, r, bus_routes)
 		return

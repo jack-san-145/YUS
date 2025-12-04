@@ -15,7 +15,7 @@ func Cache_Bus_Route(current_bus_route []models.CurrentRoute) {
 		return
 	}
 
-	err = rc.Set(context.Background(), "CurrentBusRoute", current_bus_route_byte, time.Hour*12).Err()
+	err = rc.Set(context.Background(), "CurrentBusRoute", current_bus_route_byte, time.Hour*24).Err()
 	if err != nil {
 		fmt.Println("error while set the current_bus_route in redis - ", err)
 		return
@@ -36,5 +36,7 @@ func Get_cached_route() []models.CurrentRoute {
 		fmt.Println("error while unmarshal cached route - ", err)
 		return nil
 	}
+
+	fmt.Println("cached routes from redis ")
 	return current_bus_route
 }
