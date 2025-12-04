@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"yus/internal/models"
 	"yus/internal/storage/postgres"
+	"yus/internal/storage/redis"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -85,6 +86,8 @@ func Map_Route_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 		status["route_mapped"] = true
 	}
 	WriteJSON(w, r, status)
+
+	go redis.Cache_Bus_Route()
 }
 
 func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
@@ -115,6 +118,8 @@ func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	WriteJSON(w, r, status)
+
+	go redis.Cache_Bus_Route()
 }
 
 func ChangeRoute_direction_handler(w http.ResponseWriter, r *http.Request) {
@@ -134,4 +139,7 @@ func ChangeRoute_direction_handler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		WriteJSON(w, r, map[string]bool{"changed": false})
 	}
+
+	go redis.Cache_Bus_Route()
+
 }

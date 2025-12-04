@@ -6,9 +6,12 @@ import (
 	"fmt"
 	"time"
 	"yus/internal/models"
+	"yus/internal/storage/postgres"
 )
 
-func Cache_Bus_Route(current_bus_route []models.CurrentRoute) {
+func Cache_Bus_Route() {
+	current_bus_route := postgres.Current_bus_routes()
+
 	current_bus_route_byte, err := json.Marshal(current_bus_route)
 	if err != nil {
 		fmt.Println("error while marshal the route - ", err)
