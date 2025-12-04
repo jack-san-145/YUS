@@ -38,7 +38,7 @@ func SendEmailTo(email string, otp string) bool {
 		<html>
 		<body style="font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5;">
 			<div style="max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 10px;">
-				<h2 style="color:#1A73E8;">🔐 YUS Verification Code</h2>
+				<h2 style="color: #1A73E8;">🔐 YUS Verification Code</h2>
 				<p>Your one-time verification code is:</p>
 				<h1 style="color:#1A73E8; letter-spacing: 5px; margin: 20px 0;">%s</h1>
 				<p>This code is valid for <b>3 minutes</b>. Do not share it with anyone.</p>

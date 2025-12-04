@@ -32,6 +32,7 @@ func SaveRoute_to_DB(up_route *models.Route) map[string]string {
 	fmt.Println("going to insert route to table")
 	//inserting both up and down routes to db
 	up_route_id, err1 := insert_route_to_db(up_route)
+
 	down_route.Id = up_route_id //assign the up_route_id to the down_route_id
 	_, err2 := insert_route_to_db(down_route)
 

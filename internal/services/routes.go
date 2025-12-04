@@ -14,6 +14,7 @@ func Calculate_Uproute_departure(upRoute *models.Route) {
 	fmt.Println("upStops - ", upStops)
 	//convert the normal names to camel-case to store in DB
 	upRoute.UpRouteName = Convert_to_CamelCase(upRoute.UpRouteName)
+	upRoute.DownRouteName = Convert_to_CamelCase(upRoute.DownRouteName)
 	upRoute.Src = Convert_to_CamelCase(upRoute.Src)
 	upRoute.Dest = Convert_to_CamelCase(upRoute.Dest)
 
