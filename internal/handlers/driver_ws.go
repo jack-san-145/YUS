@@ -62,8 +62,9 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 		Arrival_status = redis_as
 	}
 
-	Ongoing_route := postgres.Find_route_by_bus_or_driver_ID(driver_id, "DRIVER").Stops
-	fmt.Println("ongoing route - ", Ongoing_route)
+	Ongoing_route, _, _ := postgres.Find_route_by_bus_or_driver_ID(driver_id, "DRIVER")
+	Ongoing_route_stops := Ongoing_route.Stops
+	fmt.Println("ongoing route - ", Ongoing_route_stops)
 
 	fmt.Println("driver connected successfully")
 
@@ -112,7 +113,7 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 			continue
 		}
 
-		stop_sequence, reached_time, is_reached := services.FindNearestStop(current_location.Latitude, current_location.Longitude, Ongoing_route)
+		stop_sequence, reached_time, is_reached := services.FindNearestStop(current_location.Latitude, current_location.Longitude, Ongoing_route_stops)
 		_, ok := Arrival_status[stop_sequence] //returns true only if the key exists otherwise returns false
 		if is_reached && !ok {
 			Arrival_status[stop_sequence] = reached_time

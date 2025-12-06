@@ -82,6 +82,7 @@ type CurrentRoute struct {
 	Dest      string       `json:"dest"`
 	Stops     []RouteStops `json:"stops"`
 	IsStop    bool         `json:"is_Stop"`
+	Active    bool         `json:"active"`
 }
 
 type BusRoute struct {

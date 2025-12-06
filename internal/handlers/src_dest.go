@@ -18,7 +18,7 @@ func Get_rotue_by_busID(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error while converting the bus_id_string to bus_id_int - ", err)
 		WriteJSON(w, r, "null")
 	}
-	route_by_busId := postgres.Find_route_by_bus_or_driver_ID(bus_id_int, "PASSENGER")
+	route_by_busId, _, _ := postgres.Find_route_by_bus_or_driver_ID(bus_id_int, "PASSENGER")
 	WriteJSON(w, r, route_by_busId)
 
 }

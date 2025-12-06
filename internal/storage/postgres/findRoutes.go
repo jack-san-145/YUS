@@ -9,7 +9,7 @@ import (
 	"yus/internal/services"
 )
 
-func Find_route_by_bus_or_driver_ID(bus_id int, requestFrom string) models.CurrentRoute {
+func Find_route_by_bus_or_driver_ID(bus_id int, requestFrom string) (models.CurrentRoute, models.CurrentRoute, models.CurrentRoute) {
 	if requestFrom == "DRIVER" {
 		driver_id := &bus_id
 		query := "select bus_id from current_bus_route where driver_id = $1"
@@ -18,7 +18,11 @@ func Find_route_by_bus_or_driver_ID(bus_id int, requestFrom string) models.Curre
 			fmt.Println("error while finding bus_id by driver_id - ", err)
 		}
 	}
-	var route models.CurrentRoute
+	var (
+		route     models.CurrentRoute
+		uproute   models.CurrentRoute
+		downroute models.CurrentRoute
+	)
 	query := "select bus_id,driver_id,route_id,direction,route_name,src,dest from current_bus_route where bus_id = $1 "
 	err := pool.QueryRow(context.Background(), query, bus_id).Scan(&route.BusId,
 		&route.DriverId,
@@ -34,13 +38,39 @@ func Find_route_by_bus_or_driver_ID(bus_id int, requestFrom string) models.Curre
 
 	if errors.Is(err, sql.ErrNoRows) {
 		fmt.Println("no route found for this bus_id ")
-		return route
+		return route, route, route
 	} else if err != nil {
 		fmt.Println("error while finding the route with bus_id - ", err)
-		return route
+		return route, route, route
 	}
-	findStops(&route)
-	return route
+
+	if route.Direction == "UP" {
+		uproute = route
+		uproute.Active = true
+		findStops(&uproute)
+
+		route.Direction = "DOWN"
+		downroute = route
+		downroute.Src, downroute.Dest = downroute.Dest, downroute.Src
+
+		downroute.Active = false
+		findStops(&downroute)
+
+	} else if route.Direction == "DOWN" {
+		downroute = route
+		downroute.Active = true
+		findStops(&downroute)
+
+		route.Direction = "UP"
+		uproute = route
+		uproute.Src, uproute.Dest = uproute.Dest, uproute.Src
+
+		uproute.Active = false
+		findStops(&uproute)
+	}
+
+	return route, uproute, downroute
+	//here route is an current route
 }
 
 func FindRoutes_by_src_dest(src string, dest string) []models.CurrentRoute {

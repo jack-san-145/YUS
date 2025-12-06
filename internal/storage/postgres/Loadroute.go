@@ -93,8 +93,9 @@ func Current_bus_routes() []models.CurrentRoute {
 		if err != nil {
 			fmt.Println("error while scanning bus_id - ", err)
 		} else {
-			route := Find_route_by_bus_or_driver_ID(bus_id, "PASSENGER")
-			Current_Bus_route = append(Current_Bus_route, route)
+			_, uproute, downroute := Find_route_by_bus_or_driver_ID(bus_id, "PASSENGER")
+			Current_Bus_route = append(Current_Bus_route, uproute)
+			Current_Bus_route = append(Current_Bus_route, downroute)
 		}
 	}
 	return Current_Bus_route
