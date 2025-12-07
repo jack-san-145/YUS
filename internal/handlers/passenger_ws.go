@@ -10,6 +10,13 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// AddDriver(driverID int)
+// 	RemoveDriver(driverID int)
+// 	AddPassengerConn(driverID int, conn *websocket.Conn)
+// 	RemovePassengerConn(driverID int, conn *websocket.Conn)
+// 	GetPassengerConns(driverID int) []*PassengerConn
+// 	BroadcastLocation(driverID int, location models.Location)
+
 func Passenger_Ws_handler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("working passenger app websocket upgradation")

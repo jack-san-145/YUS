@@ -8,26 +8,38 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// to allow only one go routine to write data in one ws conn at a time
-type PassengerConn struct {
-	Conn *websocket.Conn
-	Mu   sync.Mutex
+type SyncMapPassengerStore struct {
+	PassMap sync.Map // driverID -> []*PassengerConn
 }
 
-var PassengerMap sync.Map // driverId -> []*PassengerConn
+func NewSyncMapPassengerStore() *SyncMapPassengerStore {
+	return &SyncMapPassengerStore{}
+}
 
-func Add_PassConn(driverId int, conn *websocket.Conn) {
-	value, _ := PassengerMap.Load(driverId)
+// add new driver to the PassMap
+func (s *SyncMapPassengerStore) AddDriver(driver_id int) {
+	s.PassMap.Store(driver_id, []*PassengerConn{})
+}
+
+// remove driver from the PassMap
+func (s *SyncMapPassengerStore) RemoveDriver(driver_id int) {
+	s.PassMap.Delete(driver_id)
+}
+
+// add new passengers to the PassMap
+func (s *SyncMapPassengerStore) AddPassengerConn(driverId int, conn *websocket.Conn) {
+	value, _ := s.PassMap.Load(driverId)
 	var conns []*PassengerConn
 	if value != nil {
 		conns = value.([]*PassengerConn)
 	}
 	conns = append(conns, &PassengerConn{Conn: conn}) //creating a new passenger connection with 'conn'
-	PassengerMap.Store(driverId, conns)
+	s.PassMap.Store(driverId, conns)
 }
 
-func Remove_PassConn(driverId int, conn *websocket.Conn) {
-	value, ok := PassengerMap.Load(driverId)
+// remove passenger connections from the PassMap
+func (s *SyncMapPassengerStore) RemovePassengerConn(driverId int, conn *websocket.Conn) {
+	value, ok := s.PassMap.Load(driverId)
 	if !ok || value == nil {
 		return
 	}
@@ -38,46 +50,13 @@ func Remove_PassConn(driverId int, conn *websocket.Conn) {
 			newConns = append(newConns, c)
 		}
 	}
-	PassengerMap.Store(driverId, newConns)
+	s.PassMap.Store(driverId, newConns)
 }
 
-func Send_location_to_passenger(driver_id int, current_location models.Location) {
-
-	// value, ok := PassengerMap.Load(driver_id)
-	// if !ok || value == nil {
-	// 	fmt.Printf("driver_id - %v sending location: 0 passengers connected\n", driver_id)
-	// 	return
-	// }
-	// passengers := value.([]*PassengerConn)
-
-	passengers := Get_PassConns(driver_id)
-	fmt.Printf("driver_id - %v sending location, users = %d\n", driver_id, len(passengers))
-
-	for _, p := range passengers {
-		p.Mu.Lock() // serialize writes
-		err := p.Conn.WriteJSON(current_location)
-		p.Mu.Unlock()
-
-		if err != nil {
-			fmt.Println("error sending location to passenger:", err)
-			p.Conn.Close() //closed the websocket connection
-			Remove_PassConn(driver_id, p.Conn)
-		}
-	}
-}
-
-func Remove_Driver_from_passengerMap(driver_id int) {
-	PassengerMap.Delete(driver_id)
-}
-
-func Add_Driver_to_passengerMap(driver_id int) {
-	PassengerMap.Store(driver_id, []*PassengerConn{})
-}
-
-// Get connections
-func Get_PassConns(driverId int) []*PassengerConn {
+// Get passenger connection from the PassMap
+func (s *SyncMapPassengerStore) GetPassengerConns(driverId int) []*PassengerConn {
 	var conns []*PassengerConn
-	value, ok := PassengerMap.Load(driverId)
+	value, ok := s.PassMap.Load(driverId)
 	if !ok {
 		return nil
 	}
@@ -88,4 +67,23 @@ func Get_PassConns(driverId int) []*PassengerConn {
 		conns = []*PassengerConn{} // initialize a new slice
 	}
 	return conns
+}
+
+// send driver location updates to the passengers
+func (s *SyncMapPassengerStore) BroadcastLocation(driver_id int, current_location models.Location) {
+
+	passengers := s.GetPassengerConns(driver_id)
+	fmt.Printf("driver_id - %v sending location, users = %d\n", driver_id, len(passengers))
+
+	for _, p := range passengers {
+		p.Mu.Lock() // serialize writes
+		err := p.Conn.WriteJSON(current_location)
+		p.Mu.Unlock()
+
+		if err != nil {
+			fmt.Println("error sending location to passenger:", err)
+			p.Conn.Close() //closed the websocket connection
+			s.RemovePassengerConn(driver_id, p.Conn)
+		}
+	}
 }
