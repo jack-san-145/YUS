@@ -19,6 +19,7 @@ func Get_rotue_by_busID(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, r, "null")
 	}
 	route_by_busId, _, _ := postgres.Find_route_by_bus_or_driver_ID(bus_id_int, "PASSENGER")
+	fmt.Println("route_by bus id - ", route_by_busId)
 	WriteJSON(w, r, route_by_busId)
 
 }

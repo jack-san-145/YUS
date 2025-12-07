@@ -42,12 +42,15 @@ func Remove_PassConn(driverId int, conn *websocket.Conn) {
 }
 
 func Send_location_to_passenger(driver_id int, current_location models.Location) {
-	value, ok := PassengerMap.Load(driver_id)
-	if !ok || value == nil {
-		fmt.Printf("driver_id - %v sending location: 0 passengers connected\n", driver_id)
-		return
-	}
-	passengers := value.([]*PassengerConn)
+
+	// value, ok := PassengerMap.Load(driver_id)
+	// if !ok || value == nil {
+	// 	fmt.Printf("driver_id - %v sending location: 0 passengers connected\n", driver_id)
+	// 	return
+	// }
+	// passengers := value.([]*PassengerConn)
+
+	passengers := Get_PassConns(driver_id)
 	fmt.Printf("driver_id - %v sending location, users = %d\n", driver_id, len(passengers))
 
 	for _, p := range passengers {

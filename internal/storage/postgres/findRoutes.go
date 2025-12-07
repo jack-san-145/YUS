@@ -44,6 +44,7 @@ func Find_route_by_bus_or_driver_ID(bus_id int, requestFrom string) (models.Curr
 		return route, route, route
 	}
 
+	findStops(&route)
 	if route.Direction == "UP" {
 		uproute = route
 		uproute.Active = true
