@@ -26,4 +26,4 @@ type PassengerConnectionManager interface {
 
 var PassengerConnStore = NewMapPassengerStore() //  to store the passenger connections in normal Go Map
 
-// var PassConnStore = NewSyncMapPassengerStore() // to store the passenger connections in Sync.Map
+// var PassengerConnStore = NewSyncMapPassengerStore() // to store the passenger connections in Sync.Map

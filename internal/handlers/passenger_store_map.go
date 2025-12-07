@@ -16,7 +16,7 @@ type MapPassengerStore struct {
 
 // method to return the MapPassengerStore
 func NewMapPassengerStore() *MapPassengerStore {
-	return &MapPassengerStore{}
+	return &MapPassengerStore{PassMap: make(map[int][]*PassengerConn)}
 }
 
 // check if the driver exist or not
