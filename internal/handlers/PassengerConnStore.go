@@ -13,10 +13,9 @@ type PassengerConn struct {
 	Mu   sync.Mutex
 }
 
-var PassengerConnection = NewMapPassengerStore()
-
 // interface to implement passenger map operations
-type PassengerConnStore interface {
+type PassengerConnectionManager interface {
+	DriverExists(driverID int) bool
 	AddDriver(driverID int)
 	RemoveDriver(driverID int)
 	AddPassengerConn(driverID int, conn *websocket.Conn)
@@ -24,3 +23,7 @@ type PassengerConnStore interface {
 	GetPassengerConns(driverID int) []*PassengerConn
 	BroadcastLocation(driverID int, location models.Location)
 }
+
+var PassengerConnStore = NewMapPassengerStore() //  to store the passenger connections in normal Go Map
+
+// var PassConnStore = NewSyncMapPassengerStore() // to store the passenger connections in Sync.Map

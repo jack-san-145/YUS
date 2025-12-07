@@ -19,6 +19,13 @@ func NewMapPassengerStore() *MapPassengerStore {
 	return &MapPassengerStore{}
 }
 
+// check if the driver exist or not
+func (m *MapPassengerStore) DriverExists(driverID int) bool {
+	_, ok := m.PassMap[driverID]
+
+	return ok
+}
+
 // add new driver to the PassMap
 func (m *MapPassengerStore) AddDriver(driverID int) {
 

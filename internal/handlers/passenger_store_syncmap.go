@@ -16,6 +16,12 @@ func NewSyncMapPassengerStore() *SyncMapPassengerStore {
 	return &SyncMapPassengerStore{}
 }
 
+// check if the driver exist or not
+func (s *SyncMapPassengerStore) DriverExists(DriverID int) bool {
+	_, ok := s.PassMap.Load(DriverID)
+	return ok
+}
+
 // add new driver to the PassMap
 func (s *SyncMapPassengerStore) AddDriver(driver_id int) {
 	s.PassMap.Store(driver_id, []*PassengerConn{})
@@ -36,7 +42,6 @@ func (s *SyncMapPassengerStore) AddPassengerConn(driverId int, conn *websocket.C
 	conns = append(conns, &PassengerConn{Conn: conn}) //creating a new passenger connection with 'conn'
 	s.PassMap.Store(driverId, conns)
 }
-
 
 // remove passenger connections from the PassMap
 func (s *SyncMapPassengerStore) RemovePassengerConn(driverId int, conn *websocket.Conn) {

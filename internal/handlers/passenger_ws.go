@@ -24,7 +24,6 @@ func Passenger_Ws_handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("passenger connected successfully ")
 
 	go listen_passenger_message(conn)
-	// Passenger_All_WS_connections = append(Passenger_All_WS_connections, conn)
 
 }
 
@@ -68,7 +67,7 @@ func listen_passenger_message(conn *websocket.Conn) {
 			close(done)
 
 			//used old_requested_bus_route.DriverId bcz the current requested_bus_route.DriverId not received , so we cleared the old connection
-			Remove_PassConn(old_requested_bus_route.DriverId, conn)
+			PassengerConnStore.RemovePassengerConn(old_requested_bus_route.DriverId, conn)
 			return
 		}
 
@@ -77,21 +76,21 @@ func listen_passenger_message(conn *websocket.Conn) {
 		//to check if the passenger request ws route is present in current_bus_route,is only true when route_id,direction,driver_id matched
 		if postgres.Check_route_exits_for_pass_Ws(requested_bus_route) {
 			fmt.Printf("old driver - %v and new driver - %v\n", old_requested_bus_route.DriverId, requested_bus_route.DriverId)
-			Remove_PassConn(old_requested_bus_route.DriverId, conn)
+			PassengerConnStore.RemovePassengerConn(old_requested_bus_route.DriverId, conn)
 
 			//check if the driver exists on the passenger map
-			_, ok := PassengerMap.Load(requested_bus_route.DriverId)
+			ok := PassengerConnStore.DriverExists(requested_bus_route.DriverId)
 			if !ok {
 
 				//if driver doesn't exists add him to the passengerMap
-				Add_Driver_to_passengerMap(requested_bus_route.DriverId)
+				PassengerConnStore.AddDriver(requested_bus_route.DriverId)
 			}
 
 			//after that add passenger to the PassengerMap under that driver
-			Add_PassConn(requested_bus_route.DriverId, conn)
+			PassengerConnStore.AddPassengerConn(requested_bus_route.DriverId, conn)
 			old_requested_bus_route = requested_bus_route
 		} else {
-			Remove_PassConn(old_requested_bus_route.DriverId, conn)
+			PassengerConnStore.RemovePassengerConn(old_requested_bus_route.DriverId, conn)
 			old_requested_bus_route = requested_bus_route
 		}
 	}

@@ -33,11 +33,11 @@ func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//check if the driver exists on the passenger map
-	_, ok := PassengerMap.Load(driver_id)
+	ok:=PassengerConnStore.DriverExists(driver_id)
 	if !ok {
 
 		//if driver doesn't exists add him to the passengerMap
-		Add_Driver_to_passengerMap(driver_id)
+		PassengerConnStore.AddDriver(driver_id)
 	}
 
 	go listen_for_location(driver_id, conn)
@@ -53,7 +53,7 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 	defer func() {
 		close(done) // to close the ticker goroutine when the driver disconnects
 		redis.Store_ArrivalStatus(driver_id, Arrival_status)
-		Remove_Driver_from_passengerMap(driver_id)
+		PassengerConnStore.RemoveDriver(driver_id)
 		conn.Close()
 	}()
 
@@ -120,7 +120,7 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 			fmt.Println("arrival status - ", Arrival_status)
 			current_location.ArrivalStatus = Arrival_status
 		}
-		Send_location_to_passenger(driver_id, current_location)
+		PassengerConnStore.BroadcastLocation(driver_id, current_location)
 		fmt.Printf("latitude - %v & longitude - %v & speed - %v\n",
 			current_location.Latitude, current_location.Longitude, current_location.Speed)
 	}
