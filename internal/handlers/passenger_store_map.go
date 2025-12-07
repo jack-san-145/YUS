@@ -1,0 +1,92 @@
+package handlers
+
+import (
+	"fmt"
+	"sync"
+	"yus/internal/models"
+
+	"github.com/gorilla/websocket"
+)
+
+// struct that implements the PassConnStore
+type MapPassengerStore struct {
+	PassMap map[int][]*PassengerConn
+	Rwm     sync.RWMutex
+}
+
+// method to return the MapPassengerStore
+func NewMapPassengerStore() *MapPassengerStore {
+	return &MapPassengerStore{}
+}
+
+// add new driver to the PassMap
+func (m *MapPassengerStore) AddDriver(driverID int) {
+
+	m.Rwm.Lock()
+	m.PassMap[driverID] = []*PassengerConn{}
+	m.Rwm.Unlock()
+}
+
+// remove driver from the PassMap
+func (m *MapPassengerStore) RemoveDriver(driverID int) {
+
+	m.Rwm.Lock()
+	delete(m.PassMap, driverID)
+	m.Rwm.Unlock()
+}
+
+// add new passengers to the PassMap
+func (m *MapPassengerStore) AddPassengerConn(driverId int, conn *websocket.Conn) {
+
+	m.Rwm.Lock()
+	m.PassMap[driverId] = append(m.PassMap[driverId], &PassengerConn{Conn: conn})
+	m.Rwm.Unlock()
+}
+
+// remove passenger connections from the PassMap
+func (m *MapPassengerStore) RemovePassengerConn(driverId int, conn *websocket.Conn) {
+
+	m.Rwm.Lock()
+
+	defer m.Rwm.Unlock()
+
+	passengerconn_arr := m.PassMap[driverId]
+
+	for i, p := range passengerconn_arr {
+		if p.Conn == conn {
+			passengerconn_arr = append(passengerconn_arr[:i], passengerconn_arr[i+1:]...)
+			m.PassMap[driverId] = passengerconn_arr
+			return
+		}
+	}
+
+}
+
+// Get passenger connection from the PassMap
+func (m *MapPassengerStore) GetPassengerConns(driverID int) []*PassengerConn {
+
+	m.Rwm.RLock()
+	passangerConn := m.PassMap[driverID]
+	m.Rwm.RUnlock()
+
+	return passangerConn
+}
+
+// send driver location updates to the passengers
+func (m *MapPassengerStore) BroadcastLocation(driver_id int, current_location models.Location) {
+
+	passengers := m.GetPassengerConns(driver_id)
+	fmt.Printf("driver_id - %v sending location, users = %d\n", driver_id, len(passengers))
+
+	for _, p := range passengers {
+		p.Mu.Lock() // serialize writes
+		err := p.Conn.WriteJSON(current_location)
+		p.Mu.Unlock()
+
+		if err != nil {
+			fmt.Println("error sending location to passenger:", err)
+			p.Conn.Close() //closed the websocket connection
+			m.RemovePassengerConn(driver_id, p.Conn)
+		}
+	}
+}

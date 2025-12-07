@@ -13,6 +13,8 @@ type PassengerConn struct {
 	Mu   sync.Mutex
 }
 
+var PassengerConnection = NewMapPassengerStore()
+
 // interface to implement passenger map operations
 type PassengerConnStore interface {
 	AddDriver(driverID int)
