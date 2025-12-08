@@ -8,7 +8,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type RedisStore interface {
+type InMemoryStore interface {
 	CreateClient(ctx context.Context) (*redis.Client, error)
 	GetConnection(ctx context.Context) (*redis.Client, error)
 
@@ -33,12 +33,12 @@ type RedisStore interface {
 	GetCachedRoute(ctx context.Context) ([]models.CurrentRoute, error)
 }
 
-type PostgresStore interface {
+type DBStore interface {
 }
 
 type Store struct {
-	InMemoryDB RedisStore
-	DB         PostgresStore
+	InMemoryDB InMemoryStore
+	DB         DBStore
 }
 
 // func (s *Storage) NewStorage(redis *redis.Client, pg *pgxpool.Pool) *Storage {

@@ -11,9 +11,16 @@ import (
 
 var rc *redis.Client
 
+type RedisClient struct {
+}
+
+func NewRedisClient() *RedisClient {
+	return &RedisClient{}
+}
+
 func CreateRedisClient() {
 	rc = redis.NewClient(&redis.Options{
-		Addr:            os.Getenv("YUS_INSTANCE_IP") + ":" + os.Getenv("REDIS_SERVER_PORT"), //yus instance ip
+		Addr:            os.Getenv("REDIS_SERVER_IP") + ":" + os.Getenv("REDIS_SERVER_PORT"), //yus instance ip
 		MaxIdleConns:    10,
 		ConnMaxLifetime: time.Hour,
 	})
