@@ -6,56 +6,60 @@ import (
 	"yus/internal/services"
 )
 
-func StoreAdmin(name string, email string, password string) string {
-	if Check_admin_exist() {
+func AddAdmin(ctx context.Context, name string, email string, password string) (string, error) {
+
+	exists, _ := AdminExists(ctx)
+	if exists {
 		fmt.Println("Admin already exists")
-		return "Admin already exists"
+		return "", fmt.Errorf("admin already exists")
 	}
+
 	hased_pass := services.Hash_this_password(password)
-	err := rc.HSet(context.Background(), "Admin-data", "name", name, "email", email, "password", hased_pass).Err()
+	err := rc.HSet(ctx, "Admin-data", "name", name, "email", email, "password", hased_pass).Err()
 	if err != nil {
 		fmt.Println("error while set the admin details to the redis - ", err)
-		return "invalid"
+		return "", fmt.Errorf("invalid")
 	}
-	return "successfully added admin"
+	return "successfully added admin", nil
 }
 
-func Check_admin_exist() bool {
-	Exists, err := rc.Exists(context.Background(), "Admin-data").Result()
+func AdminExists(ctx context.Context) (bool, error) {
+	Exists, err := rc.Exists(ctx, "Admin-data").Result()
 	if err != nil {
 		fmt.Println("error while checking the existance of Admin-data - ", err)
-		return false
+		return false, err
 	}
 	if Exists == 1 {
-		return true
+		return true, nil
 	}
-	return false
+	return false, nil
 
 }
 
-func Validate_Admin_login(email string, password string) bool {
-	value, err := rc.HMGet(context.Background(), "Admin-data", "email", "password").Result() //to get the multiple values in a single query
+func AdminLogin(ctx context.Context, email string, password string) (bool, error) {
+
+	value, err := rc.HMGet(ctx, "Admin-data", "email", "password").Result() //to get the multiple values in a single query
 	if err != nil {
 		fmt.Println("error while accessing the Admin-data - ", err)
-		return false
+		return false, err
 	}
 
 	if value[0] == nil || value[1] == nil {
 		fmt.Println("both are nil")
-		return false
+		return false, nil
 	}
 
 	rc_email, ok1 := value[0].(string)
 	rc_password, ok2 := value[1].(string)
 
 	if !ok1 || !ok2 {
-		return false
+		return false, nil
 	}
 
 	if rc_email == email && services.Is_password_matched(rc_password, password) {
-		return true
+		return true, nil
 	}
-	return false
+	return false, nil
 
 }
 

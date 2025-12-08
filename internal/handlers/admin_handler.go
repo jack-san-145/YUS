@@ -9,6 +9,8 @@ import (
 )
 
 func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
 	var admin_otp_status = make(map[string]any)
 	err := r.ParseForm()
 	if err != nil {
@@ -22,19 +24,12 @@ func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
 
 	if services.ValidateClgMail(email) && services.ValidateName(name) && services.ValidatePassword(password) {
 
-		if redis.Check_admin_exist() {
+		exists, _ := redis.AdminExists(ctx)
+		if exists {
 			admin_otp_status["otp_sent"] = "Admin already exists"
 			WriteJSON(w, r, admin_otp_status)
 			return
 		}
-
-		// ch := make(chan bool) //channel to store the otp is sent to email or not
-		// otp := services.GenerateOtp()
-
-		// go services.SendEmailTo(ch, email, otp) //pass also the channel
-
-		// //this line wait until that go routine puts value to the ch
-		// is_email_sent := <-ch //receives the email sent status from the bool channel 'ch'
 
 		//now synchronous
 		otp := services.GenerateOtp()
@@ -52,6 +47,7 @@ func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
 
 func Verify_admin_otp(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
 	//show this admin_register_status as it is on the frontend
 	var admin_register_status = make(map[string]string)
 	err := r.ParseForm()
@@ -67,7 +63,13 @@ func Verify_admin_otp(w http.ResponseWriter, r *http.Request) {
 
 	if services.ValidateClgMail(email) && services.ValidateName(name) && services.ValidatePassword(password) {
 		if given_otp == redis.GetOtp(email) {
-			admin_register_status["status"] = redis.StoreAdmin(name, email, password)
+			status, err := redis.AddAdmin(ctx, name, email, password)
+			if err != nil {
+				admin_register_status["status"] = status
+			} else {
+				admin_register_status["status"] = err.Error()
+			}
+
 		} else {
 			admin_register_status["status"] = "invalid otp"
 		}
@@ -79,6 +81,9 @@ func Verify_admin_otp(w http.ResponseWriter, r *http.Request) {
 }
 
 func Admin_login_handler(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
 	var login_status = make(map[string]string)
 	err := r.ParseForm()
 	if err != nil {
@@ -87,7 +92,9 @@ func Admin_login_handler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
-		if redis.Validate_Admin_login(email, password) {
+
+		valid, _ := redis.AdminLogin(ctx, email, password)
+		if valid {
 			login_status["login_status"] = "valid"
 			session_id := redis.Create_Admin_Session(email)
 			login_status["session_id"] = session_id

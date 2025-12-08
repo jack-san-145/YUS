@@ -19,7 +19,7 @@ type InMemoryStore interface {
 	CreateAdminSession(ctx context.Context, adminEmail string) (string, error)
 	CheckAdminSession(ctx context.Context, sessionID string) (bool, error)
 	AdminLogin(ctx context.Context, email string, password string) (bool, error)
-	StoreAdmin(ctx context.Context, name string, email string, password string) (string, error)
+	AddAdmin(ctx context.Context, name string, email string, password string) (string, error)
 
 	CreateDriverSession(ctx context.Context, driverID int) (string, error)
 	CheckDriverSession(ctx context.Context, sessionID string) (bool, int, error)

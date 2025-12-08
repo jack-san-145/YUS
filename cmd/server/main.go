@@ -3,14 +3,30 @@ package main
 import (
 	"fmt"
 	"net/http"
+	// "yus/internal/storage"
 	"yus/internal/storage/postgres"
 	"yus/internal/storage/postgres/service"
 	"yus/internal/storage/redis"
 
+	// "github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
 
 func main() {
+
+	// type Application struct {
+	// 	Port   string
+	// 	Router *chi.Mux
+	// 	Store  *storage.Store
+	// }
+
+	// app := &Application{
+
+	// 	Port:   "8090",
+	// 	Router: NewRouter(),
+	// }
+
+	// rc := redis.NewRedisClient()
 
 	err := godotenv.Load("../../.env")
 	if err != nil {
