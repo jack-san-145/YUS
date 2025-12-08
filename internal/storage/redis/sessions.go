@@ -78,9 +78,11 @@ func CheckDriverSession(ctx context.Context, sessionID string) (bool, int, error
 
 }
 
-func Del_session(session_id string) {
-	err := rc.Del(context.Background(), session_id).Err()
+func DeleteSession(ctx context.Context, sessionID string) error {
+	err := rc.Del(ctx, sessionID).Err()
 	if err != nil {
 		fmt.Println("error while deleting the sessions - ", err)
+		return err
 	}
+	return nil
 }
