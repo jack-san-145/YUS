@@ -10,7 +10,6 @@ import (
 
 type InMemoryStore interface {
 	CreateClient(ctx context.Context) (*redis.Client, error)
-	GetConnection(ctx context.Context) (*redis.Client, error)
 
 	GenerateSessionID(ctx context.Context) (string, error)
 	DeleteSession(ctx context.Context, sessionID string) error
