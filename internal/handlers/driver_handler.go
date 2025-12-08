@@ -139,6 +139,9 @@ func Verify_driver_otp(w http.ResponseWriter, r *http.Request) {
 }
 
 func Driver_login_handler(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
 	var login_status = make(map[string]string)
 	err := r.ParseForm()
 	if err != nil {
@@ -154,7 +157,11 @@ func Driver_login_handler(w http.ResponseWriter, r *http.Request) {
 		password := r.FormValue("password")
 		if postgres.ValidateDriver(driver_id_int, password) {
 			login_status["login_status"] = "valid"
-			session_id := redis.Create_Driver_Session(driver_id_int)
+			session_id, err := redis.CreateDriverSession(ctx, driver_id_int)
+			if err != nil {
+				login_status["login_status"] = "invalid"
+				return
+			}
 			login_status["session_id"] = session_id
 		} else {
 			login_status["login_status"] = "invalid"

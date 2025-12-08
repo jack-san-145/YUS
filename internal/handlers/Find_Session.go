@@ -30,12 +30,14 @@ func FindAdminSession_web(r *http.Request) bool {
 }
 
 func FindDriver_httpSession(r *http.Request) (bool, int) {
+
+	ctx := r.Context()
 	session_id := r.Header.Get("Authorization")
 	if session_id == "" {
 		return false, 0
 	}
 
-	is_valid, driver_id := redis.Check_Driver_session(session_id)
+	is_valid, driver_id, _ := redis.CheckDriverSession(ctx, session_id)
 	if is_valid {
 		return true, driver_id
 	}
@@ -43,12 +45,13 @@ func FindDriver_httpSession(r *http.Request) (bool, int) {
 }
 
 func FindDriver_wssSession(r *http.Request) (bool, int) {
+	ctx := r.Context()
 	session_id := r.URL.Query().Get("session_id")
 	if session_id == "" {
 		return false, 0
 	}
 
-	is_valid, driver_id := redis.Check_Driver_session(session_id)
+	is_valid, driver_id, _ := redis.CheckDriverSession(ctx, session_id)
 	if is_valid {
 		return true, driver_id
 	}

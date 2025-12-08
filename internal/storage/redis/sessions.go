@@ -9,23 +9,25 @@ import (
 	"github.com/google/uuid"
 )
 
-func generate_sessionID() string {
-	return uuid.New().String()
+func GenerateSessionID(ctx context.Context) (string, error) {
+	return uuid.New().String(), nil
 }
 
-func Create_Driver_Session(driver_id int) string {
-	session_id := generate_sessionID()
-	err := rc.HSet(context.Background(), session_id, "category", "DRIVER", "driver_id", driver_id).Err()
+func CreateDriverSession(ctx context.Context, driverID int) (string, error) {
+	session_id, _ := GenerateSessionID(ctx)
+	err := rc.HSet(context.Background(), session_id, "category", "DRIVER", "driver_id", driverID).Err()
 	if err != nil {
 		fmt.Println("error while setting the new driver session to the redis - ", err)
+		return "", err
 	}
 
 	//set TTL for session
 	err = rc.Expire(context.Background(), session_id, 7*24*time.Hour).Err()
 	if err != nil {
 		fmt.Println("error while setting ttl to session - ", err)
+		return "", err
 	}
-	return session_id
+	return session_id, nil
 }
 
 func Create_Admin_Session(admin_email string) string {
@@ -56,8 +58,8 @@ func Check_Admin_session(session_id string) bool {
 
 }
 
-func Check_Driver_session(session_id string) (bool, int) {
-	driver_id, err := rc.HGet(context.Background(), session_id, "driver_id").Result()
+func CheckDriverSession(ctx context.Context, sessionID string) (bool, int, error) {
+	driver_id, err := rc.HGet(context.Background(), sessionID, "driver_id").Result()
 	if err != nil {
 		fmt.Println("error while getting the session from redis - ", err)
 	}
@@ -65,11 +67,11 @@ func Check_Driver_session(session_id string) (bool, int) {
 		driver_id_int, err := strconv.Atoi(driver_id)
 		if err != nil {
 			fmt.Println("error while converting the driver id - ", err)
-			return false, 0
+			return false, 0, err
 		}
-		return true, driver_id_int
+		return true, driver_id_int, nil
 	}
-	return false, 0
+	return false, 0, nil
 
 }
 
