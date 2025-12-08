@@ -98,7 +98,7 @@ func Admin_login_handler(w http.ResponseWriter, r *http.Request) {
 		valid, _ := redis.AdminLogin(ctx, email, password)
 		if valid {
 			login_status["login_status"] = "valid"
-			session_id := redis.Create_Admin_Session(email)
+			session_id, _ := redis.CreateAdminSession(ctx, email)
 			login_status["session_id"] = session_id
 
 			cookie := &http.Cookie{

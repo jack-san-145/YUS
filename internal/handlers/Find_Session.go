@@ -6,24 +6,29 @@ import (
 )
 
 func FindAdminSession_mobile(r *http.Request) bool {
+	ctx := r.Context()
+
 	session_id := r.Header.Get("Authorization")
 	if session_id == "" {
 		return false
 	}
 
-	if redis.Check_Admin_session(session_id) {
+	valid, _ := redis.CheckAdminSession(ctx, session_id)
+
+	if valid {
 		return true
 	}
 	return false
 }
 
 func FindAdminSession_web(r *http.Request) bool {
+	ctx := r.Context()
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
 		return false
 	}
-
-	if redis.Check_Admin_session(cookie.Value) {
+	valid, _ := redis.CheckAdminSession(ctx, cookie.Value)
+	if valid {
 		return true
 	}
 	return false
