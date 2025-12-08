@@ -23,7 +23,7 @@ type InMemoryStore interface {
 	CreateDriverSession(ctx context.Context, driverID int) (string, error)
 	CheckDriverSession(ctx context.Context, sessionID string) (bool, int, error)
 
-	GetOtp(email string) string
+	GetOtp(ctx context.Context, email string) (string, error)
 	SetOtp(ctx context.Context, email string, otp string) error
 
 	StoreArrivalStatus(ctx context.Context, driverID int, arrivalStatus map[int]string) error

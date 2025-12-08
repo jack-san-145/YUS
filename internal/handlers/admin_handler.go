@@ -35,7 +35,7 @@ func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
 		otp := services.GenerateOtp()
 		is_email_sent := services.SendEmailTo(email, otp)
 		if is_email_sent {
-			redis.SetOtp(email, otp) //set otp to redis if otp sent to email successfully
+			redis.SetOtp(ctx, email, otp) //set otp to redis if otp sent to email successfully
 		}
 
 		admin_otp_status["otp_sent"] = is_email_sent
@@ -62,7 +62,9 @@ func Verify_admin_otp(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("verify otp for - ", email, name, password, given_otp)
 
 	if services.ValidateClgMail(email) && services.ValidateName(name) && services.ValidatePassword(password) {
-		if given_otp == redis.GetOtp(email) {
+
+		otp, _ := redis.GetOtp(ctx, email)
+		if given_otp == otp {
 			status, err := redis.AddAdmin(ctx, name, email, password)
 			if err != nil {
 				admin_register_status["status"] = status

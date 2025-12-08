@@ -66,6 +66,8 @@ func Load_all_available_drivers(w http.ResponseWriter, r *http.Request) {
 
 func Driver_Otp_handler(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
 	var otp_status = make(map[string]bool)
 	err := r.ParseForm()
 	if err != nil {
@@ -87,7 +89,7 @@ func Driver_Otp_handler(w http.ResponseWriter, r *http.Request) {
 		otp := services.GenerateOtp()
 		is_email_sent := services.SendEmailTo(email, otp)
 		if is_email_sent {
-			redis.SetOtp(email, otp) //set otp to redis if otp sent to email successfully
+			redis.SetOtp(ctx, email, otp) //set otp to redis if otp sent to email successfully
 		}
 
 		otp_status["otp_sent"] = is_email_sent
@@ -99,6 +101,8 @@ func Driver_Otp_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Verify_driver_otp(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
 
 	var pass_status = make(map[string]string)
 	err := r.ParseForm()
@@ -118,7 +122,9 @@ func Verify_driver_otp(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("verify otp for - ", email, given_otp)
 
 	if services.ValidateEmail(email) && services.ValidatePassword(password) {
-		if given_otp == redis.GetOtp(email) {
+
+		otp, _ := redis.GetOtp(ctx, email)
+		if given_otp == otp {
 			postgres.Set_driver_password(driver_id_int, email, password)
 			pass_status["status"] = "success"
 

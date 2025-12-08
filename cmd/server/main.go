@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+
 	// "yus/internal/storage"
 	"yus/internal/storage/postgres"
 	"yus/internal/storage/postgres/service"
@@ -38,7 +40,7 @@ func main() {
 
 	postgres.Connect() //make a connection to postgres
 
-	redis.CreateRedisClient() //made a redis client
+	redis.CreateClient(context.Background()) //made a redis client
 
 	go service.Automate_route_scheduling() //change the route direction on-runtime
 
