@@ -9,20 +9,21 @@ import (
 	"yus/internal/storage/postgres"
 )
 
-func Cache_Bus_Route() {
+func CacheBusRoute(ctx context.Context) error {
 	current_bus_route := postgres.Current_bus_routes()
 
 	current_bus_route_byte, err := json.Marshal(current_bus_route)
 	if err != nil {
 		fmt.Println("error while marshal the route - ", err)
-		return
+		return err
 	}
 
 	err = rc.Set(context.Background(), "CurrentBusRoute", current_bus_route_byte, time.Hour*24).Err()
 	if err != nil {
 		fmt.Println("error while set the current_bus_route in redis - ", err)
-		return
+		return err
 	}
+	return nil
 }
 
 func Get_cached_route() []models.CurrentRoute {

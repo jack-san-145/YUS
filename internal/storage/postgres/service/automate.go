@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -19,13 +20,13 @@ func Automate_route_scheduling() {
 	//for 12 AM
 	c.AddFunc("0 0 0 * * *", func() {
 		postgres.Change_route_direction("UP")
-		redis.Cache_Bus_Route() //cache current routes in redis
+		redis.CacheBusRoute(context.Background()) //cache current routes in redis
 	})
 
 	//for 12 PM
 	c.AddFunc("0 0 12 * * *", func() {
 		postgres.Change_route_direction("DOWN")
-		redis.Cache_Bus_Route() //cache current routes in redis
+		redis.CacheBusRoute(context.Background()) //cache current routes in redis
 	})
 	c.Start()
 

@@ -70,6 +70,8 @@ func Map_Route_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
+	ctx := r.Context()
+
 	//mapping route to the bus
 	var status = make(map[string]bool)
 	route_id_string := r.URL.Query().Get("route_id")
@@ -87,7 +89,7 @@ func Map_Route_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 	}
 	WriteJSON(w, r, status)
 
-	go redis.Cache_Bus_Route()
+	go redis.CacheBusRoute(ctx)
 }
 
 func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
@@ -97,6 +99,7 @@ func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
+	ctx := r.Context()
 	//gets the driver and bus allocation array , after allocated it returns the results
 	var DriverAllocation_array []models.DriverAllocation
 
@@ -119,7 +122,7 @@ func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 
 	WriteJSON(w, r, status)
 
-	go redis.Cache_Bus_Route()
+	go redis.CacheBusRoute(ctx)
 }
 
 func ChangeRoute_direction_handler(w http.ResponseWriter, r *http.Request) {
@@ -128,6 +131,8 @@ func ChangeRoute_direction_handler(w http.ResponseWriter, r *http.Request) {
 	// 	w.WriteHeader(http.StatusUnauthorized)
 	// 	return
 	// }
+
+	ctx := r.Context()
 
 	direction := chi.URLParam(r, "direction")
 	if direction == "UP" || direction == "DOWN" {
@@ -140,6 +145,6 @@ func ChangeRoute_direction_handler(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, r, map[string]bool{"changed": false})
 	}
 
-	go redis.Cache_Bus_Route()
+	go redis.CacheBusRoute(ctx)
 
 }
