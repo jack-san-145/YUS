@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -33,7 +34,7 @@ func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//check if the driver exists on the passenger map
-	ok:=PassengerConnStore.DriverExists(driver_id)
+	ok := PassengerConnStore.DriverExists(driver_id)
 	if !ok {
 
 		//if driver doesn't exists add him to the passengerMap
@@ -52,12 +53,12 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 
 	defer func() {
 		close(done) // to close the ticker goroutine when the driver disconnects
-		redis.Store_ArrivalStatus(driver_id, Arrival_status)
+		redis.StoreArrivalStatus(context.Background(), driver_id, Arrival_status)
 		PassengerConnStore.RemoveDriver(driver_id)
 		conn.Close()
 	}()
 
-	redis_as, err := redis.Get_ArrivalStatus(driver_id)
+	redis_as, err := redis.GetArrivalStatus(context.Background(), driver_id)
 	if err == nil {
 		Arrival_status = redis_as
 	}
