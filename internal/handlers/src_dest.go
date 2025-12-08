@@ -52,7 +52,7 @@ func Get_Current_bus_routes_handler(w http.ResponseWriter, r *http.Request) {
 	// bus_routes := postgres.Current_bus_routes()
 
 	ctx := r.Context()
-	bus_routes := redis.Get_cached_route()
+	bus_routes, _ := redis.GetCachedRoute(ctx)
 
 	if bus_routes == nil {
 		bus_routes = postgres.Current_bus_routes()

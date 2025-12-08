@@ -26,21 +26,21 @@ func CacheBusRoute(ctx context.Context) error {
 	return nil
 }
 
-func Get_cached_route() []models.CurrentRoute {
+func GetCachedRoute(ctx context.Context) ([]models.CurrentRoute, error) {
 
 	var current_bus_route []models.CurrentRoute
 
 	route_string, err := rc.Get(context.Background(), "CurrentBusRoute").Result()
 	if err != nil {
 		fmt.Println("error while get the cached bus route - ", err)
-		return nil
+		return nil, err
 	}
 	err = json.Unmarshal([]byte(route_string), &current_bus_route)
 	if err != nil {
 		fmt.Println("error while unmarshal cached route - ", err)
-		return nil
+		return nil, err
 	}
 
 	fmt.Println("cached routes from redis ")
-	return current_bus_route
+	return current_bus_route, nil
 }
