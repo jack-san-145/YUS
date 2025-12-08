@@ -5,37 +5,27 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/joho/godotenv"
+	AppPkg "yus/internal/app"
 	"yus/internal/storage"
 	"yus/internal/storage/postgres"
 	"yus/internal/storage/postgres/service"
 	"yus/internal/storage/redis"
-
-	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
 )
 
 func main() {
 
-	type Application struct {
-		Port   string
-		Router *chi.Mux
-		Store  *storage.Store
-	}
-
 	rc := redis.NewRedisClient()
-	app := &Application{
 
+	AppPkg.App = &AppPkg.Application{
 		Port:   "8090",
 		Router: NewRouter(),
 		Store: &storage.Store{
-			// InMemoryDB: rc,
+			InMemoryDB: rc,
 		},
 	}
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 
 	err := godotenv.Load("../../.env")
 	if err != nil {
@@ -43,16 +33,20 @@ func main() {
 		return
 	}
 
-	router := NewRouter()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err = AppPkg.App.Store.InMemoryDB.CreateClient(ctx) // creates a new redis.Client
+	if err != nil {
+		log.Fatal("Redis connection failed:", err)
+	}
 
 	postgres.Connect() //make a connection to postgres
-
-	// redis.CreateClient(context.Background()) //made a redis client
 
 	go service.Automate_route_scheduling() //change the route direction on-runtime
 
 	fmt.Println("Server listening on :8090")
-	err = http.ListenAndServe("0.0.0.0:8090", router)
+	err = http.ListenAndServe("0.0.0.0:8090", AppPkg.App.Router)
 	if err != nil {
 		fmt.Println("server failure - ", err)
 	}
