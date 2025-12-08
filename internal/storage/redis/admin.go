@@ -6,7 +6,7 @@ import (
 	"yus/internal/services"
 )
 
-func (r *RedisClient) AddAdmin(ctx context.Context, name string, email string, password string) (string, error) {
+func (r *RedisStore) AddAdmin(ctx context.Context, name string, email string, password string) (string, error) {
 
 	exists, _ := r.AdminExists(ctx)
 	if exists {
@@ -15,7 +15,7 @@ func (r *RedisClient) AddAdmin(ctx context.Context, name string, email string, p
 	}
 
 	hased_pass := services.Hash_this_password(password)
-	err := r.RC.HSet(ctx, "Admin-data", "name", name, "email", email, "password", hased_pass).Err()
+	err := r.RedisClient.HSet(ctx, "Admin-data", "name", name, "email", email, "password", hased_pass).Err()
 	if err != nil {
 		fmt.Println("error while set the admin details to the redis - ", err)
 		return "", fmt.Errorf("invalid")
@@ -23,8 +23,8 @@ func (r *RedisClient) AddAdmin(ctx context.Context, name string, email string, p
 	return "successfully added admin", nil
 }
 
-func (r *RedisClient) AdminExists(ctx context.Context) (bool, error) {
-	Exists, err := r.RC.Exists(ctx, "Admin-data").Result()
+func (r *RedisStore) AdminExists(ctx context.Context) (bool, error) {
+	Exists, err := r.RedisClient.Exists(ctx, "Admin-data").Result()
 	if err != nil {
 		fmt.Println("error while checking the existance of Admin-data - ", err)
 		return false, err
@@ -36,9 +36,9 @@ func (r *RedisClient) AdminExists(ctx context.Context) (bool, error) {
 
 }
 
-func (r *RedisClient) AdminLogin(ctx context.Context, email string, password string) (bool, error) {
+func (r *RedisStore) AdminLogin(ctx context.Context, email string, password string) (bool, error) {
 
-	value, err := r.RC.HMGet(ctx, "Admin-data", "email", "password").Result() //to get the multiple values in a single query
+	value, err := r.RedisClient.HMGet(ctx, "Admin-data", "email", "password").Result() //to get the multiple values in a single query
 	if err != nil {
 		fmt.Println("error while accessing the Admin-data - ", err)
 		return false, err

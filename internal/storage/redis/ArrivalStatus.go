@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func StoreArrivalStatus(ctx context.Context, driverID int, arrivalStatus map[int]string) error {
+func (r *RedisStore) StoreArrivalStatus(ctx context.Context, driverID int, arrivalStatus map[int]string) error {
 
 	// Convert the map to JSON
 	arrival_status_json, err := json.Marshal(arrivalStatus)
@@ -18,7 +18,7 @@ func StoreArrivalStatus(ctx context.Context, driverID int, arrivalStatus map[int
 	}
 
 	// Store JSON string in Redis
-	err = rc.Set(ctx, "ArrivalStatus:"+strconv.Itoa(driverID), arrival_status_json, time.Minute).Err()
+	err = r.RedisClient.Set(ctx, "ArrivalStatus:"+strconv.Itoa(driverID), arrival_status_json, time.Minute).Err()
 	if err != nil {
 		fmt.Println("error while storing the arrival status to redis - ", err)
 		return err
@@ -27,11 +27,11 @@ func StoreArrivalStatus(ctx context.Context, driverID int, arrivalStatus map[int
 	return nil
 }
 
-func GetArrivalStatus(ctx context.Context, driverID int) (map[int]string, error) {
+func (r *RedisStore) GetArrivalStatus(ctx context.Context, driverID int) (map[int]string, error) {
 
 	var arrival_status_map = make(map[int]string)
 
-	arrival_status_string, err := rc.Get(context.Background(), "ArrivalStatus:"+strconv.Itoa(driverID)).Result()
+	arrival_status_string, err := r.RedisClient.Get(context.Background(), "ArrivalStatus:"+strconv.Itoa(driverID)).Result()
 	if err != nil {
 		fmt.Println("error while get arrival status from redis - ", err)
 		return arrival_status_map, fmt.Errorf("not found")

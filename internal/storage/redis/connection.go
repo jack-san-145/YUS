@@ -11,15 +11,15 @@ import (
 
 // var rc *redis.Client
 
-type RedisClient struct {
-	RC *redis.Client
+type RedisStore struct {
+	RedisClient *redis.Client
 }
 
-func NewRedisClient() *RedisClient {
-	return &RedisClient{}
+func NewRedisClient() *RedisStore {
+	return &RedisStore{}
 }
 
-func (r *RedisClient) CreateClient(ctx context.Context) (*redis.Client, error) {
+func (r *RedisStore) CreateClient(ctx context.Context) (*redis.Client, error) {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:            os.Getenv("REDIS_SERVER_IP") + ":" + os.Getenv("REDIS_SERVER_PORT"), //yus instance ip
 		MaxIdleConns:    10,
