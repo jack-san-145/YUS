@@ -18,7 +18,7 @@ func (r *RedisStore) CacheBusRoute(ctx context.Context) error {
 		return err
 	}
 
-	err = r.RedisClient.Set(context.Background(), "CurrentBusRoute", current_bus_route_byte, time.Hour*24).Err()
+	err = r.RedisClient.Set(ctx, "CurrentBusRoute", current_bus_route_byte, time.Hour*24).Err()
 	if err != nil {
 		fmt.Println("error while set the current_bus_route in redis - ", err)
 		return err
@@ -30,7 +30,7 @@ func (r *RedisStore) GetCachedRoute(ctx context.Context) ([]models.CurrentRoute,
 
 	var current_bus_route []models.CurrentRoute
 
-	route_string, err := r.RedisClient.Get(context.Background(), "CurrentBusRoute").Result()
+	route_string, err := r.RedisClient.Get(ctx, "CurrentBusRoute").Result()
 	if err != nil {
 		fmt.Println("error while get the cached bus route - ", err)
 		return nil, err

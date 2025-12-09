@@ -31,6 +31,7 @@ func (r *RedisStore) CreateClient(ctx context.Context) error {
 		log.Fatal(err)
 		return err
 	}
+	r.RedisClient = redisClient
 	fmt.Println("redis connection successfull")
 
 	return nil

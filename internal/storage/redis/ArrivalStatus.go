@@ -31,7 +31,7 @@ func (r *RedisStore) GetArrivalStatus(ctx context.Context, driverID int) (map[in
 
 	var arrival_status_map = make(map[int]string)
 
-	arrival_status_string, err := r.RedisClient.Get(context.Background(), "ArrivalStatus:"+strconv.Itoa(driverID)).Result()
+	arrival_status_string, err := r.RedisClient.Get(ctx, "ArrivalStatus:"+strconv.Itoa(driverID)).Result()
 	if err != nil {
 		fmt.Println("error while get arrival status from redis - ", err)
 		return arrival_status_map, fmt.Errorf("not found")
