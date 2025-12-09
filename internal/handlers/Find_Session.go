@@ -13,7 +13,7 @@ func FindAdminSession_mobile(r *http.Request) bool {
 		return false
 	}
 
-	valid, _ := redis.CheckAdminSession(ctx, session_id)
+	valid, _ := redis.NewRedisClient().CheckAdminSession(ctx, session_id)
 
 	if valid {
 		return true
@@ -27,7 +27,7 @@ func FindAdminSession_web(r *http.Request) bool {
 	if err != nil {
 		return false
 	}
-	valid, _ := redis.CheckAdminSession(ctx, cookie.Value)
+	valid, _ := redis.NewRedisClient().CheckAdminSession(ctx, cookie.Value)
 	if valid {
 		return true
 	}
@@ -42,7 +42,7 @@ func FindDriver_httpSession(r *http.Request) (bool, int) {
 		return false, 0
 	}
 
-	is_valid, driver_id, _ := redis.CheckDriverSession(ctx, session_id)
+	is_valid, driver_id, _ := redis.NewRedisClient().CheckDriverSession(ctx, session_id)
 	if is_valid {
 		return true, driver_id
 	}
@@ -56,7 +56,7 @@ func FindDriver_wssSession(r *http.Request) (bool, int) {
 		return false, 0
 	}
 
-	is_valid, driver_id, _ := redis.CheckDriverSession(ctx, session_id)
+	is_valid, driver_id, _ := redis.NewRedisClient().CheckDriverSession(ctx, session_id)
 	if is_valid {
 		return true, driver_id
 	}
