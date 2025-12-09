@@ -1,4 +1,4 @@
-package handlers
+package driver
 
 import (
 	"context"
@@ -7,17 +7,18 @@ import (
 	"net/http"
 	"time"
 
+	"yus/internal/handlers"
+	"yus/internal/handlers/passenger"
 	"yus/internal/models"
 	"yus/internal/services"
 	"yus/internal/storage/postgres"
-	"yus/internal/storage/redis"
 
 	"github.com/gorilla/websocket"
 )
 
-func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
+func (h *DriverHandler) WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
-	isValid, driver_id := FindDriver_wssSession(r)
+	isValid, driver_id := handlers.FindDriver_wssSession(r)
 	if !isValid {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
@@ -34,18 +35,18 @@ func Driver_Ws_hanler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//check if the driver exists on the passenger map
-	ok := PassengerConnStore.DriverExists(driver_id)
+	ok := passenger.PassengerConnStore.DriverExists(driver_id)
 	if !ok {
 
 		//if driver doesn't exists add him to the passengerMap
-		PassengerConnStore.AddDriver(driver_id)
+		passenger.PassengerConnStore.AddDriver(driver_id)
 	}
 
-	go listen_for_location(driver_id, conn)
+	go h.listenForLocation(driver_id, conn)
 
 }
 
-func listen_for_location(driver_id int, conn *websocket.Conn) {
+func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 	//bus_status
 	var Arrival_status = make(map[int]string)
 	var done = make(chan struct{}) // using to shutdown the unwanted ticker goroutine
@@ -53,12 +54,12 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 
 	defer func() {
 		close(done) // to close the ticker goroutine when the driver disconnects
-		redis.StoreArrivalStatus(context.Background(), driver_id, Arrival_status)
-		PassengerConnStore.RemoveDriver(driver_id)
+		h.Store.InMemoryDB.StoreArrivalStatus(context.Background(), driver_id, Arrival_status)
+		passenger.PassengerConnStore.RemoveDriver(driver_id)
 		conn.Close()
 	}()
 
-	redis_as, err := redis.GetArrivalStatus(context.Background(), driver_id)
+	redis_as, err := h.Store.InMemoryDB.GetArrivalStatus(context.Background(), driver_id)
 	if err == nil {
 		Arrival_status = redis_as
 	}
@@ -121,7 +122,7 @@ func listen_for_location(driver_id int, conn *websocket.Conn) {
 			fmt.Println("arrival status - ", Arrival_status)
 			current_location.ArrivalStatus = Arrival_status
 		}
-		PassengerConnStore.BroadcastLocation(driver_id, current_location)
+		passenger.PassengerConnStore.BroadcastLocation(driver_id, current_location)
 		fmt.Printf("latitude - %v & longitude - %v & speed - %v\n",
 			current_location.Latitude, current_location.Longitude, current_location.Speed)
 	}

@@ -1,16 +1,17 @@
-package handlers
+package driver
 
 import (
 	"fmt"
 	"net/http"
 	"strconv"
 
+	"yus/internal/handlers"
+	"yus/internal/handlers/common/response"
 	"yus/internal/services"
 	"yus/internal/storage/postgres"
-	"yus/internal/storage/redis"
 )
 
-func Driver_Otp_handler(w http.ResponseWriter, r *http.Request) {
+func (h *DriverHandler) SendOTPHandler(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
@@ -28,14 +29,14 @@ func Driver_Otp_handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error while converting the driver_id string to driver_id_int - ", err)
 	}
 	if !postgres.Check_Driver_exits(driver_id_int) {
-		WriteJSON(w, r, map[string]string{"status": "no driver found"})
+		response.WriteJSON(w, r, map[string]string{"status": "no driver found"})
 		return
 	}
 	if services.ValidateEmail(email) {
 		otp := services.GenerateOtp()
 		is_email_sent := services.SendEmailTo(email, otp)
 		if is_email_sent {
-			redis.SetOtp(ctx, email, otp) //set otp to redis if otp sent to email successfully
+			h.Store.InMemoryDB.SetOtp(ctx, email, otp) //set otp to redis if otp sent to email successfully
 		}
 
 		otp_status["otp_sent"] = is_email_sent
@@ -43,10 +44,10 @@ func Driver_Otp_handler(w http.ResponseWriter, r *http.Request) {
 		otp_status["otp_sent"] = false
 	}
 
-	WriteJSON(w, r, otp_status)
+	response.WriteJSON(w, r, otp_status)
 }
 
-func Verify_driver_otp(w http.ResponseWriter, r *http.Request) {
+func (h *DriverHandler) VerifyOTPHandler(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
@@ -69,7 +70,7 @@ func Verify_driver_otp(w http.ResponseWriter, r *http.Request) {
 
 	if services.ValidateEmail(email) && services.ValidatePassword(password) {
 
-		otp, _ := redis.GetOtp(ctx, email)
+		otp, _ := h.Store.InMemoryDB.GetOtp(ctx, email)
 		if given_otp == otp {
 			postgres.Set_driver_password(driver_id_int, email, password)
 			pass_status["status"] = "success"
@@ -81,10 +82,10 @@ func Verify_driver_otp(w http.ResponseWriter, r *http.Request) {
 	} else {
 		pass_status["status"] = "failed"
 	}
-	WriteJSON(w, r, pass_status)
+	response.WriteJSON(w, r, pass_status)
 }
 
-func Driver_login_handler(w http.ResponseWriter, r *http.Request) {
+func (h *DriverHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
@@ -103,7 +104,7 @@ func Driver_login_handler(w http.ResponseWriter, r *http.Request) {
 		password := r.FormValue("password")
 		if postgres.ValidateDriver(driver_id_int, password) {
 			login_status["login_status"] = "valid"
-			session_id, err := redis.CreateDriverSession(ctx, driver_id_int)
+			session_id, err := h.Store.InMemoryDB.CreateDriverSession(ctx, driver_id_int)
 			if err != nil {
 				login_status["login_status"] = "invalid"
 				return
@@ -113,12 +114,12 @@ func Driver_login_handler(w http.ResponseWriter, r *http.Request) {
 			login_status["login_status"] = "invalid"
 		}
 	}
-	WriteJSON(w, r, login_status)
+	response.WriteJSON(w, r, login_status)
 }
 
-func Alloted_bus_handler(w http.ResponseWriter, r *http.Request) {
+func (h *DriverHandler) GetAllocatedBusHandler(w http.ResponseWriter, r *http.Request) {
 
-	isValid, driver_id := FindDriver_httpSession(r)
+	isValid, driver_id := handlers.FindDriver_httpSession(r)
 	if !isValid {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
@@ -127,8 +128,8 @@ func Alloted_bus_handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("driver_id- ", driver_id)
 	alloted_bus := postgres.Get_Allotted_Bus(driver_id)
 	if alloted_bus.BusID != 0 && alloted_bus.RouteId != 0 {
-		WriteJSON(w, r, alloted_bus)
+		response.WriteJSON(w, r, alloted_bus)
 	} else {
-		WriteJSON(w, r, map[string]string{"status": "no bus allotted"})
+		response.WriteJSON(w, r, map[string]string{"status": "no bus allotted"})
 	}
 }
