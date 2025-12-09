@@ -6,7 +6,6 @@ import (
 	"time"
 	"yus/internal/handlers/common/response"
 	"yus/internal/services"
-	"yus/internal/storage/redis"
 )
 
 func (h *AdminHandler) SendOTPHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,9 +63,9 @@ func (h *AdminHandler) VerifyOTPHandler(w http.ResponseWriter, r *http.Request) 
 
 	if services.ValidateClgMail(email) && services.ValidateName(name) && services.ValidatePassword(password) {
 
-		otp, _ := redis.GetOtp(ctx, email)
+		otp, _ := h.Store.InMemoryDB.GetOtp(ctx, email)
 		if given_otp == otp {
-			status, err := redis.AddAdmin(ctx, name, email, password)
+			status, err := h.Store.InMemoryDB.AddAdmin(ctx, name, email, password)
 			if err != nil {
 				admin_register_status["status"] = status
 			} else {
@@ -96,10 +95,10 @@ func (h *AdminHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 
-		valid, _ := redis.AdminLogin(ctx, email, password)
+		valid, _ := h.Store.InMemoryDB.AdminLogin(ctx, email, password)
 		if valid {
 			login_status["login_status"] = "valid"
-			session_id, _ := redis.CreateAdminSession(ctx, email)
+			session_id, _ := h.Store.InMemoryDB.CreateAdminSession(ctx, email)
 			login_status["session_id"] = session_id
 
 			cookie := &http.Cookie{

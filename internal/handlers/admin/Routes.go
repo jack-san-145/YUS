@@ -3,14 +3,12 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"net/http"
 	"strconv"
 	"yus/internal/handlers/common/response"
 	"yus/internal/models"
 	"yus/internal/storage/postgres"
-	"yus/internal/storage/redis"
-
-	"github.com/go-chi/chi/v5"
 )
 
 func (h *AdminHandler) GetCachedRoutesHandler(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +88,7 @@ func (h *AdminHandler) AssignRouteToBusHandler(w http.ResponseWriter, r *http.Re
 	}
 	response.WriteJSON(w, r, status)
 
-	go redis.CacheBusRoute(ctx)
+	go h.Store.InMemoryDB.CacheBusRoute(ctx)
 }
 
 func (h *AdminHandler) AssignDriverToBusHandler(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +121,7 @@ func (h *AdminHandler) AssignDriverToBusHandler(w http.ResponseWriter, r *http.R
 
 	response.WriteJSON(w, r, status)
 
-	go redis.CacheBusRoute(ctx)
+	go h.Store.InMemoryDB.CacheBusRoute(ctx)
 }
 
 func (h *AdminHandler) UpdateRouteDirectionHandler(w http.ResponseWriter, r *http.Request) {
@@ -146,6 +144,6 @@ func (h *AdminHandler) UpdateRouteDirectionHandler(w http.ResponseWriter, r *htt
 		response.WriteJSON(w, r, map[string]bool{"changed": false})
 	}
 
-	go redis.CacheBusRoute(ctx)
+	go h.Store.InMemoryDB.CacheBusRoute(ctx)
 
 }
