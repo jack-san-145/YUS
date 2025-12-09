@@ -5,11 +5,10 @@ import (
 	"yus/internal/models"
 
 	// "github.com/jackc/pgx/v5/pgxpool"
-	"github.com/redis/go-redis/v9"
 )
 
 type InMemoryStore interface {
-	CreateClient(ctx context.Context) (*redis.Client, error)
+	CreateClient(ctx context.Context) error
 
 	GenerateSessionID(ctx context.Context) (string, error)
 	DeleteSession(ctx context.Context, sessionID string) error

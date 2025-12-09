@@ -3,6 +3,7 @@ package redis
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -19,7 +20,7 @@ func NewRedisClient() *RedisStore {
 	return &RedisStore{}
 }
 
-func (r *RedisStore) CreateClient(ctx context.Context) (*redis.Client, error) {
+func (r *RedisStore) CreateClient(ctx context.Context) error {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:            os.Getenv("REDIS_SERVER_IP") + ":" + os.Getenv("REDIS_SERVER_PORT"), //yus instance ip
 		MaxIdleConns:    10,
@@ -27,11 +28,11 @@ func (r *RedisStore) CreateClient(ctx context.Context) (*redis.Client, error) {
 	})
 	err := redisClient.Ping(ctx).Err()
 	if err != nil {
-		fmt.Println("redis connection faliure - ", err)
-		return nil, err
+		log.Fatal(err)
+		return err
 	}
 	fmt.Println("redis connection successfull")
 
-	return redisClient, nil
+	return nil
 
 }

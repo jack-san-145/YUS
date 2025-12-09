@@ -11,5 +11,3 @@ type Application struct {
 	Router *chi.Mux
 	Store  *storage.Store
 }
-
-var App *Application

@@ -100,7 +100,7 @@ func Available_drivers() []models.AvailableDriver {
 	defer all_drivers.Close()
 	for all_drivers.Next() {
 		var driver models.AvailableDriver
-		err = all_drivers.Scan(&driver.Id, &driver.Name,&driver.MobileNo)
+		err = all_drivers.Scan(&driver.Id, &driver.Name, &driver.MobileNo)
 		if err != nil {
 			fmt.Println("error while scanning the driver from DB - ", err)
 			continue
