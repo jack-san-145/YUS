@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"yus/internal/handlers/common/response"
 	"yus/internal/models"
 	"yus/internal/storage/postgres"
 	"yus/internal/storage/redis"
@@ -26,7 +27,7 @@ func Cached_route_handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	cached_bus_routes := postgres.Load_cached_route(bus_id_int)
-	WriteJSON(w, r, cached_bus_routes)
+	response.WriteJSON(w, r, cached_bus_routes)
 }
 
 func Load_all_available_routes(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +40,7 @@ func Load_all_available_routes(w http.ResponseWriter, r *http.Request) {
 	//to load all the available routes
 	all_available_routes := postgres.Load_available_routes()
 	fmt.Println("avalaible routes - ", all_available_routes)
-	WriteJSON(w, r, all_available_routes)
+	response.WriteJSON(w, r, all_available_routes)
 }
 
 func Add_New_Bus_handler(w http.ResponseWriter, r *http.Request) {
@@ -60,7 +61,7 @@ func Add_New_Bus_handler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		status["status"] = "success"
 	}
-	WriteJSON(w, r, status)
+	response.WriteJSON(w, r, status)
 }
 
 func Map_Route_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
@@ -87,7 +88,7 @@ func Map_Route_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		status["route_mapped"] = true
 	}
-	WriteJSON(w, r, status)
+	response.WriteJSON(w, r, status)
 
 	go redis.CacheBusRoute(ctx)
 }
@@ -120,7 +121,7 @@ func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	WriteJSON(w, r, status)
+	response.WriteJSON(w, r, status)
 
 	go redis.CacheBusRoute(ctx)
 }
@@ -137,12 +138,12 @@ func ChangeRoute_direction_handler(w http.ResponseWriter, r *http.Request) {
 	direction := chi.URLParam(r, "direction")
 	if direction == "UP" || direction == "DOWN" {
 		if postgres.Change_route_direction(direction) {
-			WriteJSON(w, r, map[string]bool{"changed": true})
+			response.WriteJSON(w, r, map[string]bool{"changed": true})
 		} else {
-			WriteJSON(w, r, map[string]bool{"changed": false})
+			response.WriteJSON(w, r, map[string]bool{"changed": false})
 		}
 	} else {
-		WriteJSON(w, r, map[string]bool{"changed": false})
+		response.WriteJSON(w, r, map[string]bool{"changed": false})
 	}
 
 	go redis.CacheBusRoute(ctx)

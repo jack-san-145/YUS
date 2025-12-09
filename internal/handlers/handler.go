@@ -5,10 +5,6 @@ import (
 	"yus/internal/storage"
 )
 
-// func Store() *storage.Store {
-// 	return AppPkg.App.Store
-// }
-
 type AdminHandler interface {
 }
 

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"yus/internal/handlers/common/response"
 	"yus/internal/models"
 	"yus/internal/storage/postgres"
 )
@@ -26,7 +27,7 @@ func Save_New_route_handler(w http.ResponseWriter, r *http.Request) {
 	NewRoute.Direction = "UP"
 	fmt.Printf("actual route - %+v", NewRoute)
 	status := postgres.SaveRoute_to_DB(&NewRoute)
-	WriteJSON(w, r, status)
+	response.WriteJSON(w, r, status)
 	// All_Bus_Routes = append(All_Bus_Routes, NewRoute)
 	// display_all_routes()
 
@@ -49,4 +50,3 @@ func Save_New_route_handler(w http.ResponseWriter, r *http.Request) {
 			}
 	*/
 }
-

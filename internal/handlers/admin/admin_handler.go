@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+	"yus/internal/handlers/common/response"
 	"yus/internal/services"
 	"yus/internal/storage/redis"
 )
@@ -27,7 +28,7 @@ func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
 		exists, _ := redis.AdminExists(ctx)
 		if exists {
 			admin_otp_status["otp_sent"] = "Admin already exists"
-			WriteJSON(w, r, admin_otp_status)
+			response.WriteJSON(w, r, admin_otp_status)
 			return
 		}
 
@@ -42,7 +43,7 @@ func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		admin_otp_status["otp_sent"] = false
 	}
-	WriteJSON(w, r, admin_otp_status)
+	response.WriteJSON(w, r, admin_otp_status)
 }
 
 func Verify_admin_otp(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +80,7 @@ func Verify_admin_otp(w http.ResponseWriter, r *http.Request) {
 	} else {
 		admin_register_status["status"] = "invalid data"
 	}
-	WriteJSON(w, r, admin_register_status)
+	response.WriteJSON(w, r, admin_register_status)
 }
 
 func Admin_login_handler(w http.ResponseWriter, r *http.Request) {
@@ -115,5 +116,5 @@ func Admin_login_handler(w http.ResponseWriter, r *http.Request) {
 			login_status["login_status"] = "invalid"
 		}
 	}
-	WriteJSON(w, r, login_status)
+	response.WriteJSON(w, r, login_status)
 }
