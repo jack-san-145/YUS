@@ -8,8 +8,6 @@ import (
 func (app *Application) IsDriverAuthorized(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		type driverIDKey struct{} // it is the real key
-
 		var sessionID string
 		sessionID = r.Header.Get("Authorization")
 		if sessionID == "" {
@@ -26,7 +24,7 @@ func (app *Application) IsDriverAuthorized(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), driverIDKey{}, driverID)
+		ctx := context.WithValue(r.Context(), "DRIVER_ID", driverID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 
 	})

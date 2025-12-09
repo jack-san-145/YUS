@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"time"
 
-	"yus/internal/handlers/common/sessions"
 	"yus/internal/handlers/passenger"
 	"yus/internal/models"
 	"yus/internal/services"
@@ -19,11 +18,7 @@ import (
 func (h *DriverHandler) WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	//wss://yus.kwscloud.in/yus/driver-ws?session_id='23sdf-sdfsq-341'
 
-	isValid, driver_id := sessions.FindDriver_wssSession(r)
-	if !isValid {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	driver_id := r.Context().Value("DRIVER_ID").(int)
 
 	fmt.Println("working")
 	var upgrader = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool {

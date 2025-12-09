@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"yus/internal/handlers/common/response"
-	"yus/internal/handlers/common/sessions"
 	"yus/internal/services"
 	"yus/internal/storage/postgres"
 )
@@ -120,11 +119,7 @@ func (h *DriverHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 func (h *DriverHandler) GetAllocatedBusHandler(w http.ResponseWriter, r *http.Request) {
 	//yus.kwscloud.in/yus/get-allotted-bus
 
-	isValid, driver_id := sessions.FindDriver_httpSession(r)
-	if !isValid {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	driver_id := r.Context().Value("DRIVER_ID").(int)
 
 	fmt.Println("driver_id- ", driver_id)
 	alloted_bus := postgres.Get_Allotted_Bus(driver_id)
