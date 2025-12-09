@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func Passenger_Ws_handler(w http.ResponseWriter, r *http.Request) {
+func (h *PassengerHandler) WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("working passenger app websocket upgradation")
 	var upgrader = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool {
@@ -23,11 +23,11 @@ func Passenger_Ws_handler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("passenger connected successfully ")
 
-	go listen_passenger_message(conn)
+	go h.listenPassengerMessage(conn)
 
 }
 
-func listen_passenger_message(conn *websocket.Conn) {
+func (h *PassengerHandler) listenPassengerMessage(conn *websocket.Conn) {
 	const pingPeriod = 50 * time.Second
 
 	// Ping ticker to keep connection alive

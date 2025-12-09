@@ -7,12 +7,11 @@ import (
 	"yus/internal/handlers/common/response"
 	"yus/internal/services"
 	"yus/internal/storage/postgres"
-	"yus/internal/storage/redis"
 
 	"github.com/go-chi/chi/v5"
 )
 
-func Get_rotue_by_busID(w http.ResponseWriter, r *http.Request) {
+func (h *PassengerHandler) GetRouteByBusIDHandler(w http.ResponseWriter, r *http.Request) {
 	bus_id_string := r.URL.Query().Get("bus_id")
 	bus_id_int, err := strconv.Atoi(bus_id_string)
 	if err != nil {
@@ -25,7 +24,7 @@ func Get_rotue_by_busID(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func Src_Dest_Stop_handler(w http.ResponseWriter, r *http.Request) {
+func (h *PassengerHandler) SrcDestStopsHandler(w http.ResponseWriter, r *http.Request) {
 	src := chi.URLParam(r, "source")
 	dest := chi.URLParam(r, "destination")
 	stop := chi.URLParam(r, "stop")
@@ -38,7 +37,7 @@ func Src_Dest_Stop_handler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func Src_Dest_handler(w http.ResponseWriter, r *http.Request) {
+func (h *PassengerHandler) SrcDestHandler(w http.ResponseWriter, r *http.Request) {
 	src := chi.URLParam(r, "source")
 	dest := chi.URLParam(r, "destination")
 	fmt.Printf("given src - %v & destination - %v ", src, dest)
@@ -49,15 +48,15 @@ func Src_Dest_handler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func Get_Current_bus_routes_handler(w http.ResponseWriter, r *http.Request) {
+func (h *PassengerHandler) GetCurrentBusRoutesHandler(w http.ResponseWriter, r *http.Request) {
 	// bus_routes := postgres.Current_bus_routes()
 
 	ctx := r.Context()
-	bus_routes, _ := redis.GetCachedRoute(ctx)
+	bus_routes, _ := h.Store.InMemoryDB.GetCachedRoute(ctx)
 
 	if bus_routes == nil {
 		bus_routes = postgres.Current_bus_routes()
-		go redis.CacheBusRoute(ctx)
+		go h.Store.InMemoryDB.CacheBusRoute(ctx)
 	}
 
 	if len(bus_routes) != 0 {
