@@ -12,6 +12,8 @@ import (
 )
 
 func (h *PassengerHandler) GetRouteByBusIDHandler(w http.ResponseWriter, r *http.Request) {
+
+	//yus.kwscloud.in/yus/get-route?bus_id={bus_id}
 	bus_id_string := r.URL.Query().Get("bus_id")
 	bus_id_int, err := strconv.Atoi(bus_id_string)
 	if err != nil {
@@ -52,9 +54,9 @@ func (h *PassengerHandler) GetCurrentBusRoutesHandler(w http.ResponseWriter, r *
 	// bus_routes := postgres.Current_bus_routes()
 
 	ctx := r.Context()
-	bus_routes, _ := h.Store.InMemoryDB.GetCachedRoute(ctx)
+	bus_routes, err := h.Store.InMemoryDB.GetCachedRoute(ctx)
 
-	if bus_routes == nil {
+	if err != nil {
 		bus_routes = postgres.Current_bus_routes()
 		go h.Store.InMemoryDB.CacheBusRoute(ctx)
 	}

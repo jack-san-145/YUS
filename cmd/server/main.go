@@ -43,7 +43,7 @@ func main() {
 	}
 
 	YUSHandler := handlers.NewHandler(app.Store)
-	app.Router = NewRouter(YUSHandler)
+	app.Router = NewRouter(app, YUSHandler)
 
 	postgres.Connect() //make a connection to postgres
 

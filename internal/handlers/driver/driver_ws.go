@@ -17,6 +17,7 @@ import (
 )
 
 func (h *DriverHandler) WebSocketHandler(w http.ResponseWriter, r *http.Request) {
+	//wss://yus.kwscloud.in/yus/driver-ws?session_id='23sdf-sdfsq-341'
 
 	isValid, driver_id := sessions.FindDriver_wssSession(r)
 	if !isValid {

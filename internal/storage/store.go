@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 	"yus/internal/models"
-
 	// "github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -38,10 +37,3 @@ type Store struct {
 	InMemoryDB InMemoryStore
 	DB         DBStore
 }
-
-// func (s *Storage) NewStorage(redis *redis.Client, pg *pgxpool.Pool) *Storage {
-
-// 	return &Storage{
-// 		InMemoryDB: redis,
-// 	}
-// }

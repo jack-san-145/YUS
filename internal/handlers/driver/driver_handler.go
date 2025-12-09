@@ -118,6 +118,7 @@ func (h *DriverHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *DriverHandler) GetAllocatedBusHandler(w http.ResponseWriter, r *http.Request) {
+	//yus.kwscloud.in/yus/get-allotted-bus
 
 	isValid, driver_id := sessions.FindDriver_httpSession(r)
 	if !isValid {

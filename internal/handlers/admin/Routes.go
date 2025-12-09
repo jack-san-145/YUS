@@ -12,6 +12,7 @@ import (
 )
 
 func (h *AdminHandler) GetCachedRoutesHandler(w http.ResponseWriter, r *http.Request) {
+	//yus.kwscloud.in/yus/get-cached-routes?bus_id=10
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)
@@ -42,6 +43,7 @@ func (h *AdminHandler) ListRoutesHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *AdminHandler) AddBusHandler(w http.ResponseWriter, r *http.Request) {
+	//yus.kwscloud.in/yus/add-new-bus?bus_id=10
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)
@@ -63,6 +65,7 @@ func (h *AdminHandler) AddBusHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AdminHandler) AssignRouteToBusHandler(w http.ResponseWriter, r *http.Request) {
+	//yus/allocate-bus-route?route_id=42&bus_id=10
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)

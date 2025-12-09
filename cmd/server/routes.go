@@ -2,13 +2,14 @@ package main
 
 import (
 	"net/http"
+	"yus/internal/AppPkg"
 	"yus/internal/handlers"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 )
 
-func NewRouter(h *handlers.YUSHandler) *chi.Mux {
+func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 
 	router := chi.NewRouter()
 
@@ -34,81 +35,59 @@ func NewRouter(h *handlers.YUSHandler) *chi.Mux {
 	router.Get("/yus/serve-register-page", handlers.Serve_register_page)
 	router.Get("/yus/serve-otp-verify-page", handlers.Serve_otp_verify_page)
 
-	/*
+	//Passenger Operations
+	router.Group(func(passenger chi.Router) {
+		router.Get("/yus/passenger-ws", h.Passenger.WebSocketHandler)
+		router.Get("/yus/get-current-bus-routes", h.Passenger.GetCurrentBusRoutesHandler)
+		router.Get("/yus/src-{source}&dest-{destination}", h.Passenger.SrcDestHandler) //here i changed the endpoint format
+		router.Get("/yus/src-{source}&dest-{destination}&stop-{stop}", h.Passenger.SrcDestStopsHandler)
+		router.Get("/yus/get-route", h.Passenger.GetRouteByBusIDHandler) //route by BusID
 
+	})
 
+	//Driver Operations
+	router.Group(func(driver chi.Router) {
+		router.Post("/yus/send-otp-driver-password", h.Driver.SendOTPHandler)
+		router.Post("/yus/verify-otp-driver-password", h.Driver.VerifyOTPHandler)
+		router.Post("/yus/driver-login", h.Driver.LoginHandler)
+	})
 
-		admin-operations(website)
+	router.Group(func(protectedDriver chi.Router) {
+		protectedDriver.Use(app.IsDriverAuthorized)
+		protectedDriver.Get("/yus/driver-ws", h.Driver.WebSocketHandler)
+		protectedDriver.Get("/yus/get-allotted-bus", h.Driver.GetAllocatedBusHandler)
+	})
 
-	*/
-	router.Post("/yus/admin-login", h.Admin.LoginHandler)
-	router.Post("/yus/send-otp-admin", h.Admin.SendOTPHandler)
-	router.Post("/yus/verify-otp-admin", h.Admin.VerifyOTPHandler)
-	router.Put("/yus/change-route/{direction}", h.Admin.UpdateRouteDirectionHandler)
+	//Admin Operations
+	router.Group(func(admin chi.Router) {
+		admin.Post("/yus/admin-login", h.Admin.LoginHandler)
+		admin.Post("/yus/send-otp-admin", h.Admin.SendOTPHandler)
+		admin.Post("/yus/verify-otp-admin", h.Admin.VerifyOTPHandler)
+	})
 
-	router.Post("/yus/add-new-driver", h.Admin.AddDriverHandler)
-	router.Get("/yus/get-available-routes", h.Admin.ListRoutesHandler)
+	router.Group(func(protectedAdmin chi.Router) {
+		protectedAdmin.Use(app.IsAdminAuthorized)
 
-	//yus.kwscloud.in/yus/add-new-bus?bus_id=10
-	router.Put("/yus/add-new-bus", h.Admin.AddBusHandler)
+		//route creation
+		router.Post("/yus/save-new-route", h.Admin.SaveRouteHandler)
 
-	//yus/allocate-bus-route?route_id=42&bus_id=10
-	router.Put("/yus/allocate-bus-route", h.Admin.AssignRouteToBusHandler)
-	router.Post("/yus/allocate-bus-driver", h.Admin.AssignDriverToBusHandler)
-	router.Get("/yus/get-available-drivers", h.Admin.ListDriversHandler)
+		//scheduling Operations
+		protectedAdmin.Put("/yus/change-route/{direction}", h.Admin.UpdateRouteDirectionHandler)
+		protectedAdmin.Post("/yus/add-new-driver", h.Admin.AddDriverHandler)
+		protectedAdmin.Get("/yus/get-available-routes", h.Admin.ListRoutesHandler)
+		protectedAdmin.Put("/yus/add-new-bus", h.Admin.AddBusHandler)
+		protectedAdmin.Put("/yus/allocate-bus-route", h.Admin.AssignRouteToBusHandler)
+		protectedAdmin.Post("/yus/allocate-bus-driver", h.Admin.AssignDriverToBusHandler)
+		protectedAdmin.Get("/yus/get-available-drivers", h.Admin.ListDriversHandler)
+		protectedAdmin.Get("/yus/get-cached-routes", h.Admin.GetCachedRoutesHandler)
+		protectedAdmin.Get("/yus/get-current-schedule", h.Admin.GetScheduleHandler)
 
-	//yus.kwscloud.in/yus/get-cached-routes?bus_id=10
-	router.Get("/yus/get-cached-routes", h.Admin.GetCachedRoutesHandler)
-	router.Get("/yus/get-current-schedule", h.Admin.GetScheduleHandler)
+		//removal operations
+		protectedAdmin.Delete("/yus/remove-route/{route-id}", h.Admin.RemoveRouteHandler)
+		protectedAdmin.Delete("/yus/remove-bus/{bus-id}", h.Admin.RemoveBusHandler)
+		protectedAdmin.Delete("/yus/remove-driver/{driver-id}", h.Admin.RemoveDriverHandler)
 
-	//removal operations
-	router.Delete("/yus/remove-route/{route-id}", h.Admin.RemoveRouteHandler)
-	router.Delete("/yus/remove-bus/{bus-id}", h.Admin.RemoveBusHandler)
-	router.Delete("/yus/remove-driver/{driver-id}", h.Admin.RemoveDriverHandler)
-
-	/*
-
-
-
-		admin-operations(mobile)
-
-	*/
-	router.Post("/yus/save-new-route", h.Admin.SaveRouteHandler)
-
-	/*
-
-
-
-		passenger-operations
-
-	*/
-	router.Get("/yus/passenger-ws", h.Passenger.WebSocketHandler)
-	router.Get("/yus/src-{source}&dest-{destination}", h.Passenger.SrcDestHandler) //here i changed the endpoint format
-
-	router.Get("/yus/src-{source}&dest-{destination}&stop-{stop}", h.Passenger.SrcDestStopsHandler)
-
-	//yus.kwscloud.in/yus/get-route?bus_id={bus_id}
-	router.Get("/yus/get-route", h.Passenger.GetRouteByBusIDHandler)
-
-	router.Get("/yus/get-current-bus-routes", h.Passenger.GetCurrentBusRoutesHandler)
-
-	/*
-
-
-
-		driver-operations
-
-	*/
-
-	router.Post("/yus/send-otp-driver-password", h.Driver.SendOTPHandler)
-	router.Post("/yus/verify-otp-driver-password", h.Driver.VerifyOTPHandler)
-	router.Post("/yus/driver-login", h.Driver.LoginHandler)
-
-	//wss://yus.kwscloud.in/yus/driver-ws?session_id='23sdf-sdfsq-341'
-	router.Get("/yus/driver-ws", h.Driver.WebSocketHandler)
-
-	//yus.kwscloud.in/yus/get-allotted-bus
-	router.Get("/yus/get-allotted-bus", h.Driver.GetAllocatedBusHandler) //by sessions
+	})
 
 	return router
 
