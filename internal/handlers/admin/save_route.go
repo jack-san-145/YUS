@@ -1,4 +1,4 @@
-package handlers
+package admin
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 
 // var All_Bus_Routes []models.Route
 
-func Save_New_route_handler(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) SaveRouteHandler(w http.ResponseWriter, r *http.Request) {
 
 	if !FindAdminSession_mobile(r) {
 		w.WriteHeader(http.StatusUnauthorized)

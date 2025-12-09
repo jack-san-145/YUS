@@ -1,4 +1,4 @@
-package handlers
+package admin
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 	"yus/internal/storage/postgres"
 )
 
-func Get_Schedule_handler(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) GetScheduleHandler(w http.ResponseWriter, r *http.Request) {
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)
@@ -23,7 +23,7 @@ func Get_Schedule_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 // To add many drivers in one request
-func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) AddDriverHandler(w http.ResponseWriter, r *http.Request) {
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)
@@ -62,7 +62,7 @@ func Add_new_driver_handler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func Load_all_available_drivers(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) ListDriversHandler(w http.ResponseWriter, r *http.Request) {
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)

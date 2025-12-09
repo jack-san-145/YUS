@@ -1,4 +1,4 @@
-package handlers
+package admin
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 )
 
 // to delele the given route from DB
-func Remove_route_handler(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) RemoveRouteHandler(w http.ResponseWriter, r *http.Request) {
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)
@@ -31,7 +31,7 @@ func Remove_route_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 // to remove the given bus from DB
-func Remove_bus_handler(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) RemoveBusHandler(w http.ResponseWriter, r *http.Request) {
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)
@@ -52,7 +52,7 @@ func Remove_bus_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 // to remove the given driver from DB
-func Remove_driver_handler(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) RemoveDriverHandler(w http.ResponseWriter, r *http.Request) {
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)

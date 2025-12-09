@@ -1,4 +1,4 @@
-package handlers
+package admin
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"yus/internal/storage/redis"
 )
 
-func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) SendOTPHandler(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 	var admin_otp_status = make(map[string]any)
@@ -25,7 +25,7 @@ func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
 
 	if services.ValidateClgMail(email) && services.ValidateName(name) && services.ValidatePassword(password) {
 
-		exists, _ := redis.AdminExists(ctx)
+		exists, _ := h.Store.InMemoryDB.AdminExists(ctx)
 		if exists {
 			admin_otp_status["otp_sent"] = "Admin already exists"
 			response.WriteJSON(w, r, admin_otp_status)
@@ -36,7 +36,7 @@ func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
 		otp := services.GenerateOtp()
 		is_email_sent := services.SendEmailTo(email, otp)
 		if is_email_sent {
-			redis.SetOtp(ctx, email, otp) //set otp to redis if otp sent to email successfully
+			h.Store.InMemoryDB.SetOtp(ctx, email, otp) //set otp to redis if otp sent to email successfully
 		}
 
 		admin_otp_status["otp_sent"] = is_email_sent
@@ -46,7 +46,7 @@ func Admin_otp_handler(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, r, admin_otp_status)
 }
 
-func Verify_admin_otp(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) VerifyOTPHandler(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 	//show this admin_register_status as it is on the frontend
@@ -83,7 +83,7 @@ func Verify_admin_otp(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, r, admin_register_status)
 }
 
-func Admin_login_handler(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 

@@ -1,4 +1,4 @@
-package handlers
+package admin
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func Cached_route_handler(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) GetCachedRoutesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)
@@ -30,7 +30,7 @@ func Cached_route_handler(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, r, cached_bus_routes)
 }
 
-func Load_all_available_routes(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) ListRoutesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)
@@ -43,7 +43,7 @@ func Load_all_available_routes(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, r, all_available_routes)
 }
 
-func Add_New_Bus_handler(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) AddBusHandler(w http.ResponseWriter, r *http.Request) {
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)
@@ -64,7 +64,7 @@ func Add_New_Bus_handler(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, r, status)
 }
 
-func Map_Route_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) AssignRouteToBusHandler(w http.ResponseWriter, r *http.Request) {
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)
@@ -93,7 +93,7 @@ func Map_Route_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 	go redis.CacheBusRoute(ctx)
 }
 
-func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) AssignDriverToBusHandler(w http.ResponseWriter, r *http.Request) {
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)
@@ -126,7 +126,7 @@ func Map_Driver_With_Bus_handler(w http.ResponseWriter, r *http.Request) {
 	go redis.CacheBusRoute(ctx)
 }
 
-func ChangeRoute_direction_handler(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) UpdateRouteDirectionHandler(w http.ResponseWriter, r *http.Request) {
 
 	// if !FindAdminSession_web(r) {
 	// 	w.WriteHeader(http.StatusUnauthorized)
