@@ -1,9 +1,10 @@
-package handlers
+package passenger
 
 import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"yus/internal/handlers/common/response"
 	"yus/internal/services"
 	"yus/internal/storage/postgres"
 	"yus/internal/storage/redis"
@@ -16,11 +17,11 @@ func Get_rotue_by_busID(w http.ResponseWriter, r *http.Request) {
 	bus_id_int, err := strconv.Atoi(bus_id_string)
 	if err != nil {
 		fmt.Println("error while converting the bus_id_string to bus_id_int - ", err)
-		WriteJSON(w, r, "null")
+		response.WriteJSON(w, r, "null")
 	}
 	route_by_busId, _, _ := postgres.Find_route_by_bus_or_driver_ID(bus_id_int, "PASSENGER")
 	fmt.Println("route_by bus id - ", route_by_busId)
-	WriteJSON(w, r, route_by_busId)
+	response.WriteJSON(w, r, route_by_busId)
 
 }
 
@@ -33,7 +34,7 @@ func Src_Dest_Stop_handler(w http.ResponseWriter, r *http.Request) {
 	dest = services.Convert_to_CamelCase(dest)
 	stop = services.Convert_to_CamelCase(stop)
 	matched_routes := postgres.FindRoutes_by_src_dest_stop(src, dest, stop)
-	WriteJSON(w, r, matched_routes)
+	response.WriteJSON(w, r, matched_routes)
 
 }
 
@@ -44,7 +45,7 @@ func Src_Dest_handler(w http.ResponseWriter, r *http.Request) {
 
 	src = services.Convert_to_CamelCase(src)
 	dest = services.Convert_to_CamelCase(dest)
-	WriteJSON(w, r, postgres.FindRoutes_by_src_dest(src, dest))
+	response.WriteJSON(w, r, postgres.FindRoutes_by_src_dest(src, dest))
 
 }
 
@@ -60,8 +61,8 @@ func Get_Current_bus_routes_handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(bus_routes) != 0 {
-		WriteJSON(w, r, bus_routes)
+		response.WriteJSON(w, r, bus_routes)
 		return
 	}
-	WriteJSON(w, r, map[string]string{"bus_routes": "null"})
+	response.WriteJSON(w, r, map[string]string{"bus_routes": "null"})
 }
