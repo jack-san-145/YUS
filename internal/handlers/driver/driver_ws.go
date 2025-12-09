@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"yus/internal/handlers"
+	"yus/internal/handlers/common/sessions"
 	"yus/internal/handlers/passenger"
 	"yus/internal/models"
 	"yus/internal/services"
@@ -18,7 +18,7 @@ import (
 
 func (h *DriverHandler) WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
-	isValid, driver_id := handlers.FindDriver_wssSession(r)
+	isValid, driver_id := sessions.FindDriver_wssSession(r)
 	if !isValid {
 		w.WriteHeader(http.StatusUnauthorized)
 		return

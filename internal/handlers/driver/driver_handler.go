@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"yus/internal/handlers"
 	"yus/internal/handlers/common/response"
+	"yus/internal/handlers/common/sessions"
 	"yus/internal/services"
 	"yus/internal/storage/postgres"
 )
@@ -119,7 +119,7 @@ func (h *DriverHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h *DriverHandler) GetAllocatedBusHandler(w http.ResponseWriter, r *http.Request) {
 
-	isValid, driver_id := handlers.FindDriver_httpSession(r)
+	isValid, driver_id := sessions.FindDriver_httpSession(r)
 	if !isValid {
 		w.WriteHeader(http.StatusUnauthorized)
 		return

@@ -8,10 +8,10 @@ import (
 
 func Serve_index_page(w http.ResponseWriter, r *http.Request) {
 
-	if !FindAdminSession_web(r) {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	// if !FindAdminSession_web(r) {
+	// 	w.WriteHeader(http.StatusUnauthorized)
+	// 	return
+	// }
 
 	templ, err := template.ParseFiles("../../ui/Admin-website/templates/index.html")
 	if err != nil {
@@ -72,10 +72,10 @@ func Serve_register_page(w http.ResponseWriter, r *http.Request) {
 
 func Serve_bus_schedule_page(w http.ResponseWriter, r *http.Request) {
 
-	if !FindAdminSession_web(r) {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	// if !FindAdminSession_web(r) {
+	// 	w.WriteHeader(http.StatusUnauthorized)
+	// 	return
+	// }
 
 	templ, err := template.ParseFiles("../../ui/Admin-website/templates/bus_schedule.html")
 	if err != nil {
@@ -88,10 +88,10 @@ func Serve_bus_schedule_page(w http.ResponseWriter, r *http.Request) {
 
 func Serve_driver_page(w http.ResponseWriter, r *http.Request) {
 
-	if !FindAdminSession_web(r) {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	// if !FindAdminSession_web(r) {
+	// 	w.WriteHeader(http.StatusUnauthorized)
+	// 	return
+	// }
 
 	templ, err := template.ParseFiles("../../ui/Admin-website/templates/driver.html")
 	if err != nil {
