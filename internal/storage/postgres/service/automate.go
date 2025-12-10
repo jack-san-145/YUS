@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"time"
 
+	"yus/internal/AppPkg"
 	"yus/internal/storage/postgres"
-	"yus/internal/storage/redis"
 
 	"github.com/robfig/cron/v3"
 )
 
-func Automate_route_scheduling() {
+func AutomateRouteScheduling(app *AppPkg.Application) {
 
 	c := cron.New(
 		cron.WithSeconds(),
@@ -20,13 +20,13 @@ func Automate_route_scheduling() {
 	//for 12 AM
 	c.AddFunc("0 0 0 * * *", func() {
 		postgres.Change_route_direction("UP")
-		redis.NewRedisClient().CacheBusRoute(context.Background()) //cache current routes in redis
+		app.Store.InMemoryDB.CacheBusRoute(context.Background()) //cache current routes in redis
 	})
 
 	//for 12 PM
 	c.AddFunc("0 0 12 * * *", func() {
 		postgres.Change_route_direction("DOWN")
-		redis.NewRedisClient().CacheBusRoute(context.Background()) //cache current routes in redis
+		app.Store.InMemoryDB.CacheBusRoute(context.Background()) //cache current routes in redis
 	})
 	c.Start()
 

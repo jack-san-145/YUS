@@ -47,7 +47,7 @@ func main() {
 
 	postgres.Connect() //make a connection to postgres
 
-	go service.Automate_route_scheduling() //change the route direction on-runtime
+	go service.AutomateRouteScheduling(app) //change the route direction on-runtime
 
 	fmt.Println("Server listening on :8090")
 	err = http.ListenAndServe("0.0.0.0:8090", app.Router)
