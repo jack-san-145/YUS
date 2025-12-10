@@ -14,11 +14,6 @@ import (
 func (h *AdminHandler) GetCachedRoutesHandler(w http.ResponseWriter, r *http.Request) {
 	//yus.kwscloud.in/yus/get-cached-routes?bus_id=10
 
-	// if !FindAdminSession_web(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
-
 	bus_id_string := r.URL.Query().Get("bus_id")
 	bus_id_int, err := strconv.Atoi(bus_id_string)
 	if err != nil {
@@ -31,11 +26,6 @@ func (h *AdminHandler) GetCachedRoutesHandler(w http.ResponseWriter, r *http.Req
 
 func (h *AdminHandler) ListRoutesHandler(w http.ResponseWriter, r *http.Request) {
 
-	// if !FindAdminSession_web(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
-
 	//to load all the available routes
 	all_available_routes := postgres.Load_available_routes()
 	fmt.Println("avalaible routes - ", all_available_routes)
@@ -44,11 +34,6 @@ func (h *AdminHandler) ListRoutesHandler(w http.ResponseWriter, r *http.Request)
 
 func (h *AdminHandler) AddBusHandler(w http.ResponseWriter, r *http.Request) {
 	//yus.kwscloud.in/yus/add-new-bus?bus_id=10
-
-	// if !FindAdminSession_web(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
 
 	//to add a new bus
 	var status = make(map[string]string)
@@ -66,11 +51,6 @@ func (h *AdminHandler) AddBusHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h *AdminHandler) AssignRouteToBusHandler(w http.ResponseWriter, r *http.Request) {
 	//yus/allocate-bus-route?route_id=42&bus_id=10
-
-	// if !FindAdminSession_web(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
 
 	ctx := r.Context()
 
@@ -95,11 +75,6 @@ func (h *AdminHandler) AssignRouteToBusHandler(w http.ResponseWriter, r *http.Re
 }
 
 func (h *AdminHandler) AssignDriverToBusHandler(w http.ResponseWriter, r *http.Request) {
-
-	// if !FindAdminSession_web(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
 
 	ctx := r.Context()
 	//gets the driver and bus allocation array , after allocated it returns the results
@@ -128,11 +103,6 @@ func (h *AdminHandler) AssignDriverToBusHandler(w http.ResponseWriter, r *http.R
 }
 
 func (h *AdminHandler) UpdateRouteDirectionHandler(w http.ResponseWriter, r *http.Request) {
-
-	// if !FindAdminSession_web(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
 
 	ctx := r.Context()
 

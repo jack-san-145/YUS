@@ -13,11 +13,6 @@ import (
 
 func (h *AdminHandler) SaveRouteHandler(w http.ResponseWriter, r *http.Request) {
 
-	// if !FindAdminSession_mobile(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
-
 	var NewRoute models.Route
 	err := json.NewDecoder(r.Body).Decode(&NewRoute)
 	if err != nil {

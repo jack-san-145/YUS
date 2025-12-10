@@ -12,11 +12,6 @@ import (
 // to delele the given route from DB
 func (h *AdminHandler) RemoveRouteHandler(w http.ResponseWriter, r *http.Request) {
 
-	// if !FindAdminSession_web(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
-
 	route_id_string := chi.URLParam(r, "route-id")
 	route_id_int, err := strconv.Atoi(route_id_string)
 	if err != nil {
@@ -33,11 +28,6 @@ func (h *AdminHandler) RemoveRouteHandler(w http.ResponseWriter, r *http.Request
 // to remove the given bus from DB
 func (h *AdminHandler) RemoveBusHandler(w http.ResponseWriter, r *http.Request) {
 
-	// if !FindAdminSession_web(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
-
 	bus_id_string := chi.URLParam(r, "bus-id")
 	bus_id_int, err := strconv.Atoi(bus_id_string)
 	if err != nil {
@@ -53,11 +43,6 @@ func (h *AdminHandler) RemoveBusHandler(w http.ResponseWriter, r *http.Request) 
 
 // to remove the given driver from DB
 func (h *AdminHandler) RemoveDriverHandler(w http.ResponseWriter, r *http.Request) {
-
-	// if !FindAdminSession_web(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
 
 	driver_id_string := chi.URLParam(r, "driver-id")
 	driver_id_int, err := strconv.Atoi(driver_id_string)

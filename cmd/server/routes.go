@@ -66,7 +66,7 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 	})
 
 	router.Group(func(protectedAdmin chi.Router) {
-		protectedAdmin.Use(app.IsAdminAuthorized)
+		// protectedAdmin.Use(app.IsAdminAuthorized)
 
 		//route creation
 		router.Post("/yus/save-new-route", h.Admin.SaveRouteHandler)

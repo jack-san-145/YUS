@@ -12,11 +12,6 @@ import (
 
 func (h *AdminHandler) GetScheduleHandler(w http.ResponseWriter, r *http.Request) {
 
-	// if !FindAdminSession_web(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
-
 	current_schedule := postgres.Get_Current_schedule()
 	response.WriteJSON(w, r, current_schedule)
 
@@ -24,11 +19,6 @@ func (h *AdminHandler) GetScheduleHandler(w http.ResponseWriter, r *http.Request
 
 // To add many drivers in one request
 func (h *AdminHandler) AddDriverHandler(w http.ResponseWriter, r *http.Request) {
-
-	// if !FindAdminSession_web(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
 
 	var (
 		Driver_array []models.Driver
@@ -63,11 +53,6 @@ func (h *AdminHandler) AddDriverHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *AdminHandler) ListDriversHandler(w http.ResponseWriter, r *http.Request) {
-
-	// if !FindAdminSession_web(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
 
 	//to load all the available routes
 	all_available_drivers := postgres.Available_drivers()
