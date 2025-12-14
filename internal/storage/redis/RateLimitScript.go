@@ -37,7 +37,7 @@ func (r *RedisStore) RateLimiter(ctx context.Context, rateLimit *models.RateLimi
 	-- Refill tokens
 	local elapsed_time = math.max(0,now - last_time)
 	local refill = (elapsed_time/1000) * refill_rate
-	tokens = math.min(capacity,tokens + refill)
+	tokens = math.min(capacity,math.floor(tokens + refill))
 
 	-- find allowed status
 	local allowed = 0

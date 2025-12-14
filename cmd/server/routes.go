@@ -22,6 +22,8 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 		AllowCredentials: true,
 	}))
 
+	router.Use(app.RateLimit) //limits requests from same ip
+
 	// Serve static files for admin website (CSS, JS, images)
 	fileServer := http.FileServer(http.Dir("../../ui/Admin-website/static"))
 	router.Handle("/admin-static/*", http.StripPrefix("/admin-static/", fileServer))
@@ -37,7 +39,6 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 
 	//Passenger Operations
 	router.Group(func(passenger chi.Router) {
-		passenger.Use(app.RateLimit)
 		passenger.Get("/yus/passenger-ws", h.Passenger.WebSocketHandler)
 		passenger.Get("/yus/get-current-bus-routes", h.Passenger.GetCurrentBusRoutesHandler)
 		passenger.Get("/yus/src-{source}&dest-{destination}", h.Passenger.SrcDestHandler) //here i changed the endpoint format
@@ -48,7 +49,6 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 
 	//Driver Operations
 	router.Group(func(driver chi.Router) {
-		driver.Use(app.RateLimit)
 		driver.Post("/yus/send-otp-driver-password", h.Driver.SendOTPHandler)
 		driver.Post("/yus/verify-otp-driver-password", h.Driver.VerifyOTPHandler)
 		driver.Post("/yus/driver-login", h.Driver.LoginHandler)
@@ -71,7 +71,6 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 
 	router.Group(func(protectedAdmin chi.Router) {
 		// protectedAdmin.Use(app.IsAdminAuthorized)
-		protectedAdmin.Use(app.RateLimit)
 
 		//route creation
 		protectedAdmin.Post("/yus/save-new-route", h.Admin.SaveRouteHandler)

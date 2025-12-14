@@ -15,11 +15,11 @@ func (app *Application) RateLimit(next http.Handler) http.Handler {
 		var rateLimit models.RateLimit
 		ctx := r.Context()
 
-		ip := GetClientIP(r)
+		ip := "rate:ip:" + GetClientIP(r)
 		rateLimit.Key = ip
 		rateLimit.Capacity = 5
 		rateLimit.RefillPerSecond = 1
-		rateLimit.TimeStamp = time.Now().Unix()
+		rateLimit.TimeStamp = time.Now().UnixMilli()
 
 		allowed, err := app.Store.InMemoryDB.RateLimiter(ctx, &rateLimit)
 
