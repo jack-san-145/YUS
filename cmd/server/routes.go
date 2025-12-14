@@ -2,10 +2,12 @@ package main
 
 import (
 	"net/http"
+	"time"
 	"yus/internal/AppPkg"
 	"yus/internal/handlers"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 )
 
@@ -22,7 +24,12 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 		AllowCredentials: true,
 	}))
 
-	router.Use(app.RateLimit) //limits requests from same ip
+	router.Use(middleware.RequestID)                 //Assigns a unique ID to each request
+	router.Use(middleware.RealIP)                    // get correct client IP behind proxies
+	router.Use(middleware.Logger)                    // logs requests
+	router.Use(middleware.Recoverer)                 // recovers from panics
+	router.Use(middleware.Timeout(60 * time.Second)) // set request timeout
+	router.Use(app.RateLimit)                        //limits requests from same ip
 
 	// Serve static files for admin website (CSS, JS, images)
 	fileServer := http.FileServer(http.Dir("../../ui/Admin-website/static"))
@@ -55,7 +62,6 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 	})
 
 	router.Group(func(protectedDriver chi.Router) {
-		protectedDriver.Use(app.RateLimit)
 		protectedDriver.Use(app.IsDriverAuthorized)
 		protectedDriver.Get("/yus/driver-ws", h.Driver.WebSocketHandler)
 		protectedDriver.Get("/yus/get-allotted-bus", h.Driver.GetAllocatedBusHandler)
@@ -63,7 +69,6 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 
 	//Admin Operations
 	router.Group(func(admin chi.Router) {
-		admin.Use(app.RateLimit)
 		admin.Post("/yus/admin-login", h.Admin.LoginHandler)
 		admin.Post("/yus/send-otp-admin", h.Admin.SendOTPHandler)
 		admin.Post("/yus/verify-otp-admin", h.Admin.VerifyOTPHandler)
