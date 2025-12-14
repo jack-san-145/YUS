@@ -1,14 +1,16 @@
 package admin
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/go-chi/chi/v5"
 	"net/http"
 	"strconv"
 	"yus/internal/handlers/common/response"
 	"yus/internal/models"
 	"yus/internal/storage/postgres"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func (h *AdminHandler) GetCachedRoutesHandler(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +54,7 @@ func (h *AdminHandler) AddBusHandler(w http.ResponseWriter, r *http.Request) {
 func (h *AdminHandler) AssignRouteToBusHandler(w http.ResponseWriter, r *http.Request) {
 	//yus/allocate-bus-route?route_id=42&bus_id=10
 
-	ctx := r.Context()
+	// ctx := r.Context()
 
 	//mapping route to the bus
 	var status = make(map[string]bool)
@@ -71,12 +73,12 @@ func (h *AdminHandler) AssignRouteToBusHandler(w http.ResponseWriter, r *http.Re
 	}
 	response.WriteJSON(w, r, status)
 
-	go h.Store.InMemoryDB.CacheBusRoute(ctx)
+	go h.Store.InMemoryDB.CacheBusRoute(context.Background())
 }
 
 func (h *AdminHandler) AssignDriverToBusHandler(w http.ResponseWriter, r *http.Request) {
 
-	ctx := r.Context()
+	// ctx := r.Context()
 	//gets the driver and bus allocation array , after allocated it returns the results
 	var DriverAllocation_array []models.DriverAllocation
 
@@ -99,12 +101,10 @@ func (h *AdminHandler) AssignDriverToBusHandler(w http.ResponseWriter, r *http.R
 
 	response.WriteJSON(w, r, status)
 
-	go h.Store.InMemoryDB.CacheBusRoute(ctx)
+	go h.Store.InMemoryDB.CacheBusRoute(context.Background())
 }
 
 func (h *AdminHandler) UpdateRouteDirectionHandler(w http.ResponseWriter, r *http.Request) {
-
-	ctx := r.Context()
 
 	direction := chi.URLParam(r, "direction")
 	if direction == "UP" || direction == "DOWN" {
@@ -117,6 +117,6 @@ func (h *AdminHandler) UpdateRouteDirectionHandler(w http.ResponseWriter, r *htt
 		response.WriteJSON(w, r, map[string]bool{"changed": false})
 	}
 
-	go h.Store.InMemoryDB.CacheBusRoute(ctx)
+	go h.Store.InMemoryDB.CacheBusRoute(context.Background())
 
 }

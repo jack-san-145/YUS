@@ -1,6 +1,7 @@
 package passenger
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -58,7 +59,7 @@ func (h *PassengerHandler) GetCurrentBusRoutesHandler(w http.ResponseWriter, r *
 
 	if err != nil {
 		bus_routes = postgres.Current_bus_routes()
-		go h.Store.InMemoryDB.CacheBusRoute(ctx)
+		go h.Store.InMemoryDB.CacheBusRoute(context.Background())
 	}
 
 	if len(bus_routes) != 0 {

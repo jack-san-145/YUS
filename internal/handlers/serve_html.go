@@ -8,11 +8,6 @@ import (
 
 func Serve_index_page(w http.ResponseWriter, r *http.Request) {
 
-	// if !FindAdminSession_web(r) {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
-
 	templ, err := template.ParseFiles("../../ui/Admin-website/templates/index.html")
 	if err != nil {
 		fmt.Println("index.html not found - ", err)
