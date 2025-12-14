@@ -115,3 +115,4 @@ type PassengerWsRequest struct {
 	RouteId   int    `json:"route_id"`
 	Direction string `json:"direction"`
 }
+
