@@ -37,22 +37,25 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 
 	//Passenger Operations
 	router.Group(func(passenger chi.Router) {
-		router.Get("/yus/passenger-ws", h.Passenger.WebSocketHandler)
-		router.Get("/yus/get-current-bus-routes", h.Passenger.GetCurrentBusRoutesHandler)
-		router.Get("/yus/src-{source}&dest-{destination}", h.Passenger.SrcDestHandler) //here i changed the endpoint format
-		router.Get("/yus/src-{source}&dest-{destination}&stop-{stop}", h.Passenger.SrcDestStopsHandler)
-		router.Get("/yus/get-route", h.Passenger.GetRouteByBusIDHandler) //route by BusID
+		passenger.Use(app.RateLimit)
+		passenger.Get("/yus/passenger-ws", h.Passenger.WebSocketHandler)
+		passenger.Get("/yus/get-current-bus-routes", h.Passenger.GetCurrentBusRoutesHandler)
+		passenger.Get("/yus/src-{source}&dest-{destination}", h.Passenger.SrcDestHandler) //here i changed the endpoint format
+		passenger.Get("/yus/src-{source}&dest-{destination}&stop-{stop}", h.Passenger.SrcDestStopsHandler)
+		passenger.Get("/yus/get-route", h.Passenger.GetRouteByBusIDHandler) //route by BusID
 
 	})
 
 	//Driver Operations
 	router.Group(func(driver chi.Router) {
-		router.Post("/yus/send-otp-driver-password", h.Driver.SendOTPHandler)
-		router.Post("/yus/verify-otp-driver-password", h.Driver.VerifyOTPHandler)
-		router.Post("/yus/driver-login", h.Driver.LoginHandler)
+		driver.Use(app.RateLimit)
+		driver.Post("/yus/send-otp-driver-password", h.Driver.SendOTPHandler)
+		driver.Post("/yus/verify-otp-driver-password", h.Driver.VerifyOTPHandler)
+		driver.Post("/yus/driver-login", h.Driver.LoginHandler)
 	})
 
 	router.Group(func(protectedDriver chi.Router) {
+		protectedDriver.Use(app.RateLimit)
 		protectedDriver.Use(app.IsDriverAuthorized)
 		protectedDriver.Get("/yus/driver-ws", h.Driver.WebSocketHandler)
 		protectedDriver.Get("/yus/get-allotted-bus", h.Driver.GetAllocatedBusHandler)
@@ -60,6 +63,7 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 
 	//Admin Operations
 	router.Group(func(admin chi.Router) {
+		admin.Use(app.RateLimit)
 		admin.Post("/yus/admin-login", h.Admin.LoginHandler)
 		admin.Post("/yus/send-otp-admin", h.Admin.SendOTPHandler)
 		admin.Post("/yus/verify-otp-admin", h.Admin.VerifyOTPHandler)
@@ -67,9 +71,10 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 
 	router.Group(func(protectedAdmin chi.Router) {
 		// protectedAdmin.Use(app.IsAdminAuthorized)
+		protectedAdmin.Use(app.RateLimit)
 
 		//route creation
-		router.Post("/yus/save-new-route", h.Admin.SaveRouteHandler)
+		protectedAdmin.Post("/yus/save-new-route", h.Admin.SaveRouteHandler)
 
 		//scheduling Operations
 		protectedAdmin.Put("/yus/change-route/{direction}", h.Admin.UpdateRouteDirectionHandler)
