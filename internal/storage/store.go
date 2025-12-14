@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 	"yus/internal/models"
-	// "github.com/jackc/pgx/v5/pgxpool"
 )
 
 type InMemoryStore interface {
@@ -28,6 +27,8 @@ type InMemoryStore interface {
 	GetArrivalStatus(ctx context.Context, driverID int) (map[int]string, error)
 	CacheBusRoute(ctx context.Context) error
 	GetCachedRoute(ctx context.Context) ([]models.CurrentRoute, error)
+
+	RateLimiter(ctx context.Context, rateLimit *models.RateLimit) (int, error)
 }
 
 type DBStore interface {
