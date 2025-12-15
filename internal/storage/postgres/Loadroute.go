@@ -61,7 +61,7 @@ func Load_routes_by_src_and_dest(src string, dest string) {
 
 func Get_Current_schedule() []models.CurrentSchedule {
 	var current_schedule []models.CurrentSchedule
-	query := "select bus_id,driver_id from current_bus_route"
+	query := "select bus_id,driver_id,route_id from current_bus_route"
 	rows, err := pool.Query(context.Background(), query)
 	if err != nil {
 		fmt.Println("error while finding the current bus route - ", err)
@@ -72,7 +72,8 @@ func Get_Current_schedule() []models.CurrentSchedule {
 
 		var bus_route models.CurrentSchedule
 		rows.Scan(&bus_route.BusId,
-			&bus_route.DriverId)
+			&bus_route.DriverId,
+		&bus_route.RouteId)
 
 		current_schedule = append(current_schedule, bus_route)
 	}
