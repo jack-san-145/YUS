@@ -21,8 +21,6 @@ type Route struct {
 	UpDepartureTime   string       `json:"up_departure_time"`
 	DownDepartureTime string       `json:"down_departure_time"` //its for down_departure_time
 	Created_At        time.Time    `json:"created_at"`
-	// DepartureTime string       `json:"down_departure_time"`
-
 }
 
 type RouteStops struct {
@@ -108,6 +106,7 @@ type AllotedBus struct {
 type CurrentSchedule struct {
 	DriverId int `json:"driver_id"`
 	BusId    int `json:"bus_id"`
+	RouteId  int `json:"route_id"`
 }
 
 type PassengerWsRequest struct {
@@ -115,4 +114,3 @@ type PassengerWsRequest struct {
 	RouteId   int    `json:"route_id"`
 	Direction string `json:"direction"`
 }
-
