@@ -412,3 +412,19 @@ backend to frontend:
         "email": ""
     }
 ]
+
+
+
+
+9. Bus Scheduling :
+
+
+
+endpoint : https://yus.kwscloud.in/yus/schedule-bus?bus_id=10&driver_id=1004&route_id=28
+method : Put (Query param)
+
+backend to frontend:
+{
+    status : true (or)
+    status : false 
+}
