@@ -24,9 +24,9 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 		AllowCredentials: true,
 	}))
 
-	router.Use(middleware.RequestID)                 //Assigns a unique ID to each request
-	router.Use(middleware.RealIP)                    // get correct client IP behind proxies
-	router.Use(middleware.Logger)                    // logs requests
+	router.Use(middleware.RequestID) //Assigns a unique ID to each request
+	router.Use(middleware.RealIP)    // get correct client IP behind proxies
+	// router.Use(middleware.Logger)                    // logs requests
 	router.Use(middleware.Recoverer)                 // recovers from panics
 	router.Use(middleware.Timeout(60 * time.Second)) // set request timeout
 	router.Use(app.RateLimit)                        //limits requests from same ip
@@ -90,7 +90,7 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 		protectedAdmin.Get("/yus/get-available-drivers", h.Admin.ListDriversHandler)
 		protectedAdmin.Get("/yus/get-cached-routes", h.Admin.GetCachedRoutesHandler)
 		protectedAdmin.Get("/yus/get-current-schedule", h.Admin.GetScheduleHandler)
-
+		protectedAdmin.Put("/yus/schedule-bus", h.Admin.ScheduleBusHandler)
 		//removal operations
 		protectedAdmin.Delete("/yus/remove-route/{route-id}", h.Admin.RemoveRouteHandler)
 		protectedAdmin.Delete("/yus/remove-bus/{bus-id}", h.Admin.RemoveBusHandler)
