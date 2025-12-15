@@ -3,7 +3,9 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"strconv"
 	"yus/internal/handlers/common/response"
 	"yus/internal/models"
 	"yus/internal/services"
@@ -58,4 +60,38 @@ func (h *AdminHandler) ListDriversHandler(w http.ResponseWriter, r *http.Request
 	all_available_drivers := postgres.Available_drivers()
 	fmt.Println("avalaible drivers - ", all_available_drivers)
 	response.WriteJSON(w, r, all_available_drivers)
+}
+
+func ScheduleBusHandler(w http.ResponseWriter, r *http.Request) {
+
+	//https://yus.kwscloud.in/schedule-bus?bus_id=10&driver_id=1050&route_id=33
+
+	var (
+		bus_id    int
+		driver_id int
+		route_id  int
+		err       error
+	)
+
+	bus_id_string := r.URL.Query().Get("bus_id")
+	driver_id_string := r.URL.Query().Get("driver_id")
+	route_id_string := r.URL.Query().Get("route_id")
+
+	bus_id, err = strconv.Atoi(bus_id_string)
+	if err != nil {
+		log.Println("error while converting bus_id to int - ", err)
+		return
+	}
+
+	driver_id, err = strconv.Atoi(driver_id_string)
+	if err != nil {
+		log.Println("error while converting driver_id to int - ", err)
+		return
+	}
+	route_id, err = strconv.Atoi(route_id_string)
+	if err != nil {
+		log.Println("error while converting route_id to int - ", err)
+		return
+	}
+
 }
