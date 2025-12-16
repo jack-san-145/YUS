@@ -14,7 +14,7 @@ import (
 
 func (h *AdminHandler) GetScheduleHandler(w http.ResponseWriter, r *http.Request) {
 
-	current_schedule := postgres.Get_Current_schedule()
+	current_schedule, _ := postgres.Get_Current_schedule()
 	response.WriteJSON(w, r, current_schedule)
 
 }
