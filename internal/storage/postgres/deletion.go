@@ -19,11 +19,11 @@ func RemoveRoute(ctx context.Context, routeID int) error {
 	return nil
 }
 
-func Remove_bus(bus_id int) error {
+func RemoveBus(ctx context.Context, busID int) error {
 
 	query := fmt.Sprintf(`delete from cached_bus_route where bus_id = %d;
 							delete from current_bus_route where bus_id = %d;
-						`, bus_id, bus_id)
+						`, busID, busID)
 	_, err := pool.Exec(context.Background(), query)
 	if err != nil {
 		fmt.Println("error while removing bus - ", err)
@@ -32,10 +32,10 @@ func Remove_bus(bus_id int) error {
 	return nil
 }
 
-func Remove_driver(driver_id int) error {
+func RemoveDriver(ctx context.Context, driverID int) error {
 	query := fmt.Sprintf(`update current_bus_route set driver_id = 1000 where driver_id = %d ;
 							delete from drivers where driver_id = %d ;
-						`, driver_id, driver_id)
+						`, driverID, driverID)
 	_, err := pool.Exec(context.Background(), query)
 	if err != nil {
 		fmt.Println("error while removing driver - ", err)
