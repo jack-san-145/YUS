@@ -106,13 +106,13 @@ func Current_bus_routes() ([]models.CurrentRoute, error) {
 }
 
 // function to load all up_routes
-func Load_available_routes() []models.AvilableRoute {
+func Load_available_routes() ([]models.AvilableRoute, error) {
 	var Available_routes []models.AvilableRoute
 	query := "select route_id,route_name,src,dest,direction from all_routes where direction = 'UP' "
 	all_routes, err := pool.Query(context.Background(), query)
 	if err != nil {
 		fmt.Println("error while finding the the all_routes - ", err)
-		return nil
+		return nil, err
 	}
 
 	defer all_routes.Close()
@@ -151,16 +151,16 @@ func Load_available_routes() []models.AvilableRoute {
 		}
 		Available_routes = append(Available_routes, route)
 	}
-	return Available_routes
+	return Available_routes, nil
 }
 
-func Load_cached_route(bus_id int) []models.BusRoute {
+func Load_cached_route(bus_id int) ([]models.BusRoute, error) {
 	var All_bus_routes []models.BusRoute
 	query := "select route_id,route_name,src,dest from cached_bus_route where bus_id = $1"
 	rows, err := pool.Query(context.Background(), query, bus_id)
 	if err != nil {
 		fmt.Println("error while fetching the cached routes - ", err)
-		return All_bus_routes
+		return All_bus_routes, err
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -193,5 +193,5 @@ func Load_cached_route(bus_id int) []models.BusRoute {
 		}
 
 	}
-	return All_bus_routes
+	return All_bus_routes, nil
 }

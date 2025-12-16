@@ -38,7 +38,7 @@ func (h *AdminHandler) AddDriverHandler(w http.ResponseWriter, r *http.Request) 
 
 		fmt.Println("driver - ", driver)
 		if services.ValidateMobileNo(driver.Mobile_no) && services.ValidateName(driver.Name) {
-			if postgres.Store_new_driver_to_DB(&driver) { //stores the new_driver to DB
+			if err := postgres.Store_new_driver_to_DB(&driver); err == nil { //stores the new_driver to DB
 				status.IsAdded = true
 			} else {
 				status.IsAdded = false

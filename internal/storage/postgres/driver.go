@@ -9,7 +9,7 @@ import (
 	"yus/internal/services"
 )
 
-func Get_Allotted_Bus(driver_id int) models.AllotedBus {
+func Get_Allotted_Bus(driver_id int) (models.AllotedBus, error) {
 
 	var alloted_bus models.AllotedBus
 	query := "select bus_id,route_id,route_name,direction,src,dest from current_bus_route where driver_id = $1"
@@ -28,21 +28,23 @@ func Get_Allotted_Bus(driver_id int) models.AllotedBus {
 	alloted_bus.DriverId = driver_id
 	if errors.Is(err, sql.ErrNoRows) {
 		fmt.Printf("no bus is allotted for driver_id - %v", driver_id)
+		return alloted_bus, fmt.Errorf("no bus alloted")
 	} else if err != nil {
 		fmt.Println("error while finding the allotted bus for driver - ", err)
+		return alloted_bus, err
 	}
-	return alloted_bus
+	return alloted_bus, nil
 }
 
-func Store_new_driver_to_DB(new_driver *models.Driver) bool {
+func Store_new_driver_to_DB(new_driver *models.Driver) error {
 	query := "insert into drivers(driver_name,mobile_no) values($1,$2)"
 	_, err := pool.Exec(context.Background(), query, new_driver.Name, new_driver.Mobile_no)
 	if err != nil {
 		fmt.Println("error while inserting the new driver - ", err)
-		return false
+		return err
 	}
 	fmt.Println("working")
-	return true
+	return nil
 }
 
 func Check_Driver_exits(driver_id int) bool {
@@ -51,8 +53,9 @@ func Check_Driver_exits(driver_id int) bool {
 	err := pool.QueryRow(context.Background(), query, driver_id).Scan(&exists)
 	if err != nil {
 		fmt.Println("error while checking the existance of driver - ", err)
+		return
 	}
-	return exists
+	return exists,nil
 }
 
 func Set_driver_password(driver_id int, driver_email string, password string) bool {

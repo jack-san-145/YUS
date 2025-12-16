@@ -122,7 +122,7 @@ func (h *DriverHandler) GetAllocatedBusHandler(w http.ResponseWriter, r *http.Re
 	driver_id := r.Context().Value("DRIVER_ID").(int)
 
 	fmt.Println("driver_id- ", driver_id)
-	alloted_bus := postgres.Get_Allotted_Bus(driver_id)
+	alloted_bus, _ := postgres.Get_Allotted_Bus(driver_id)
 	if alloted_bus.BusID != 0 && alloted_bus.RouteId != 0 {
 		response.WriteJSON(w, r, alloted_bus)
 	} else {

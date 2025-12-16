@@ -22,14 +22,14 @@ func (h *AdminHandler) GetCachedRoutesHandler(w http.ResponseWriter, r *http.Req
 		fmt.Println("error while converting bus_id_int to bus_id_string - ", err)
 		return
 	}
-	cached_bus_routes := postgres.Load_cached_route(bus_id_int)
+	cached_bus_routes, _ := postgres.Load_cached_route(bus_id_int)
 	response.WriteJSON(w, r, cached_bus_routes)
 }
 
 func (h *AdminHandler) ListRoutesHandler(w http.ResponseWriter, r *http.Request) {
 
 	//to load all the available routes
-	all_available_routes := postgres.Load_available_routes()
+	all_available_routes, _ := postgres.Load_available_routes()
 	fmt.Println("avalaible routes - ", all_available_routes)
 	response.WriteJSON(w, r, all_available_routes)
 }
