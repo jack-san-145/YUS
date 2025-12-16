@@ -114,3 +114,9 @@ type PassengerWsRequest struct {
 	RouteId   int    `json:"route_id"`
 	Direction string `json:"direction"`
 }
+
+type AllRoute struct {
+	Currentroute CurrentRoute
+	Uproute      CurrentRoute
+	Downroute    CurrentRoute
+}

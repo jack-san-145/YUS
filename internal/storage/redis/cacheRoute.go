@@ -10,7 +10,7 @@ import (
 )
 
 func (r *RedisStore) CacheBusRoute(ctx context.Context) error {
-	current_bus_route := postgres.Current_bus_routes()
+	current_bus_route, _ := postgres.Current_bus_routes()
 
 	current_bus_route_byte, err := json.Marshal(current_bus_route)
 	if err != nil {

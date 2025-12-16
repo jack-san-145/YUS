@@ -9,7 +9,7 @@ import (
 	"yus/internal/services"
 )
 
-func Find_groute_by_bus_or_driver_ID(bus_id int, requestFrom string) (*models.AllRoute, error) {
+func Find_route_by_bus_or_driver_ID(bus_id int, requestFrom string) (*models.AllRoute, error) {
 	if requestFrom == "DRIVER" {
 		driver_id := &bus_id
 		query := "select bus_id from current_bus_route where driver_id = $1"

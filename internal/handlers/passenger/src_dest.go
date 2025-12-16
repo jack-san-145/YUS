@@ -58,7 +58,7 @@ func (h *PassengerHandler) GetCurrentBusRoutesHandler(w http.ResponseWriter, r *
 	bus_routes, err := h.Store.InMemoryDB.GetCachedRoute(ctx)
 
 	if err != nil {
-		bus_routes = postgres.Current_bus_routes()
+		bus_routes, _ = postgres.Current_bus_routes()
 		go h.Store.InMemoryDB.CacheBusRoute(context.Background())
 	}
 

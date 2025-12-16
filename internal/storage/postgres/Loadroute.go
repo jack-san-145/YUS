@@ -59,12 +59,13 @@ func Load_routes_by_src_and_dest(src string, dest string) {
 }
 */
 
-func Get_Current_schedule() []models.CurrentSchedule {
+func Get_Current_schedule() ([]models.CurrentSchedule, error) {
 	var current_schedule []models.CurrentSchedule
 	query := "select bus_id,driver_id,route_id from current_bus_route"
 	rows, err := pool.Query(context.Background(), query)
 	if err != nil {
 		fmt.Println("error while finding the current bus route - ", err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -73,14 +74,14 @@ func Get_Current_schedule() []models.CurrentSchedule {
 		var bus_route models.CurrentSchedule
 		rows.Scan(&bus_route.BusId,
 			&bus_route.DriverId,
-		&bus_route.RouteId)
+			&bus_route.RouteId)
 
 		current_schedule = append(current_schedule, bus_route)
 	}
-	return current_schedule
+	return current_schedule, nil
 }
 
-func Current_bus_routes() []models.CurrentRoute {
+func Current_bus_routes() ([]models.CurrentRoute, error) {
 
 	query := "select bus_id from current_bus_route where driver_id!=1000 and route_id!=0"
 	bus_id_rows, _ := pool.Query(context.Background(), query)
@@ -93,13 +94,14 @@ func Current_bus_routes() []models.CurrentRoute {
 		err := bus_id_rows.Scan(&bus_id)
 		if err != nil {
 			fmt.Println("error while scanning bus_id - ", err)
+			return nil, err
 		} else {
-			_, uproute, downroute := Find_route_by_bus_or_driver_ID(bus_id, "PASSENGER")
-			Current_Bus_route = append(Current_Bus_route, uproute)
-			Current_Bus_route = append(Current_Bus_route, downroute)
+			r, _ := Find_route_by_bus_or_driver_ID(bus_id, "PASSENGER")
+			Current_Bus_route = append(Current_Bus_route, r.Uproute)
+			Current_Bus_route = append(Current_Bus_route, r.Downroute)
 		}
 	}
-	return Current_Bus_route
+	return Current_Bus_route, nil
 
 }
 

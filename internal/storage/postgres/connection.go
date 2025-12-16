@@ -19,11 +19,6 @@ func Connect() {
 		err    error
 	)
 
-	// err = godotenv.Load("../../../.env") // adjust path as needed
-	// if err != nil {
-	// 	fmt.Println("⚠️ Warning: .env file not loaded:", err)
-	// }
-
 	//get the connection string from the .env file
 	username := os.Getenv("POSTGRES_DB_USERNAME")
 	pass := os.Getenv("POSTGRES_DB_PASSWORD")
