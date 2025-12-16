@@ -20,8 +20,12 @@ func (h *AdminHandler) RemoveRouteHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	status, _ := postgres.Remove_route(route_id_int)
-	response.WriteJSON(w, r, map[string]bool{"deleted": status})
+	err = postgres.Remove_route(route_id_int)
+	if err != nil {
+		response.WriteJSON(w, r, map[string]bool{"deleted": false})
+		return
+	}
+	response.WriteJSON(w, r, map[string]bool{"deleted": true})
 
 }
 
@@ -36,8 +40,12 @@ func (h *AdminHandler) RemoveBusHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	status, _ := postgres.Remove_bus(bus_id_int)
-	response.WriteJSON(w, r, map[string]bool{"removed": status})
+	err = postgres.Remove_bus(bus_id_int)
+	if err != nil {
+		response.WriteJSON(w, r, map[string]bool{"removed": false})
+		return
+	}
+	response.WriteJSON(w, r, map[string]bool{"removed": true})
 
 }
 
@@ -52,7 +60,11 @@ func (h *AdminHandler) RemoveDriverHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	status, _ := postgres.Remove_driver(driver_id_int)
-	response.WriteJSON(w, r, map[string]bool{"removed": status})
+	err = postgres.Remove_driver(driver_id_int)
+	if err != nil {
+		response.WriteJSON(w, r, map[string]bool{"removed": false})
+		return
+	}
+	response.WriteJSON(w, r, map[string]bool{"removed": true})
 
 }
