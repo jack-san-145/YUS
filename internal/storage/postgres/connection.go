@@ -17,7 +17,7 @@ type PgStore struct {
 	Pool *pgxpool.Pool
 }
 
-func NewPgPool() *PgStore {
+func NewPgStore() *PgStore {
 	return &PgStore{}
 }
 
