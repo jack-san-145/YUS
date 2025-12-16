@@ -13,7 +13,7 @@ import (
 
 var pool *pgxpool.Pool
 
-func Connect() {
+func Connect() error {
 	var (
 		config *pgxpool.Config
 		err    error
@@ -35,6 +35,7 @@ func Connect() {
 	config, err = pgxpool.ParseConfig(conn)
 	if err != nil {
 		fmt.Println("error while parsing the conn - ", err)
+		return err
 	}
 
 	config.MaxConns = 10               // seting 10 maximum connections at the time
@@ -43,13 +44,16 @@ func Connect() {
 	pool, err = pgxpool.NewWithConfig(ctx, config) // created the new pool connection with the config
 	if err != nil {
 		fmt.Println("error while creating the new pool connection - ", err)
+		return err
 	}
 
 	err = pool.Ping(ctx)
 	if err != nil {
 		fmt.Println("error while pool connection ping - ", err)
+		return err
 	}
 	fmt.Println("database connected successfully")
+	return nil
 }
 
 func GivePostgresConnection() *pgxpool.Pool {

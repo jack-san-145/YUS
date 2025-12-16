@@ -35,7 +35,7 @@ func (h *PassengerHandler) SrcDestStopsHandler(w http.ResponseWriter, r *http.Re
 	src = services.Convert_to_CamelCase(src)
 	dest = services.Convert_to_CamelCase(dest)
 	stop = services.Convert_to_CamelCase(stop)
-	matched_routes := postgres.FindRoutes_by_src_dest_stop(src, dest, stop)
+	matched_routes, _ := postgres.FindRoutes_by_src_dest_stop(src, dest, stop)
 	response.WriteJSON(w, r, matched_routes)
 
 }
@@ -47,7 +47,8 @@ func (h *PassengerHandler) SrcDestHandler(w http.ResponseWriter, r *http.Request
 
 	src = services.Convert_to_CamelCase(src)
 	dest = services.Convert_to_CamelCase(dest)
-	response.WriteJSON(w, r, postgres.FindRoutes_by_src_dest(src, dest))
+	route, _ := postgres.FindRoutes_by_src_dest(src, dest)
+	response.WriteJSON(w, r, route)
 
 }
 

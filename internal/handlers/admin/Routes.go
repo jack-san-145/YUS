@@ -108,7 +108,7 @@ func (h *AdminHandler) UpdateRouteDirectionHandler(w http.ResponseWriter, r *htt
 
 	direction := chi.URLParam(r, "direction")
 	if direction == "UP" || direction == "DOWN" {
-		if postgres.Change_route_direction(direction) {
+		if ok, _ := postgres.Change_route_direction(direction); ok {
 			response.WriteJSON(w, r, map[string]bool{"changed": true})
 		} else {
 			response.WriteJSON(w, r, map[string]bool{"changed": false})

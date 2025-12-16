@@ -69,7 +69,7 @@ func Map_route_with_bus(route_id int, bus_id int) error {
 	return nil
 }
 
-func find_src_dest_name_by_routeId(route_id int) (string, string, string) {
+func find_src_dest_name_by_routeId(route_id int) (string, string, string, error) {
 	var (
 		route_name string
 		src        string
@@ -79,8 +79,9 @@ func find_src_dest_name_by_routeId(route_id int) (string, string, string) {
 	err := pool.QueryRow(context.Background(), query, route_id).Scan(&route_name, &src, &dest)
 	if err != nil {
 		fmt.Println("error while finding the route_name,src and dest - ", err)
+		return "", "", "", err
 	}
-	return src, dest, route_name
+	return src, dest, route_name, nil
 }
 
 // finds , is the route_id existing in the current_bus_route
