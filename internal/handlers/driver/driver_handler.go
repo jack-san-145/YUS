@@ -27,7 +27,7 @@ func (h *DriverHandler) SendOTPHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("error while converting the driver_id string to driver_id_int - ", err)
 	}
-	if !postgres.Check_Driver_exits(driver_id_int) {
+	if exists, _ := postgres.Check_Driver_exits(driver_id_int); !exists {
 		response.WriteJSON(w, r, map[string]string{"status": "no driver found"})
 		return
 	}
@@ -71,8 +71,12 @@ func (h *DriverHandler) VerifyOTPHandler(w http.ResponseWriter, r *http.Request)
 
 		otp, _ := h.Store.InMemoryDB.GetOtp(ctx, email)
 		if given_otp == otp {
-			postgres.Set_driver_password(driver_id_int, email, password)
-			pass_status["status"] = "success"
+			ok, _ := postgres.Set_driver_password(driver_id_int, email, password)
+			if ok {
+				pass_status["status"] = "success"
+			} else {
+				pass_status["status"] = "failed"
+			}
 
 		} else {
 			pass_status["status"] = "failed"
