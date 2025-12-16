@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func ScheduleBus(schedule *models.CurrentSchedule) error {
+func ScheduleBus(ctx context.Context, schedule *models.CurrentSchedule) error {
 
 	var route models.BusRoute
 
@@ -16,7 +16,6 @@ func ScheduleBus(schedule *models.CurrentSchedule) error {
 	route.RouteId = schedule.RouteId
 	route.Src, route.Dest, route.RouteName, _ = find_src_dest_name_by_routeId(schedule.RouteId)
 
-	ctx := context.Background()
 	tx, err := pool.Begin(ctx) //transaction for atomic operation
 	if err != nil {
 		log.Println("failed to begin tx:", err)

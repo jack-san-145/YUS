@@ -13,8 +13,9 @@ import (
 )
 
 func (h *AdminHandler) GetScheduleHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
-	current_schedule, _ := postgres.Get_Current_schedule()
+	current_schedule, _ := postgres.GetCurrentSchedule(ctx)
 	response.WriteJSON(w, r, current_schedule)
 
 }
@@ -26,6 +27,8 @@ func (h *AdminHandler) AddDriverHandler(w http.ResponseWriter, r *http.Request) 
 		Driver_array []models.Driver
 		Status_array []models.DriverAddedStatus
 	)
+
+	ctx := r.Context()
 	err := json.NewDecoder(r.Body).Decode(&Driver_array)
 	if err != nil {
 		fmt.Println("error while decode the driver array - ", err)
@@ -38,7 +41,7 @@ func (h *AdminHandler) AddDriverHandler(w http.ResponseWriter, r *http.Request) 
 
 		fmt.Println("driver - ", driver)
 		if services.ValidateMobileNo(driver.Mobile_no) && services.ValidateName(driver.Name) {
-			if err := postgres.Store_new_driver_to_DB(&driver); err == nil { //stores the new_driver to DB
+			if err := postgres.AddDriver(ctx, &driver); err == nil { //stores the new_driver to DB
 				status.IsAdded = true
 			} else {
 				status.IsAdded = false
@@ -56,13 +59,16 @@ func (h *AdminHandler) AddDriverHandler(w http.ResponseWriter, r *http.Request) 
 
 func (h *AdminHandler) ListDriversHandler(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
 	//to load all the available routes
-	all_available_drivers, _ := postgres.Available_drivers()
+	all_available_drivers, _ := postgres.GetAvailableDrivers(ctx)
 	fmt.Println("avalaible drivers - ", all_available_drivers)
 	response.WriteJSON(w, r, all_available_drivers)
 }
 
 func (h *AdminHandler) ScheduleBusHandler(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
 
 	//https://yus.kwscloud.in/schedule-bus?bus_id=10&driver_id=1050&route_id=33
 
@@ -92,7 +98,7 @@ func (h *AdminHandler) ScheduleBusHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = postgres.ScheduleBus(&schedule)
+	err = postgres.ScheduleBus(ctx, &schedule)
 	if err != nil {
 		response.WriteJSON(w, r, map[string]bool{"status": false})
 		return

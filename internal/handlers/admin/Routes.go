@@ -106,9 +106,10 @@ func (h *AdminHandler) AssignDriverToBusHandler(w http.ResponseWriter, r *http.R
 
 func (h *AdminHandler) UpdateRouteDirectionHandler(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
 	direction := chi.URLParam(r, "direction")
 	if direction == "UP" || direction == "DOWN" {
-		if ok, _ := postgres.Change_route_direction(direction); ok {
+		if ok, _ := postgres.ChangeRouteDirection(ctx, direction); ok {
 			response.WriteJSON(w, r, map[string]bool{"changed": true})
 		} else {
 			response.WriteJSON(w, r, map[string]bool{"changed": false})

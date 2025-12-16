@@ -9,11 +9,11 @@ import (
 	"yus/internal/services"
 )
 
-func Get_Allotted_Bus(driver_id int) (models.AllotedBus, error) {
+func GetAllottedBusForDriver(ctx context.Context, driverID int) (models.AllotedBus, error) {
 
 	var alloted_bus models.AllotedBus
 	query := "select bus_id,route_id,route_name,direction,src,dest from current_bus_route where driver_id = $1"
-	err := pool.QueryRow(context.Background(), query, driver_id).Scan(&alloted_bus.BusID,
+	err := pool.QueryRow(context.Background(), query, driverID).Scan(&alloted_bus.BusID,
 
 		&alloted_bus.RouteId,
 		&alloted_bus.RouteName,
@@ -25,9 +25,9 @@ func Get_Allotted_Bus(driver_id int) (models.AllotedBus, error) {
 	alloted_bus.Src = services.Convert_to_Normal(alloted_bus.Src)
 	alloted_bus.Dest = services.Convert_to_Normal(alloted_bus.Dest)
 
-	alloted_bus.DriverId = driver_id
+	alloted_bus.DriverId = driverID
 	if errors.Is(err, sql.ErrNoRows) {
-		fmt.Printf("no bus is allotted for driver_id - %v", driver_id)
+		fmt.Printf("no bus is allotted for driver_id - %v", driverID)
 		return alloted_bus, fmt.Errorf("no bus alloted")
 	} else if err != nil {
 		fmt.Println("error while finding the allotted bus for driver - ", err)
@@ -36,9 +36,9 @@ func Get_Allotted_Bus(driver_id int) (models.AllotedBus, error) {
 	return alloted_bus, nil
 }
 
-func Store_new_driver_to_DB(new_driver *models.Driver) error {
+func AddDriver(ctx context.Context, driver *models.Driver) error {
 	query := "insert into drivers(driver_name,mobile_no) values($1,$2)"
-	_, err := pool.Exec(context.Background(), query, new_driver.Name, new_driver.Mobile_no)
+	_, err := pool.Exec(context.Background(), query, driver.Name, driver.Mobile_no)
 	if err != nil {
 		fmt.Println("error while inserting the new driver - ", err)
 		return err
@@ -47,10 +47,10 @@ func Store_new_driver_to_DB(new_driver *models.Driver) error {
 	return nil
 }
 
-func Check_Driver_exits(driver_id int) (bool, error) {
+func DriverExists(ctx context.Context, driverID int) (bool, error) {
 	var exists bool
 	query := "select exists(select 1 from drivers where driver_id = $1)"
-	err := pool.QueryRow(context.Background(), query, driver_id).Scan(&exists)
+	err := pool.QueryRow(context.Background(), query, driverID).Scan(&exists)
 	if err != nil {
 		fmt.Println("error while checking the existance of driver - ", err)
 		return exists, err
@@ -58,11 +58,11 @@ func Check_Driver_exits(driver_id int) (bool, error) {
 	return exists, nil
 }
 
-func Set_driver_password(driver_id int, driver_email string, password string) (bool, error) {
+func SetDriverPassword(ctx context.Context, driverID int, email string, password string) (bool, error) {
 	hashed_pass := services.Hash_this_password(password)
-	if exists, _ := Check_Driver_exits(driver_id); exists {
+	if exists, _ := DriverExists(ctx, driverID); exists {
 		query := "update drivers set password = $1,email = $2 where driver_id = $3 "
-		_, err := pool.Exec(context.Background(), query, hashed_pass, driver_email, driver_id)
+		_, err := pool.Exec(context.Background(), query, hashed_pass, email, password)
 		if err != nil {
 			fmt.Println("error while update the driver's password - ", err)
 			return false, err
@@ -71,23 +71,23 @@ func Set_driver_password(driver_id int, driver_email string, password string) (b
 	return true, nil
 }
 
-func ValidateDriver(driver_id int, pass string) (bool, error) {
+func ValidateDriver(ctx context.Context, driverID int, password string) (bool, error) {
 
 	var DB_pass string
 	query := "select password from drivers where driver_id = $1"
-	err := pool.QueryRow(context.Background(), query, driver_id).Scan(&DB_pass)
+	err := pool.QueryRow(context.Background(), query, driverID).Scan(&DB_pass)
 	if err != nil {
 		fmt.Println("error while validate the driver - ", err)
 		return false, err
 	}
 
-	if services.Is_password_matched(DB_pass, pass) {
+	if services.Is_password_matched(DB_pass, password) {
 		return true, nil
 	}
 	return false, nil
 }
 
-func Available_drivers() ([]models.AvailableDriver, error) {
+func GetAvailableDrivers(ctx context.Context) ([]models.AvailableDriver, error) {
 	var (
 		all_available_drivers []models.AvailableDriver
 		is_driver_exists      bool

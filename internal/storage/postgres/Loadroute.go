@@ -59,7 +59,7 @@ func Load_routes_by_src_and_dest(src string, dest string) {
 }
 */
 
-func Get_Current_schedule() ([]models.CurrentSchedule, error) {
+func GetCurrentSchedule(ctx context.Context) ([]models.CurrentSchedule, error) {
 	var current_schedule []models.CurrentSchedule
 	query := "select bus_id,driver_id,route_id from current_bus_route"
 	rows, err := pool.Query(context.Background(), query)
@@ -81,7 +81,7 @@ func Get_Current_schedule() ([]models.CurrentSchedule, error) {
 	return current_schedule, nil
 }
 
-func Current_bus_routes() ([]models.CurrentRoute, error) {
+func GetCurrentBusRoutes(ctx context.Context) ([]models.CurrentRoute, error) {
 
 	query := "select bus_id from current_bus_route where driver_id!=1000 and route_id!=0"
 	bus_id_rows, _ := pool.Query(context.Background(), query)
@@ -96,7 +96,7 @@ func Current_bus_routes() ([]models.CurrentRoute, error) {
 			fmt.Println("error while scanning bus_id - ", err)
 			return nil, err
 		} else {
-			r, _ := Find_route_by_bus_or_driver_ID(bus_id, "PASSENGER")
+			r, _ := FindRouteByBusOrDriverID(ctx, bus_id, "PASSENGER")
 			Current_Bus_route = append(Current_Bus_route, r.Uproute)
 			Current_Bus_route = append(Current_Bus_route, r.Downroute)
 		}
@@ -175,7 +175,7 @@ func Load_cached_route(bus_id int) ([]models.BusRoute, error) {
 			&route.Dest)
 		route.Direction = "UP"
 
-		findStops(&route)
+		FindStops(ctx, &route)
 		bus_route.BusID = bus_id
 		bus_route.RouteId = route.RouteId
 		bus_route.RouteName = route.RouteName

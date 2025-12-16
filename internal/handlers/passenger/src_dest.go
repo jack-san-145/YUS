@@ -14,6 +14,8 @@ import (
 
 func (h *PassengerHandler) GetRouteByBusIDHandler(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
 	//yus.kwscloud.in/yus/get-route?bus_id={bus_id}
 	bus_id_string := r.URL.Query().Get("bus_id")
 	bus_id_int, err := strconv.Atoi(bus_id_string)
@@ -21,13 +23,14 @@ func (h *PassengerHandler) GetRouteByBusIDHandler(w http.ResponseWriter, r *http
 		fmt.Println("error while converting the bus_id_string to bus_id_int - ", err)
 		response.WriteJSON(w, r, "null")
 	}
-	route, _ := postgres.Find_route_by_bus_or_driver_ID(bus_id_int, "PASSENGER")
+	route, _ := postgres.FindRouteByBusOrDriverID(ctx, bus_id_int, "PASSENGER")
 	fmt.Println("route_by bus id - ", route.Currentroute)
 	response.WriteJSON(w, r, route.Currentroute)
 
 }
 
 func (h *PassengerHandler) SrcDestStopsHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	src := chi.URLParam(r, "source")
 	dest := chi.URLParam(r, "destination")
 	stop := chi.URLParam(r, "stop")
@@ -35,19 +38,21 @@ func (h *PassengerHandler) SrcDestStopsHandler(w http.ResponseWriter, r *http.Re
 	src = services.Convert_to_CamelCase(src)
 	dest = services.Convert_to_CamelCase(dest)
 	stop = services.Convert_to_CamelCase(stop)
-	matched_routes, _ := postgres.FindRoutes_by_src_dest_stop(src, dest, stop)
+	matched_routes, _ := postgres.FindRoutesBySrcDstStop(ctx, src, dest, stop)
 	response.WriteJSON(w, r, matched_routes)
 
 }
 
 func (h *PassengerHandler) SrcDestHandler(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
 	src := chi.URLParam(r, "source")
 	dest := chi.URLParam(r, "destination")
 	fmt.Printf("given src - %v & destination - %v ", src, dest)
 
 	src = services.Convert_to_CamelCase(src)
 	dest = services.Convert_to_CamelCase(dest)
-	route, _ := postgres.FindRoutes_by_src_dest(src, dest)
+	route, _ := postgres.FindRoutesBySrcDst(ctx, src, dest)
 	response.WriteJSON(w, r, route)
 
 }

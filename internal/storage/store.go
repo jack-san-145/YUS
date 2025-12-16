@@ -29,7 +29,7 @@ type DBStore interface {
 
 	// Connection
 	Connect(ctx context.Context) error
-
+\
 	// Driver Management
 	AddDriver(ctx context.Context, driver *models.Driver) error
 	DriverExists(ctx context.Context, driverID int) (bool, error)

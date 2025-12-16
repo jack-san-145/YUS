@@ -60,7 +60,7 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 		Arrival_status = redis_as
 	}
 
-	r, _ := postgres.Find_route_by_bus_or_driver_ID(driver_id, "DRIVER")
+	r, _ := postgres.FindRouteByBusOrDriverID(context.Background(), driver_id, "DRIVER")
 	Ongoing_route_stops := r.Currentroute.Stops
 	fmt.Println("ongoing route - ", Ongoing_route_stops)
 
