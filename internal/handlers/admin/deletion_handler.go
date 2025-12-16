@@ -20,8 +20,8 @@ func (h *AdminHandler) RemoveRouteHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	status := postgres.Remove_route(route_id_int)
-	response.WriteJSON(w, r, status)
+	status, _ := postgres.Remove_route(route_id_int)
+	response.WriteJSON(w, r, map[string]bool{"deleted": status})
 
 }
 
@@ -36,8 +36,8 @@ func (h *AdminHandler) RemoveBusHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	status := postgres.Remove_bus(bus_id_int)
-	response.WriteJSON(w, r, status)
+	status, _ := postgres.Remove_bus(bus_id_int)
+	response.WriteJSON(w, r, map[string]bool{"removed": status})
 
 }
 
@@ -52,7 +52,7 @@ func (h *AdminHandler) RemoveDriverHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	status := postgres.Remove_driver(driver_id_int)
-	response.WriteJSON(w, r, status)
+	status, _ := postgres.Remove_driver(driver_id_int)
+	response.WriteJSON(w, r, map[string]bool{"removed": status})
 
 }

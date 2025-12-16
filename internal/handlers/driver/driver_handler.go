@@ -105,7 +105,7 @@ func (h *DriverHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("error while converting the driver_id string to driver_id_int - ", err)
 		}
 		password := r.FormValue("password")
-		if postgres.ValidateDriver(driver_id_int, password) {
+		if valid, _ := postgres.ValidateDriver(driver_id_int, password); valid {
 			login_status["login_status"] = "valid"
 			session_id, err := h.Store.InMemoryDB.CreateDriverSession(ctx, driver_id_int)
 			if err != nil {

@@ -71,23 +71,23 @@ func Set_driver_password(driver_id int, driver_email string, password string) (b
 	return true, nil
 }
 
-func ValidateDriver(driver_id int, pass string) bool {
+func ValidateDriver(driver_id int, pass string) (bool, error) {
 
 	var DB_pass string
 	query := "select password from drivers where driver_id = $1"
 	err := pool.QueryRow(context.Background(), query, driver_id).Scan(&DB_pass)
 	if err != nil {
 		fmt.Println("error while validate the driver - ", err)
-		return false
+		return false, err
 	}
 
 	if services.Is_password_matched(DB_pass, pass) {
-		return true
+		return true, nil
 	}
-	return false
+	return false, nil
 }
 
-func Available_drivers() []models.AvailableDriver {
+func Available_drivers() ([]models.AvailableDriver, error) {
 	var (
 		all_available_drivers []models.AvailableDriver
 		is_driver_exists      bool
@@ -97,7 +97,7 @@ func Available_drivers() []models.AvailableDriver {
 	all_drivers, err := pool.Query(context.Background(), query)
 	if err != nil {
 		fmt.Println("error while selecting the driver_id , driver_name and mobile no - ", err)
-		return nil
+		return nil, err
 	}
 
 	defer all_drivers.Close()
@@ -119,5 +119,5 @@ func Available_drivers() []models.AvailableDriver {
 		}
 		all_available_drivers = append(all_available_drivers, driver)
 	}
-	return all_available_drivers
+	return all_available_drivers, nil
 }

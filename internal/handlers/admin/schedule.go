@@ -57,7 +57,7 @@ func (h *AdminHandler) AddDriverHandler(w http.ResponseWriter, r *http.Request) 
 func (h *AdminHandler) ListDriversHandler(w http.ResponseWriter, r *http.Request) {
 
 	//to load all the available routes
-	all_available_drivers := postgres.Available_drivers()
+	all_available_drivers, _ := postgres.Available_drivers()
 	fmt.Println("avalaible drivers - ", all_available_drivers)
 	response.WriteJSON(w, r, all_available_drivers)
 }
