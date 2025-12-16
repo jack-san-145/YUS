@@ -74,7 +74,7 @@ func (h *PassengerHandler) listenPassengerMessage(conn *websocket.Conn) {
 		fmt.Println("requested_bus_route -", requested_bus_route)
 
 		//to check if the passenger request ws route is present in current_bus_route,is only true when route_id,direction,driver_id matched
-		if postgres.Check_route_exits_for_pass_Ws(requested_bus_route) {
+		if exists, _ := postgres.Check_route_exits_for_pass_Ws(requested_bus_route); exists {
 			fmt.Printf("old driver - %v and new driver - %v\n", old_requested_bus_route.DriverId, requested_bus_route.DriverId)
 			PassengerConnStore.RemovePassengerConn(old_requested_bus_route.DriverId, conn)
 

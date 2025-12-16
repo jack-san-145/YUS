@@ -6,7 +6,7 @@ import (
 	"yus/internal/models"
 )
 
-func Check_route_exits_for_pass_Ws(route models.PassengerWsRequest) bool {
+func Check_route_exits_for_pass_Ws(route models.PassengerWsRequest) (bool, error) {
 	var exists bool
 
 	fmt.Printf("route.Direction - %v & type - %T ", route.Direction, route.Direction)
@@ -16,8 +16,9 @@ func Check_route_exits_for_pass_Ws(route models.PassengerWsRequest) bool {
 	err := pool.QueryRow(context.Background(), query, route.DriverId, route.RouteId, route.Direction).Scan(&exists)
 	if err != nil {
 		fmt.Println("error while check the route exits for the passenger request - ", err)
+		return exists, err
 	}
 	fmt.Println("exists - ", exists)
 
-	return exists
+	return exists, nil
 }

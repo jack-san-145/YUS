@@ -22,7 +22,7 @@ func (h *AdminHandler) SaveRouteHandler(w http.ResponseWriter, r *http.Request) 
 	NewRoute.Direction = "UP"
 	fmt.Printf("actual route - %+v", NewRoute)
 	status, _ := postgres.SaveRoute_to_DB(&NewRoute)
-	response.WriteJSON(w, r, status)
+	response.WriteJSON(w, r, map[string]string{"status": status})
 	// All_Bus_Routes = append(All_Bus_Routes, NewRoute)
 	// display_all_routes()
 
