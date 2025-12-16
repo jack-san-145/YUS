@@ -7,27 +7,21 @@ import (
 
 type InMemoryStore interface {
 	CreateClient(ctx context.Context) error
-
 	GenerateSessionID(ctx context.Context) (string, error)
 	DeleteSession(ctx context.Context, sessionID string) error
-
 	AdminExists(ctx context.Context) (bool, error)
 	CreateAdminSession(ctx context.Context, adminEmail string) (string, error)
 	CheckAdminSession(ctx context.Context, sessionID string) (bool, error)
 	AdminLogin(ctx context.Context, email string, password string) (bool, error)
 	AddAdmin(ctx context.Context, name string, email string, password string) (string, error)
-
 	CreateDriverSession(ctx context.Context, driverID int) (string, error)
 	CheckDriverSession(ctx context.Context, sessionID string) (bool, int, error)
-
 	GetOtp(ctx context.Context, email string) (string, error)
 	SetOtp(ctx context.Context, email string, otp string) error
-
 	StoreArrivalStatus(ctx context.Context, driverID int, arrivalStatus map[int]string) error
 	GetArrivalStatus(ctx context.Context, driverID int) (map[int]string, error)
 	CacheBusRoute(ctx context.Context) error
 	GetCachedRoute(ctx context.Context) ([]models.CurrentRoute, error)
-
 	RateLimiter(ctx context.Context, rateLimit *models.RateLimit) (int, error)
 }
 

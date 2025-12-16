@@ -10,7 +10,7 @@ run :
 
 
 
-#to run the application even after close the terminal 
+#to run the application even after close the terminal and store logs in yus.log file
 run-forever :
 	cd cmd && cd server && nohup ./yus > yus.log 2>&1 &
  

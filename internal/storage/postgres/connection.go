@@ -13,6 +13,14 @@ import (
 
 var pool *pgxpool.Pool
 
+type PgStore struct {
+	Pool *pgxpool.Pool
+}
+
+func NewPgPool() *PgStore {
+	return &PgStore{}
+}
+
 func Connect() error {
 	var (
 		config *pgxpool.Config

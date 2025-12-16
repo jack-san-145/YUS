@@ -25,12 +25,12 @@ func main() {
 		return
 	}
 
-	rc := redis.NewRedisClient() //Get redisStore
+	redisStore := redis.NewRedisStore() //Get redisStore
 
 	app := &AppPkg.Application{
 		Port: "8090",
 		Store: &storage.Store{
-			InMemoryDB: rc,
+			InMemoryDB: redisStore,
 		},
 	} //Initialize new Application
 
