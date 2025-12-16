@@ -9,7 +9,7 @@ import (
 	"yus/internal/services"
 )
 
-func Find_route_by_bus_or_driver_ID(bus_id int, requestFrom string) (models.CurrentRoute, models.CurrentRoute, models.CurrentRoute) {
+func Find_groute_by_bus_or_driver_ID(bus_id int, requestFrom string) (*models.AllRoute, error) {
 	if requestFrom == "DRIVER" {
 		driver_id := &bus_id
 		query := "select bus_id from current_bus_route where driver_id = $1"
@@ -18,59 +18,57 @@ func Find_route_by_bus_or_driver_ID(bus_id int, requestFrom string) (models.Curr
 			fmt.Println("error while finding bus_id by driver_id - ", err)
 		}
 	}
-	var (
-		route     models.CurrentRoute
-		uproute   models.CurrentRoute
-		downroute models.CurrentRoute
-	)
-	query := "select bus_id,driver_id,route_id,direction,route_name,src,dest from current_bus_route where bus_id = $1 "
-	err := pool.QueryRow(context.Background(), query, bus_id).Scan(&route.BusId,
-		&route.DriverId,
-		&route.RouteId,
-		&route.Direction,
-		&route.RouteName,
-		&route.Src,
-		&route.Dest)
 
-	route.RouteName = services.Convert_to_Normal(route.RouteName)
-	route.Src = services.Convert_to_Normal(route.Src)
-	route.Dest = services.Convert_to_Normal(route.Dest)
+	var r = &models.AllRoute{}
+
+	query := "select bus_id,driver_id,route_id,direction,route_name,src,dest from current_bus_route where bus_id = $1 "
+	err := pool.QueryRow(context.Background(), query, bus_id).Scan(&r.Currentroute.BusId,
+		&r.Currentroute.DriverId,
+		&r.Currentroute.RouteId,
+		&r.Currentroute.Direction,
+		&r.Currentroute.RouteName,
+		&r.Currentroute.Src,
+		&r.Currentroute.Dest)
+
+	r.Currentroute.RouteName = services.Convert_to_Normal(r.Currentroute.RouteName)
+	r.Currentroute.Src = services.Convert_to_Normal(r.Currentroute.Src)
+	r.Currentroute.Dest = services.Convert_to_Normal(r.Currentroute.Dest)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		fmt.Println("no route found for this bus_id ")
-		return route, route, route
+		return r, fmt.Errorf("no route found")
 	} else if err != nil {
 		fmt.Println("error while finding the route with bus_id - ", err)
-		return route, route, route
+		return r, err
 	}
 
-	findStops(&route)
-	if route.Direction == "UP" {
-		uproute = route
-		uproute.Active = true
-		findStops(&uproute)
+	findStops(&r.Currentroute)
+	if r.Currentroute.Direction == "UP" {
+		r.Uproute = r.Currentroute
+		r.Uproute.Active = true
+		findStops(&r.Uproute)
 
-		route.Direction = "DOWN"
-		downroute = route
-		downroute.Src, downroute.Dest = downroute.Dest, downroute.Src
+		r.Currentroute.Direction = "DOWN"
+		r.Downroute = r.Currentroute
+		r.Downroute.Src, r.Downroute.Dest = r.Downroute.Dest, r.Downroute.Src
 
-		downroute.Active = false
-		findStops(&downroute)
+		r.Downroute.Active = false
+		findStops(&r.Downroute)
 
-	} else if route.Direction == "DOWN" {
-		downroute = route
-		downroute.Active = true
-		findStops(&downroute)
+	} else if r.Currentroute.Direction == "DOWN" {
+		r.Downroute = r.Currentroute
+		r.Downroute.Active = true
+		findStops(&r.Downroute)
 
-		route.Direction = "UP"
-		uproute = route
-		uproute.Src, uproute.Dest = uproute.Dest, uproute.Src
+		r.Currentroute.Direction = "UP"
+		r.Uproute = r.Currentroute
+		r.Uproute.Src, r.Uproute.Dest = r.Uproute.Dest, r.Uproute.Src
 
-		uproute.Active = false
-		findStops(&uproute)
+		r.Uproute.Active = false
+		findStops(&r.Uproute)
 	}
 
-	return route, uproute, downroute
+	return r, nil
 	//here route is an current route
 }
 
@@ -187,9 +185,6 @@ func find_reverseRoute_by_routeId(src string, dest string) []models.CurrentRoute
 		} else if route.Direction == "DOWN" {
 			route.Direction = "UP"
 		}
-		// route.RouteName = services.Convert_to_Normal(route.RouteName)
-		// route.Src = services.Convert_to_Normal(route.Src)
-		// route.Dest = services.Convert_to_Normal(route.Dest)
 
 		findStops(&route) //it sets the stops to the route with pointer
 		All_routes = append(All_routes, route)
@@ -204,16 +199,6 @@ func find_reverseRoute_by_routeId(src string, dest string) []models.CurrentRoute
 	return All_routes
 
 }
-
-// func check_reverseRoute_exists(src string, dest string) bool {
-// 	var reverse_route_exists bool
-// 	query := "select exists(select 1 from current_bus_route where src = $1 and dest = $2)"
-// 	err := pool.QueryRow(context.Background(), query, src, dest).Scan(&reverse_route_exists)
-// 	if err != nil {
-// 		fmt.Println("error while check the existance of reverse route - ", err)
-// 	}
-// 	return reverse_route_exists
-// }
 
 /*
 1. check the direction exists on db
