@@ -10,7 +10,7 @@ import (
 	"yus/internal/services"
 )
 
-func SaveRoute_to_DB(up_route *models.Route) map[string]string {
+func SaveRoute_to_DB(up_route *models.Route) (string, error) {
 
 	up_route.Direction = "UP"
 	services.Calculate_Uproute_departure(up_route)
@@ -26,7 +26,7 @@ func SaveRoute_to_DB(up_route *models.Route) map[string]string {
 	err := check_if_route_exist(up_route.Src, up_route.Dest, up_route.Stops)
 	if err != nil {
 		fmt.Println(err.Error())
-		return map[string]string{"status": err.Error()}
+		return "failed", err
 	}
 
 	fmt.Println("going to insert route to table")
@@ -37,11 +37,10 @@ func SaveRoute_to_DB(up_route *models.Route) map[string]string {
 	_, err2 := insert_route_to_db(down_route)
 
 	if err1 != nil && err2 != nil {
-		return map[string]string{"status": "failed"}
+		return "failed", nil
 	} else {
-		return map[string]string{"status": "success"}
+		return "success", nil
 	}
-
 }
 
 // find the latest route id

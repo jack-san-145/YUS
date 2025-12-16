@@ -14,7 +14,7 @@ func ScheduleBus(schedule *models.CurrentSchedule) error {
 
 	route.BusID = schedule.BusId
 	route.RouteId = schedule.RouteId
-	route.Src, route.Dest, route.RouteName = find_src_dest_name_by_routeId(schedule.RouteId)
+	route.Src, route.Dest, route.RouteName, _ = find_src_dest_name_by_routeId(schedule.RouteId)
 
 	ctx := context.Background()
 	tx, err := pool.Begin(ctx) //transaction for atomic operation

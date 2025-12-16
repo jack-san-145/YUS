@@ -42,7 +42,7 @@ func Map_route_with_bus(route_id int, bus_id int) error {
 		return err
 	}
 
-	src, dest, route_name := find_src_dest_name_by_routeId(route_id)
+	src, dest, route_name, _ := find_src_dest_name_by_routeId(route_id)
 
 	if is_route_present && route_id != 0 {
 
@@ -178,7 +178,7 @@ func Add_new_bus(bus_id int) error {
 	return nil
 }
 
-func cache_this_route(route *models.BusRoute) {
+func cache_this_route(route *models.BusRoute) error {
 	var is_route_exists bool
 
 	//check if the route already exist in cached_bus_route or not
@@ -186,6 +186,7 @@ func cache_this_route(route *models.BusRoute) {
 	err := pool.QueryRow(context.Background(), query, route.BusID, route.RouteId).Scan(&is_route_exists)
 	if err != nil {
 		fmt.Println("error while finding the existance of the bus_route in cached_bus_route - ", err)
+		return err
 	}
 
 	// if it doesn't exists then add this bus_route to cached_bus_route otherwise do nothing
@@ -194,7 +195,8 @@ func cache_this_route(route *models.BusRoute) {
 		_, err = pool.Exec(context.Background(), query, route.BusID, route.RouteId, route.RouteName, route.Src, route.Dest)
 		if err != nil {
 			fmt.Println("error while insert the route to the cached route - ", err)
+			return err
 		}
 	}
-
+	return nil
 }
