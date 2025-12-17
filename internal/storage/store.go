@@ -20,7 +20,7 @@ type InMemoryStore interface {
 	SetOtp(ctx context.Context, email string, otp string) error
 	StoreArrivalStatus(ctx context.Context, driverID int, arrivalStatus map[int]string) error
 	GetArrivalStatus(ctx context.Context, driverID int) (map[int]string, error)
-	CacheBusRoute(ctx context.Context) error
+	CacheBusRoute(ctx context.Context, route []models.CurrentRoute) error
 	GetCachedRoute(ctx context.Context) ([]models.CurrentRoute, error)
 	RateLimiter(ctx context.Context, rateLimit *models.RateLimit) (int, error)
 }
@@ -63,7 +63,7 @@ type DBStore interface {
 	GetAllottedBusForDriver(ctx context.Context, driverID int) (models.AllotedBus, error)
 	FindRouteByBusOrDriverID(ctx context.Context, busID int, requestFrom string) (*models.AllRoute, error)
 	FindRoutesBySrcDst(ctx context.Context, src string, dest string) ([]models.CurrentRoute, error)
-	FindReverseRoutesByRouteID(ctx context.Context, src string, dest string) ([]models.CurrentRoute, error)
+	FindReverseRoutesBySrcDest(ctx context.Context, src string, dest string) ([]models.CurrentRoute, error)
 	FindRoutesBySrcDstStop(ctx context.Context, src string, dest string, stop string) ([]models.CurrentRoute, error)
 	FindStops(ctx context.Context, route *models.CurrentRoute) error
 	GetSrcDestNameByRouteID(ctx context.Context, routeID int) (string, string, string, error)
