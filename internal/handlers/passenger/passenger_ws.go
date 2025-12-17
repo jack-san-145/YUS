@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 	"yus/internal/models"
-	"yus/internal/storage/postgres"
 
 	"github.com/gorilla/websocket"
 )
@@ -75,7 +74,7 @@ func (h *PassengerHandler) listenPassengerMessage(conn *websocket.Conn) {
 		fmt.Println("requested_bus_route -", requested_bus_route)
 
 		//to check if the passenger request ws route is present in current_bus_route,is only true when route_id,direction,driver_id matched
-		if exists, _ := postgres.CheckRouteExistsForPassengerWS(context.Background(), requested_bus_route); exists {
+		if exists, _ := h.Store.DB.CheckRouteExistsForPassengerWS(context.Background(), requested_bus_route); exists {
 			fmt.Printf("old driver - %v and new driver - %v\n", old_requested_bus_route.DriverId, requested_bus_route.DriverId)
 			PassengerConnStore.RemovePassengerConn(old_requested_bus_route.DriverId, conn)
 

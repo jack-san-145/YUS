@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"yus/internal/handlers/common/response"
 	"yus/internal/services"
-	"yus/internal/storage/postgres"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -23,7 +22,7 @@ func (h *PassengerHandler) GetRouteByBusIDHandler(w http.ResponseWriter, r *http
 		fmt.Println("error while converting the bus_id_string to bus_id_int - ", err)
 		response.WriteJSON(w, r, "null")
 	}
-	route, _ := postgres.FindRouteByBusOrDriverID(ctx, bus_id_int, "PASSENGER")
+	route, _ := h.Store.DB.FindRouteByBusOrDriverID(ctx, bus_id_int, "PASSENGER")
 	fmt.Println("route_by bus id - ", route.Currentroute)
 	response.WriteJSON(w, r, route.Currentroute)
 
@@ -38,7 +37,7 @@ func (h *PassengerHandler) SrcDestStopsHandler(w http.ResponseWriter, r *http.Re
 	src = services.Convert_to_CamelCase(src)
 	dest = services.Convert_to_CamelCase(dest)
 	stop = services.Convert_to_CamelCase(stop)
-	matched_routes, _ := postgres.FindRoutesBySrcDstStop(ctx, src, dest, stop)
+	matched_routes, _ := h.Store.DB.FindRoutesBySrcDstStop(ctx, src, dest, stop)
 	response.WriteJSON(w, r, matched_routes)
 
 }
@@ -52,7 +51,7 @@ func (h *PassengerHandler) SrcDestHandler(w http.ResponseWriter, r *http.Request
 
 	src = services.Convert_to_CamelCase(src)
 	dest = services.Convert_to_CamelCase(dest)
-	route, _ := postgres.FindRoutesBySrcDst(ctx, src, dest)
+	route, _ := h.Store.DB.FindRoutesBySrcDst(ctx, src, dest)
 	response.WriteJSON(w, r, route)
 
 }
@@ -64,8 +63,11 @@ func (h *PassengerHandler) GetCurrentBusRoutesHandler(w http.ResponseWriter, r *
 	bus_routes, err := h.Store.InMemoryDB.GetCachedRoute(ctx)
 
 	if err != nil {
-		bus_routes, _ = postgres.GetCurrentBusRoutes(ctx)
-		go h.Store.InMemoryDB.CacheBusRoute(context.Background())
+		bus_routes, _ = h.Store.DB.GetCurrentBusRoutes(ctx)
+		go func() {
+			current_route, _ := h.Store.DB.GetCurrentBusRoutes(context.Background())
+			h.Store.InMemoryDB.CacheBusRoute(context.Background(), current_route)
+		}()
 	}
 
 	if len(bus_routes) != 0 {
