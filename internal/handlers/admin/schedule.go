@@ -97,6 +97,8 @@ func (h *AdminHandler) ScheduleBusHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	fmt.Println("schedule bus - ", schedule)
+
 	err = h.Store.DB.ScheduleBus(ctx, &schedule)
 	if err != nil {
 		response.WriteJSON(w, r, map[string]bool{"status": false})

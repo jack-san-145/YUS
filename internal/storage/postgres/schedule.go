@@ -26,7 +26,7 @@ func (pg *PgStore) ScheduleBus(ctx context.Context, schedule *models.CurrentSche
 	batch := &pgx.Batch{}
 
 	batch.Queue("update current_bus_route set driver_id=1000 where driver_id=$1;", schedule.DriverId)
-	batch.Queue("update current_bus_route set route_id=0 where route_id=$1;", schedule.RouteId)
+	batch.Queue("update current_bus_route set route_id=0,route_name='',src='',dest='' where route_id=$1;", schedule.RouteId)
 	batch.Queue("update current_bus_route set driver_id = $1,route_id = $2,route_name = $3,src = $4,dest = $5 where bus_id = $6;",
 		schedule.DriverId,
 		schedule.RouteId,

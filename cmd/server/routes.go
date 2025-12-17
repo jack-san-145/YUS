@@ -46,11 +46,11 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 
 	//Passenger Operations
 	router.Group(func(passenger chi.Router) {
-		passenger.Get("yus/passenger-ws", h.Passenger.WebSocketHandler)
-		passenger.Get("yus/get-current-bus-routes", h.Passenger.GetCurrentBusRoutesHandler)
-		passenger.Get("yus/src-{source}&dest-{destination}", h.Passenger.SrcDestHandler) //here i changed the endpoint format
-		passenger.Get("yus/src-{source}&dest-{destination}&stop-{stop}", h.Passenger.SrcDestStopsHandler)
-		passenger.Get("yus/get-route", h.Passenger.GetRouteByBusIDHandler) //route by BusID
+		passenger.Get("/yus/passenger-ws", h.Passenger.WebSocketHandler)
+		passenger.Get("/yus/get-current-bus-routes", h.Passenger.GetCurrentBusRoutesHandler)
+		passenger.Get("/yus/src-{source}&dest-{destination}", h.Passenger.SrcDestHandler) //here i changed the endpoint format
+		passenger.Get("/yus/src-{source}&dest-{destination}&stop-{stop}", h.Passenger.SrcDestStopsHandler)
+		passenger.Get("/yus/get-route", h.Passenger.GetRouteByBusIDHandler) //route by BusID
 
 	})
 
