@@ -46,18 +46,18 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 
 	//Passenger Operations
 	router.Group(func(passenger chi.Router) {
-		passenger.Get("/passenger-ws", h.Passenger.WebSocketHandler)
-		passenger.Get("/get-current-bus-routes", h.Passenger.GetCurrentBusRoutesHandler)
-		passenger.Get("/src-{source}&dest-{destination}", h.Passenger.SrcDestHandler) //here i changed the endpoint format
-		passenger.Get("/src-{source}&dest-{destination}&stop-{stop}", h.Passenger.SrcDestStopsHandler)
-		passenger.Get("/get-route", h.Passenger.GetRouteByBusIDHandler) //route by BusID
+		passenger.Get("yus/passenger-ws", h.Passenger.WebSocketHandler)
+		passenger.Get("yus/get-current-bus-routes", h.Passenger.GetCurrentBusRoutesHandler)
+		passenger.Get("yus/src-{source}&dest-{destination}", h.Passenger.SrcDestHandler) //here i changed the endpoint format
+		passenger.Get("yus/src-{source}&dest-{destination}&stop-{stop}", h.Passenger.SrcDestStopsHandler)
+		passenger.Get("yus/get-route", h.Passenger.GetRouteByBusIDHandler) //route by BusID
 
 	})
 
 	//Driver Operations
 	router.Group(func(driver chi.Router) {
 		driver.Post("/yus/send-otp-driver-password", h.Driver.SendOTPHandler)
-		driver.Post("/yus/verify-otp-driver-password", h.Driver.VerifyOTPHandler) 
+		driver.Post("/yus/verify-otp-driver-password", h.Driver.VerifyOTPHandler)
 		driver.Post("/yus/driver-login", h.Driver.LoginHandler)
 	})
 
