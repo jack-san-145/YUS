@@ -24,7 +24,7 @@ func (pg *PgStore) RemoveBus(ctx context.Context, busID int) error {
 	query := fmt.Sprintf(`delete from cached_bus_route where bus_id = %d;
 							delete from current_bus_route where bus_id = %d;
 						`, busID, busID)
-	_, err := pool.Exec(context.Background(), query)
+	_, err := pool.Exec(ctx, query)
 	if err != nil {
 		fmt.Println("error while removing bus - ", err)
 		return err
@@ -36,7 +36,7 @@ func (pg *PgStore) RemoveDriver(ctx context.Context, driverID int) error {
 	query := fmt.Sprintf(`update current_bus_route set driver_id = 1000 where driver_id = %d ;
 							delete from drivers where driver_id = %d ;
 						`, driverID, driverID)
-	_, err := pool.Exec(context.Background(), query)
+	_, err := pool.Exec(ctx, query)
 	if err != nil {
 		fmt.Println("error while removing driver - ", err)
 		return err
