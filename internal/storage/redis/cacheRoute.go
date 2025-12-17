@@ -6,11 +6,9 @@ import (
 	"fmt"
 	"time"
 	"yus/internal/models"
-	"yus/internal/storage/postgres"
 )
 
-func (r *RedisStore) CacheBusRoute(ctx context.Context) error {
-	current_bus_route, _ := postgres.GetCurrentBusRoutes(ctx)
+func (r *RedisStore) CacheBusRoute(ctx context.Context, current_bus_route []models.CurrentRoute) error {
 
 	current_bus_route_byte, err := json.Marshal(current_bus_route)
 	if err != nil {
