@@ -9,9 +9,9 @@ import (
 
 	AppPkg "yus/internal/AppPkg"
 	"yus/internal/handlers"
+	"yus/internal/services"
 	"yus/internal/storage"
 	"yus/internal/storage/postgres"
-	"yus/internal/storage/postgres/service"
 	"yus/internal/storage/redis"
 
 	"github.com/joho/godotenv"
@@ -26,11 +26,13 @@ func main() {
 	}
 
 	redisStore := redis.NewRedisStore() //Get redisStore
+	pgStore := postgres.NewPgStore()
 
 	app := &AppPkg.Application{
 		Port: "8090",
 		Store: &storage.Store{
 			InMemoryDB: redisStore,
+			DB:         pgStore,
 		},
 	} //Initialize new Application
 
@@ -42,12 +44,18 @@ func main() {
 		log.Fatal("Redis connection failed:", err)
 	}
 
+	err = app.Store.DB.Connect(ctx) //create a DB connection
+	if err != nil {
+		log.Fatal("Database connection failed:", err)
+	}
+
 	YUSHandler := handlers.NewHandler(app.Store)
+
 	app.Router = NewRouter(app, YUSHandler)
 
-	postgres.Connect() //make a connection to postgres
+	app.Store.DB.Connect(ctx)
 
-	go service.AutomateRouteScheduling(app) //to automate route direction change
+	go services.AutomateRouteScheduling(app) //to automate route direction change
 
 	fmt.Println("Server listening on :8090")
 	err = http.ListenAndServe("0.0.0.0:8090", app.Router)
