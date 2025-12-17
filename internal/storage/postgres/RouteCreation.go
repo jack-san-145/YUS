@@ -22,7 +22,7 @@ func (pg *PgStore) SaveRoute(ctx context.Context, up_route *models.Route) (strin
 
 	//check is the new  route exist or not ?
 
-	err := CheckRouteExists(ctx, up_route.Src, up_route.Dest, up_route.Stops)
+	err := pg.CheckRouteExists(ctx, up_route.Src, up_route.Dest, up_route.Stops)
 	if err != nil {
 		fmt.Println(err.Error())
 		return "failed", err
@@ -30,10 +30,10 @@ func (pg *PgStore) SaveRoute(ctx context.Context, up_route *models.Route) (strin
 
 	fmt.Println("going to insert route to table")
 	//inserting both up and down routes to db
-	up_route_id, err1 := InsertRoute(ctx, up_route)
+	up_route_id, err1 := pg.InsertRoute(ctx, up_route)
 
 	down_route.Id = up_route_id //assign the up_route_id to the down_route_id
-	_, err2 := InsertRoute(ctx, down_route)
+	_, err2 := pg.InsertRoute(ctx, down_route)
 
 	if err1 != nil && err2 != nil {
 		return "failed", nil
@@ -69,7 +69,7 @@ func (pg *PgStore) InsertRoute(ctx context.Context, route *models.Route) (int, e
 	)
 
 	if route.Direction == "UP" {
-		route.Id, err = GetLastRouteID(ctx)
+		route.Id, err = pg.GetLastRouteID(ctx)
 		if err != nil {
 			fmt.Println("error while finding the route_id - ", err)
 			return -1, err

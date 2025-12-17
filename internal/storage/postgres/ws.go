@@ -6,7 +6,7 @@ import (
 	"yus/internal/models"
 )
 
-func CheckRouteExistsForPassengerWS(ctx context.Context, route models.PassengerWsRequest) (bool, error) {
+func (pg *PgStore) CheckRouteExistsForPassengerWS(ctx context.Context, route models.PassengerWsRequest) (bool, error) {
 	var exists bool
 
 	fmt.Printf("route.Direction - %v & type - %T ", route.Direction, route.Direction)

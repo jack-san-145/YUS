@@ -81,7 +81,7 @@ func (pg *PgStore) GetCurrentSchedule(ctx context.Context) ([]models.CurrentSche
 	return current_schedule, nil
 }
 
-func GetCurrentBusRoutes(ctx context.Context) ([]models.CurrentRoute, error) {
+func (pg *PgStore) GetCurrentBusRoutes(ctx context.Context) ([]models.CurrentRoute, error) {
 
 	query := "select bus_id from current_bus_route where driver_id!=1000 and route_id!=0"
 	bus_id_rows, _ := pool.Query(context.Background(), query)
@@ -175,7 +175,7 @@ func (pg *PgStore) GetCachedRoutesByBusID(ctx context.Context, busID int) ([]mod
 			&route.Dest)
 		route.Direction = "UP"
 
-		FindStops(ctx, &route)
+		pg.FindStops(ctx, &route)
 		bus_route.BusID = busID
 		bus_route.RouteId = route.RouteId
 		bus_route.RouteName = route.RouteName

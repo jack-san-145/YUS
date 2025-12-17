@@ -8,7 +8,7 @@ import (
 
 func (pg *PgStore) AssignDriverToBus(ctx context.Context, driverID int, busID int) error {
 	// finds , is the driver_id existing in the current_bus_route
-	is_driver_present, err := DriverExistsInCBR(ctx, driverID)
+	is_driver_present, err := pg.DriverExistsInCBR(ctx, driverID)
 	if err != nil {
 		return err
 	}
@@ -16,7 +16,7 @@ func (pg *PgStore) AssignDriverToBus(ctx context.Context, driverID int, busID in
 	if is_driver_present {
 
 		// update the bus_route when the driver_id is exists
-		err := UpdateBusDriver(ctx, driverID, busID)
+		err := pg.UpdateBusDriver(ctx, driverID, busID)
 		if err != nil {
 			return err
 		}
@@ -37,18 +37,18 @@ func (pg *PgStore) AssignRouteToBus(ctx context.Context, routeID int, busID int)
 
 	var route models.BusRoute
 	// finds , is the route_id existing in the current_bus_route
-	is_route_present, err := RouteExistsInCBR(ctx, routeID)
+	is_route_present, err := pg.RouteExistsInCBR(ctx, routeID)
 	if err != nil {
 		return err
 	}
 
-	src, dest, route_name, _ := GetSrcDestNameByRouteID(ctx, routeID)
+	src, dest, route_name, _ := pg.GetSrcDestNameByRouteID(ctx, routeID)
 
 	if is_route_present && routeID != 0 {
 
 		route.RouteId, route.RouteName, route.Src, route.Dest, route.BusID = routeID, route_name, src, dest, busID
 		// update the bus_route when the route_id is exists
-		err := UpdateBusRoute(ctx, &route)
+		err := pg.UpdateBusRoute(ctx, &route)
 		if err != nil {
 			return err
 		}
@@ -64,7 +64,7 @@ func (pg *PgStore) AssignRouteToBus(ctx context.Context, routeID int, busID int)
 		}
 	}
 	if routeID != 0 {
-		go CacheRoute(ctx, &route)
+		go pg.CacheRoute(ctx, &route)
 	}
 	return nil
 }
