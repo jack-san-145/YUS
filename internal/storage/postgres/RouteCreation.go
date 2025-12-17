@@ -47,7 +47,7 @@ func (pg *PgStore) GetLastRouteID(ctx context.Context) (int, error) {
 
 	var route_id int
 	query := "select route_id from all_routes where direction = 'UP' order by route_id desc limit 1"
-	err := pool.QueryRow(context.Background(), query).Scan(&route_id)
+	err := pool.QueryRow(ctx, query).Scan(&route_id)
 	if errors.Is(err, sql.ErrNoRows) {
 		return 1, nil
 	} else if err != nil {

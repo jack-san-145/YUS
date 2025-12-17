@@ -57,7 +57,7 @@ func (pg *PgStore) ScheduleBus(ctx context.Context, schedule *models.CurrentSche
 
 	if schedule.RouteId != 0 {
 
-		go pg.CacheRoute(ctx, &route)
+		go pg.CacheRoute(context.Background(), &route)
 	}
 	return nil
 
