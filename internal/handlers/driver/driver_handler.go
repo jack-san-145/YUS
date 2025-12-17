@@ -7,7 +7,6 @@ import (
 
 	"yus/internal/handlers/common/response"
 	"yus/internal/services"
-	"yus/internal/storage/postgres"
 )
 
 func (h *DriverHandler) SendOTPHandler(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +26,7 @@ func (h *DriverHandler) SendOTPHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("error while converting the driver_id string to driver_id_int - ", err)
 	}
-	if exists, _ := postgres.DriverExists(ctx, driver_id_int); !exists {
+	if exists, _ := h.Store.DB.DriverExists(ctx, driver_id_int); !exists {
 		response.WriteJSON(w, r, map[string]string{"status": "no driver found"})
 		return
 	}
@@ -71,7 +70,7 @@ func (h *DriverHandler) VerifyOTPHandler(w http.ResponseWriter, r *http.Request)
 
 		otp, _ := h.Store.InMemoryDB.GetOtp(ctx, email)
 		if given_otp == otp {
-			ok, _ := postgres.SetDriverPassword(ctx, driver_id_int, email, password)
+			ok, _ := h.Store.DB.SetDriverPassword(ctx, driver_id_int, email, password)
 			if ok {
 				pass_status["status"] = "success"
 			} else {
@@ -105,7 +104,7 @@ func (h *DriverHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("error while converting the driver_id string to driver_id_int - ", err)
 		}
 		password := r.FormValue("password")
-		if valid, _ := postgres.ValidateDriver(ctx, driver_id_int, password); valid {
+		if valid, _ := h.Store.DB.ValidateDriver(ctx, driver_id_int, password); valid {
 			login_status["login_status"] = "valid"
 			session_id, err := h.Store.InMemoryDB.CreateDriverSession(ctx, driver_id_int)
 			if err != nil {
@@ -128,7 +127,7 @@ func (h *DriverHandler) GetAllocatedBusHandler(w http.ResponseWriter, r *http.Re
 	driver_id := r.Context().Value("DRIVER_ID").(int)
 
 	fmt.Println("driver_id- ", driver_id)
-	alloted_bus, _ := postgres.GetAllottedBusForDriver(ctx, driver_id)
+	alloted_bus, _ := h.Store.DB.GetAllottedBusForDriver(ctx, driver_id)
 	if alloted_bus.BusID != 0 && alloted_bus.RouteId != 0 {
 		response.WriteJSON(w, r, alloted_bus)
 	} else {

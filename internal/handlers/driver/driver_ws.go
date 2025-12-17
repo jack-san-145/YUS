@@ -10,7 +10,6 @@ import (
 	"yus/internal/handlers/passenger"
 	"yus/internal/models"
 	"yus/internal/services"
-	"yus/internal/storage/postgres"
 
 	"github.com/gorilla/websocket"
 )
@@ -60,7 +59,7 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 		Arrival_status = redis_as
 	}
 
-	r, _ := postgres.FindRouteByBusOrDriverID(context.Background(), driver_id, "DRIVER")
+	r, _ := h.Store.DB.FindRouteByBusOrDriverID(context.Background(), driver_id, "DRIVER")
 	Ongoing_route_stops := r.Currentroute.Stops
 	fmt.Println("ongoing route - ", Ongoing_route_stops)
 
