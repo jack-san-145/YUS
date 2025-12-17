@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"yus/internal/handlers/common/response"
 	"yus/internal/models"
-	"yus/internal/storage/postgres"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -24,7 +23,7 @@ func (h *AdminHandler) GetCachedRoutesHandler(w http.ResponseWriter, r *http.Req
 		fmt.Println("error while converting bus_id_int to bus_id_string - ", err)
 		return
 	}
-	cached_bus_routes, _ := postgres.GetCachedRoutesByBusID(ctx, bus_id_int)
+	cached_bus_routes, _ := h.Store.DB.GetCachedRoutesByBusID(ctx, bus_id_int)
 	response.WriteJSON(w, r, cached_bus_routes)
 }
 
@@ -32,7 +31,7 @@ func (h *AdminHandler) ListRoutesHandler(w http.ResponseWriter, r *http.Request)
 
 	ctx := r.Context()
 	//to load all the available routes
-	all_available_routes, _ := postgres.GetAvailableRoutes(ctx)
+	all_available_routes, _ := h.Store.DB.GetAvailableRoutes(ctx)
 	fmt.Println("avalaible routes - ", all_available_routes)
 	response.WriteJSON(w, r, all_available_routes)
 }
@@ -46,7 +45,7 @@ func (h *AdminHandler) AddBusHandler(w http.ResponseWriter, r *http.Request) {
 	bus_id_string := r.URL.Query().Get("bus_id")
 
 	bus_id_int, _ := strconv.Atoi(bus_id_string)
-	err := postgres.AddBus(ctx, bus_id_int)
+	err := h.Store.DB.AddBus(ctx, bus_id_int)
 	if err != nil {
 		status["status"] = err.Error()
 	} else {
@@ -69,7 +68,7 @@ func (h *AdminHandler) AssignRouteToBusHandler(w http.ResponseWriter, r *http.Re
 	bus_id_int, _ := strconv.Atoi(bus_id_string)
 	fmt.Println(route_id_int, bus_id_int)
 
-	err := postgres.AssignRouteToBus(ctx, route_id_int, bus_id_int)
+	err := h.Store.DB.AssignRouteToBus(ctx, route_id_int, bus_id_int)
 	if err != nil {
 		status["route_mapped"] = false
 	} else {
@@ -77,7 +76,10 @@ func (h *AdminHandler) AssignRouteToBusHandler(w http.ResponseWriter, r *http.Re
 	}
 	response.WriteJSON(w, r, status)
 
-	go h.Store.InMemoryDB.CacheBusRoute(context.Background())
+	go func() {
+		current_route, _ := h.Store.DB.GetCurrentBusRoutes(context.Background())
+		h.Store.InMemoryDB.CacheBusRoute(context.Background(), current_route)
+	}()
 }
 
 func (h *AdminHandler) AssignDriverToBusHandler(w http.ResponseWriter, r *http.Request) {
@@ -95,7 +97,7 @@ func (h *AdminHandler) AssignDriverToBusHandler(w http.ResponseWriter, r *http.R
 	}
 
 	for _, allcoate_driver := range DriverAllocation_array {
-		err := postgres.AssignDriverToBus(ctx, allcoate_driver.DriverId, allcoate_driver.BusId)
+		err := h.Store.DB.AssignDriverToBus(ctx, allcoate_driver.DriverId, allcoate_driver.BusId)
 		if err != nil {
 			status[allcoate_driver.BusId] = false
 		} else {
@@ -105,7 +107,10 @@ func (h *AdminHandler) AssignDriverToBusHandler(w http.ResponseWriter, r *http.R
 
 	response.WriteJSON(w, r, status)
 
-	go h.Store.InMemoryDB.CacheBusRoute(context.Background())
+	go func() {
+		current_route, _ := h.Store.DB.GetCurrentBusRoutes(context.Background())
+		h.Store.InMemoryDB.CacheBusRoute(context.Background(), current_route)
+	}()
 }
 
 func (h *AdminHandler) UpdateRouteDirectionHandler(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +118,7 @@ func (h *AdminHandler) UpdateRouteDirectionHandler(w http.ResponseWriter, r *htt
 	ctx := r.Context()
 	direction := chi.URLParam(r, "direction")
 	if direction == "UP" || direction == "DOWN" {
-		if ok, _ := postgres.ChangeRouteDirection(ctx, direction); ok {
+		if ok, _ := h.Store.DB.ChangeRouteDirection(ctx, direction); ok {
 			response.WriteJSON(w, r, map[string]bool{"changed": true})
 		} else {
 			response.WriteJSON(w, r, map[string]bool{"changed": false})
@@ -122,6 +127,9 @@ func (h *AdminHandler) UpdateRouteDirectionHandler(w http.ResponseWriter, r *htt
 		response.WriteJSON(w, r, map[string]bool{"changed": false})
 	}
 
-	go h.Store.InMemoryDB.CacheBusRoute(context.Background())
+	go func() {
+		current_route, _ := h.Store.DB.GetCurrentBusRoutes(context.Background())
+		h.Store.InMemoryDB.CacheBusRoute(context.Background(), current_route)
+	}()
 
 }

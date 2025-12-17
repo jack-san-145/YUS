@@ -9,13 +9,12 @@ import (
 	"yus/internal/handlers/common/response"
 	"yus/internal/models"
 	"yus/internal/services"
-	"yus/internal/storage/postgres"
 )
 
 func (h *AdminHandler) GetScheduleHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	current_schedule, _ := postgres.GetCurrentSchedule(ctx)
+	current_schedule, _ := h.Store.DB.GetCurrentSchedule(ctx)
 	response.WriteJSON(w, r, current_schedule)
 
 }
@@ -41,7 +40,7 @@ func (h *AdminHandler) AddDriverHandler(w http.ResponseWriter, r *http.Request) 
 
 		fmt.Println("driver - ", driver)
 		if services.ValidateMobileNo(driver.Mobile_no) && services.ValidateName(driver.Name) {
-			if err := postgres.AddDriver(ctx, &driver); err == nil { //stores the new_driver to DB
+			if err := h.Store.DB.AddDriver(ctx, &driver); err == nil { //stores the new_driver to DB
 				status.IsAdded = true
 			} else {
 				status.IsAdded = false
@@ -61,7 +60,7 @@ func (h *AdminHandler) ListDriversHandler(w http.ResponseWriter, r *http.Request
 
 	ctx := r.Context()
 	//to load all the available routes
-	all_available_drivers, _ := postgres.GetAvailableDrivers(ctx)
+	all_available_drivers, _ := h.Store.DB.GetAvailableDrivers(ctx)
 	fmt.Println("avalaible drivers - ", all_available_drivers)
 	response.WriteJSON(w, r, all_available_drivers)
 }
@@ -98,7 +97,7 @@ func (h *AdminHandler) ScheduleBusHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = postgres.ScheduleBus(ctx, &schedule)
+	err = h.Store.DB.ScheduleBus(ctx, &schedule)
 	if err != nil {
 		response.WriteJSON(w, r, map[string]bool{"status": false})
 		return

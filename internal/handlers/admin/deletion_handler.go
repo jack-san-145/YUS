@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 	"yus/internal/handlers/common/response"
-	"yus/internal/storage/postgres"
 )
 
 // to delele the given route from DB
@@ -21,7 +20,7 @@ func (h *AdminHandler) RemoveRouteHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = postgres.RemoveRoute(ctx, route_id_int)
+	err = h.Store.DB.RemoveRoute(ctx, route_id_int)
 	if err != nil {
 		response.WriteJSON(w, r, map[string]bool{"deleted": false})
 		return
@@ -42,7 +41,7 @@ func (h *AdminHandler) RemoveBusHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err = postgres.RemoveBus(ctx, bus_id_int)
+	err = h.Store.DB.RemoveBus(ctx, bus_id_int)
 	if err != nil {
 		response.WriteJSON(w, r, map[string]bool{"removed": false})
 		return
@@ -63,7 +62,7 @@ func (h *AdminHandler) RemoveDriverHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = postgres.RemoveDriver(ctx, driver_id_int)
+	err = h.Store.DB.RemoveDriver(ctx, driver_id_int)
 	if err != nil {
 		response.WriteJSON(w, r, map[string]bool{"removed": false})
 		return

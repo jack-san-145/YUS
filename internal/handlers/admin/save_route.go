@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"yus/internal/handlers/common/response"
 	"yus/internal/models"
-	"yus/internal/storage/postgres"
 )
 
 // var All_Bus_Routes []models.Route
@@ -23,7 +22,7 @@ func (h *AdminHandler) SaveRouteHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	NewRoute.Direction = "UP"
 	fmt.Printf("actual route - %+v", NewRoute)
-	status, _ := postgres.SaveRoute(ctx, &NewRoute)
+	status, _ := h.Store.DB.SaveRoute(ctx, &NewRoute)
 	response.WriteJSON(w, r, map[string]string{"status": status})
 	// All_Bus_Routes = append(All_Bus_Routes, NewRoute)
 	// display_all_routes()
