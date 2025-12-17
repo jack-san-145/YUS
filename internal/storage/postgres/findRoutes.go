@@ -9,7 +9,7 @@ import (
 	"yus/internal/services"
 )
 
-func FindRouteByBusOrDriverID(ctx context.Context, busID int, requestFrom string) (*models.AllRoute, error) {
+func (pg *PgStore) FindRouteByBusOrDriverID(ctx context.Context, busID int, requestFrom string) (*models.AllRoute, error) {
 	if requestFrom == "DRIVER" {
 		driver_id := &busID
 		query := "select bus_id from current_bus_route where driver_id = $1"
@@ -42,37 +42,37 @@ func FindRouteByBusOrDriverID(ctx context.Context, busID int, requestFrom string
 		return r, err
 	}
 
-	FindStops(ctx, &r.Currentroute)
+	pg.FindStops(ctx, &r.Currentroute)
 	if r.Currentroute.Direction == "UP" {
 		r.Uproute = r.Currentroute
 		r.Uproute.Active = true
-		FindStops(ctx, &r.Uproute)
+		pg.FindStops(ctx, &r.Uproute)
 
 		r.Currentroute.Direction = "DOWN"
 		r.Downroute = r.Currentroute
 		r.Downroute.Src, r.Downroute.Dest = r.Downroute.Dest, r.Downroute.Src
 
 		r.Downroute.Active = false
-		FindStops(ctx, &r.Downroute)
+		pg.FindStops(ctx, &r.Downroute)
 
 	} else if r.Currentroute.Direction == "DOWN" {
 		r.Downroute = r.Currentroute
 		r.Downroute.Active = true
-		FindStops(ctx, &r.Downroute)
+		pg.FindStops(ctx, &r.Downroute)
 
 		r.Currentroute.Direction = "UP"
 		r.Uproute = r.Currentroute
 		r.Uproute.Src, r.Uproute.Dest = r.Uproute.Dest, r.Uproute.Src
 
 		r.Uproute.Active = false
-		FindStops(ctx, &r.Uproute)
+		pg.FindStops(ctx, &r.Uproute)
 	}
 
 	return r, nil
 	//here route is an current route
 }
 
-func FindRoutesBySrcDst(ctx context.Context, src string, dest string) ([]models.CurrentRoute, error) {
+func (pg *PgStore) FindRoutesBySrcDst(ctx context.Context, src string, dest string) ([]models.CurrentRoute, error) {
 	var (
 		All_routes []models.CurrentRoute
 		found      bool
@@ -99,7 +99,7 @@ func FindRoutesBySrcDst(ctx context.Context, src string, dest string) ([]models.
 		route.Src = services.Convert_to_Normal(route.Src)
 		route.Dest = services.Convert_to_Normal(route.Dest)
 
-		FindStops(ctx, &route) //it sets the stops to the route with pointer
+		pg.FindStops(ctx, &route) //it sets the stops to the route with pointer
 		All_routes = append(All_routes, route)
 		found = true
 	}
@@ -108,14 +108,14 @@ func FindRoutesBySrcDst(ctx context.Context, src string, dest string) ([]models.
 		fmt.Println("succesfully route founded")
 	} else if !routes.Next() {
 		fmt.Println("No routes available for this src and dest,so find reverse route")
-		All_routes, _ = FindReverseRoutesBySrcDest(ctx, dest, src)
+		All_routes, _ = pg.FindReverseRoutesBySrcDest(ctx, dest, src)
 
 	}
 	return All_routes, nil
 
 }
 
-func FindStops(ctx context.Context, route *models.CurrentRoute) error {
+func (pg *PgStore) FindStops(ctx context.Context, route *models.CurrentRoute) error {
 	var (
 		route_stops []models.RouteStops
 		route_name  string
@@ -155,7 +155,7 @@ func FindStops(ctx context.Context, route *models.CurrentRoute) error {
 	return nil
 }
 
-func FindReverseRoutesBySrcDest(ctx context.Context, src string, dest string) ([]models.CurrentRoute, error) {
+func (pg *PgStore) FindReverseRoutesBySrcDest(ctx context.Context, src string, dest string) ([]models.CurrentRoute, error) {
 
 	var (
 		All_routes []models.CurrentRoute
@@ -190,7 +190,7 @@ func FindReverseRoutesBySrcDest(ctx context.Context, src string, dest string) ([
 			route.Direction = "UP"
 		}
 
-		FindStops(ctx, &route) //it sets the stops to the route with pointer
+		pg.FindStops(ctx, &route) //it sets the stops to the route with pointer
 		All_routes = append(All_routes, route)
 		found = true
 	}
@@ -210,7 +210,7 @@ func FindReverseRoutesBySrcDest(ctx context.Context, src string, dest string) ([
 3. if doesn't exists go for all_routes and then find the match with the routestops
 4. return the matched routes
 */
-func FindRoutesBySrcDstStop(ctx context.Context, original_src string, original_dest string, original_stop string) ([]models.CurrentRoute, error) {
+func (pg *PgStore) FindRoutesBySrcDstStop(ctx context.Context, original_src string, original_dest string, original_stop string) ([]models.CurrentRoute, error) {
 
 	var (
 		Matched_routes   []models.CurrentRoute
@@ -284,7 +284,7 @@ func FindRoutesBySrcDstStop(ctx context.Context, original_src string, original_d
 				&route.Dest,
 				&route.IsStop)
 
-			FindStops(ctx, &route)
+			pg.FindStops(ctx, &route)
 			fmt.Println("active route - ", route)
 			Matched_routes = append(Matched_routes, route)
 		}
@@ -337,7 +337,7 @@ func FindRoutesBySrcDstStop(ctx context.Context, original_src string, original_d
 				&route.Src,
 				&route.IsStop)
 
-			FindStops(ctx, &route)
+			pg.FindStops(ctx, &route)
 			fmt.Println("inactive route - ", route)
 			Matched_routes = append(Matched_routes, route)
 		}
@@ -346,7 +346,7 @@ func FindRoutesBySrcDstStop(ctx context.Context, original_src string, original_d
 	return Matched_routes, nil
 }
 
-func ChangeRouteDirection(ctx context.Context, direction string) (bool, error) {
+func (pg *PgStore) ChangeRouteDirection(ctx context.Context, direction string) (bool, error) {
 	query := `
 				UPDATE current_bus_route AS cbr
 				SET 

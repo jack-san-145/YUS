@@ -6,7 +6,7 @@ import (
 	"yus/internal/models"
 )
 
-func AssignDriverToBus(ctx context.Context, driverID int, busID int) error {
+func (pg *PgStore) AssignDriverToBus(ctx context.Context, driverID int, busID int) error {
 	// finds , is the driver_id existing in the current_bus_route
 	is_driver_present, err := DriverExistsInCBR(ctx, driverID)
 	if err != nil {
@@ -33,7 +33,7 @@ func AssignDriverToBus(ctx context.Context, driverID int, busID int) error {
 	return nil
 }
 
-func AssignRouteToBus(ctx context.Context, routeID int, busID int) error {
+func (pg *PgStore) AssignRouteToBus(ctx context.Context, routeID int, busID int) error {
 
 	var route models.BusRoute
 	// finds , is the route_id existing in the current_bus_route
@@ -69,7 +69,7 @@ func AssignRouteToBus(ctx context.Context, routeID int, busID int) error {
 	return nil
 }
 
-func GetSrcDestNameByRouteID(ctx context.Context, routeID int) (string, string, string, error) {
+func (pg *PgStore) GetSrcDestNameByRouteID(ctx context.Context, routeID int) (string, string, string, error) {
 	var (
 		route_name string
 		src        string
@@ -85,7 +85,7 @@ func GetSrcDestNameByRouteID(ctx context.Context, routeID int) (string, string, 
 }
 
 // finds , is the route_id existing in the current_bus_route
-func RouteExistsInCBR(ctx context.Context, routeID int) (bool, error) {
+func (pg *PgStore) RouteExistsInCBR(ctx context.Context, routeID int) (bool, error) {
 	var is_route_present bool
 	query := "select exists(select 1 from current_bus_route where route_id = $1)"
 	err := pool.QueryRow(context.Background(), query, routeID).Scan(&is_route_present)
@@ -97,7 +97,7 @@ func RouteExistsInCBR(ctx context.Context, routeID int) (bool, error) {
 }
 
 // finds , is the route_id existing in the current_bus_route
-func DriverExistsInCBR(ctx context.Context, driverID int) (bool, error) {
+func (pg *PgStore) DriverExistsInCBR(ctx context.Context, driverID int) (bool, error) {
 	var is_driver_present bool
 	query := "select exists(select 1 from current_bus_route where driver_id = $1)"
 	err := pool.QueryRow(context.Background(), query, driverID).Scan(&is_driver_present)
@@ -109,7 +109,7 @@ func DriverExistsInCBR(ctx context.Context, driverID int) (bool, error) {
 }
 
 // update the bus_route when the route_id is exists on current_bus_route
-func UpdateBusRoute(ctx context.Context, route *models.BusRoute) error {
+func (pg *PgStore) UpdateBusRoute(ctx context.Context, route *models.BusRoute) error {
 
 	//set the already mapped other bus's route_id as 0
 	query := "update current_bus_route set route_id = 0,route_name ='',src ='',dest ='' where route_id = $1"
@@ -130,7 +130,7 @@ func UpdateBusRoute(ctx context.Context, route *models.BusRoute) error {
 }
 
 // update the bus_route when the route_id is exists on current_bus_route
-func UpdateBusDriver(ctx context.Context, driverID int, busID int) error {
+func (pg *PgStore) UpdateBusDriver(ctx context.Context, driverID int, busID int) error {
 
 	//set the already mapped other bus's route_id as 0
 	query := "update current_bus_route set driver_id = 1000 where driver_id = $1"
@@ -150,7 +150,7 @@ func UpdateBusDriver(ctx context.Context, driverID int, busID int) error {
 	return nil
 }
 
-func AddBus(ctx context.Context, busID int) error {
+func (pg *PgStore) AddBus(ctx context.Context, busID int) error {
 
 	var is_bus_exists bool
 	fmt.Println("bus_id - ", busID)
@@ -178,7 +178,7 @@ func AddBus(ctx context.Context, busID int) error {
 	return nil
 }
 
-func CacheRoute(ctx context.Context, route *models.BusRoute) error {
+func (pg *PgStore) CacheRoute(ctx context.Context, route *models.BusRoute) error {
 	var is_route_exists bool
 
 	//check if the route already exist in cached_bus_route or not

@@ -59,7 +59,7 @@ func Load_routes_by_src_and_dest(src string, dest string) {
 }
 */
 
-func GetCurrentSchedule(ctx context.Context) ([]models.CurrentSchedule, error) {
+func (pg *PgStore) GetCurrentSchedule(ctx context.Context) ([]models.CurrentSchedule, error) {
 	var current_schedule []models.CurrentSchedule
 	query := "select bus_id,driver_id,route_id from current_bus_route"
 	rows, err := pool.Query(context.Background(), query)
@@ -96,7 +96,7 @@ func GetCurrentBusRoutes(ctx context.Context) ([]models.CurrentRoute, error) {
 			fmt.Println("error while scanning bus_id - ", err)
 			return nil, err
 		} else {
-			r, _ := FindRouteByBusOrDriverID(ctx, bus_id, "PASSENGER")
+			r, _ := pg.FindRouteByBusOrDriverID(ctx, bus_id, "PASSENGER")
 			Current_Bus_route = append(Current_Bus_route, r.Uproute)
 			Current_Bus_route = append(Current_Bus_route, r.Downroute)
 		}
@@ -106,7 +106,7 @@ func GetCurrentBusRoutes(ctx context.Context) ([]models.CurrentRoute, error) {
 }
 
 // function to load all up_routes
-func GetAvailableRoutes(ctx context.Context) ([]models.AvilableRoute, error) {
+func (pg *PgStore) GetAvailableRoutes(ctx context.Context) ([]models.AvilableRoute, error) {
 	var Available_routes []models.AvilableRoute
 	query := "select route_id,route_name,src,dest,direction from all_routes where direction = 'UP' "
 	all_routes, err := pool.Query(context.Background(), query)
@@ -154,7 +154,7 @@ func GetAvailableRoutes(ctx context.Context) ([]models.AvilableRoute, error) {
 	return Available_routes, nil
 }
 
-func GetCachedRoutesByBusID(ctx context.Context, busID int) ([]models.BusRoute, error) {
+func (pg *PgStore) GetCachedRoutesByBusID(ctx context.Context, busID int) ([]models.BusRoute, error) {
 	var All_bus_routes []models.BusRoute
 	query := "select route_id,route_name,src,dest from cached_bus_route where bus_id = $1"
 	rows, err := pool.Query(context.Background(), query, busID)

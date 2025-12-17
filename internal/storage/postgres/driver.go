@@ -9,7 +9,7 @@ import (
 	"yus/internal/services"
 )
 
-func GetAllottedBusForDriver(ctx context.Context, driverID int) (models.AllotedBus, error) {
+func (pg *PgStore) GetAllottedBusForDriver(ctx context.Context, driverID int) (models.AllotedBus, error) {
 
 	var alloted_bus models.AllotedBus
 	query := "select bus_id,route_id,route_name,direction,src,dest from current_bus_route where driver_id = $1"
@@ -36,7 +36,7 @@ func GetAllottedBusForDriver(ctx context.Context, driverID int) (models.AllotedB
 	return alloted_bus, nil
 }
 
-func AddDriver(ctx context.Context, driver *models.Driver) error {
+func (pg *PgStore) AddDriver(ctx context.Context, driver *models.Driver) error {
 	query := "insert into drivers(driver_name,mobile_no) values($1,$2)"
 	_, err := pool.Exec(context.Background(), query, driver.Name, driver.Mobile_no)
 	if err != nil {
@@ -47,7 +47,7 @@ func AddDriver(ctx context.Context, driver *models.Driver) error {
 	return nil
 }
 
-func DriverExists(ctx context.Context, driverID int) (bool, error) {
+func (pg *PgStore) DriverExists(ctx context.Context, driverID int) (bool, error) {
 	var exists bool
 	query := "select exists(select 1 from drivers where driver_id = $1)"
 	err := pool.QueryRow(context.Background(), query, driverID).Scan(&exists)
@@ -58,9 +58,9 @@ func DriverExists(ctx context.Context, driverID int) (bool, error) {
 	return exists, nil
 }
 
-func SetDriverPassword(ctx context.Context, driverID int, email string, password string) (bool, error) {
+func (pg *PgStore) SetDriverPassword(ctx context.Context, driverID int, email string, password string) (bool, error) {
 	hashed_pass := services.Hash_this_password(password)
-	if exists, _ := DriverExists(ctx, driverID); exists {
+	if exists, _ := pg.DriverExists(ctx, driverID); exists {
 		query := "update drivers set password = $1,email = $2 where driver_id = $3 "
 		_, err := pool.Exec(context.Background(), query, hashed_pass, email, password)
 		if err != nil {
@@ -71,7 +71,7 @@ func SetDriverPassword(ctx context.Context, driverID int, email string, password
 	return true, nil
 }
 
-func ValidateDriver(ctx context.Context, driverID int, password string) (bool, error) {
+func (pg *PgStore) ValidateDriver(ctx context.Context, driverID int, password string) (bool, error) {
 
 	var DB_pass string
 	query := "select password from drivers where driver_id = $1"
@@ -87,7 +87,7 @@ func ValidateDriver(ctx context.Context, driverID int, password string) (bool, e
 	return false, nil
 }
 
-func GetAvailableDrivers(ctx context.Context) ([]models.AvailableDriver, error) {
+func (pg *PgStore) GetAvailableDrivers(ctx context.Context) ([]models.AvailableDriver, error) {
 	var (
 		all_available_drivers []models.AvailableDriver
 		is_driver_exists      bool

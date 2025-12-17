@@ -9,7 +9,7 @@ import (
 	"yus/internal/services"
 )
 
-func SaveRoute(ctx context.Context, up_route *models.Route) (string, error) {
+func (pg *PgStore) SaveRoute(ctx context.Context, up_route *models.Route) (string, error) {
 
 	up_route.Direction = "UP"
 	services.Calculate_Uproute_departure(up_route)
@@ -43,7 +43,7 @@ func SaveRoute(ctx context.Context, up_route *models.Route) (string, error) {
 }
 
 // find the latest route id
-func GetLastRouteID(ctx context.Context) (int, error) {
+func (pg *PgStore) GetLastRouteID(ctx context.Context) (int, error) {
 
 	var route_id int
 	query := "select route_id from all_routes where direction = 'UP' order by route_id desc limit 1"
@@ -59,7 +59,7 @@ func GetLastRouteID(ctx context.Context) (int, error) {
 	return route_id, nil
 }
 
-func InsertRoute(ctx context.Context, route *models.Route) (int, error) {
+func (pg *PgStore) InsertRoute(ctx context.Context, route *models.Route) (int, error) {
 
 	var (
 		arrival_time   string
@@ -105,7 +105,7 @@ func InsertRoute(ctx context.Context, route *models.Route) (int, error) {
 }
 
 // to check if the route is exist on DB or not
-func CheckRouteExists(ctx context.Context, src string, dest string, stops []models.RouteStops) error {
+func (pg *PgStore) CheckRouteExists(ctx context.Context, src string, dest string, stops []models.RouteStops) error {
 
 	var is_match_found_inthis_routes bool
 

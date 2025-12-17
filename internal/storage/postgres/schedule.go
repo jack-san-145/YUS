@@ -8,13 +8,13 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func ScheduleBus(ctx context.Context, schedule *models.CurrentSchedule) error {
+func (pg *PgStore) ScheduleBus(ctx context.Context, schedule *models.CurrentSchedule) error {
 
 	var route models.BusRoute
 
 	route.BusID = schedule.BusId
 	route.RouteId = schedule.RouteId
-	route.Src, route.Dest, route.RouteName, _ = GetSrcDestNameByRouteID(ctx, schedule.RouteId)
+	route.Src, route.Dest, route.RouteName, _ = pg.GetSrcDestNameByRouteID(ctx, schedule.RouteId)
 
 	tx, err := pool.Begin(ctx) //transaction for atomic operation
 	if err != nil {
@@ -57,7 +57,7 @@ func ScheduleBus(ctx context.Context, schedule *models.CurrentSchedule) error {
 
 	if schedule.RouteId != 0 {
 
-		go CacheRoute(ctx, &route)
+		go pg.CacheRoute(ctx, &route)
 	}
 	return nil
 
