@@ -13,7 +13,7 @@ func (pg *PgStore) FindRouteByBusOrDriverID(ctx context.Context, busID int, requ
 	if requestFrom == "DRIVER" {
 		driver_id := &busID
 		query := "select bus_id from current_bus_route where driver_id = $1"
-		err := pool.QueryRow(ctx, query, driver_id).Scan(&busID)
+		err := pg.Pool.QueryRow(ctx, query, driver_id).Scan(&busID)
 		if err != nil {
 			fmt.Println("error while finding bus_id by driver_id - ", err)
 		}
@@ -22,7 +22,7 @@ func (pg *PgStore) FindRouteByBusOrDriverID(ctx context.Context, busID int, requ
 	var r = &models.AllRoute{}
 
 	query := "select bus_id,driver_id,route_id,direction,route_name,src,dest from current_bus_route where bus_id = $1 "
-	err := pool.QueryRow(ctx, query, busID).Scan(&r.Currentroute.BusId,
+	err := pg.Pool.QueryRow(ctx, query, busID).Scan(&r.Currentroute.BusId,
 		&r.Currentroute.DriverId,
 		&r.Currentroute.RouteId,
 		&r.Currentroute.Direction,
@@ -78,7 +78,7 @@ func (pg *PgStore) FindRoutesBySrcDst(ctx context.Context, src string, dest stri
 		found      bool
 	)
 	query := "select bus_id,driver_id,route_id,direction,route_name,src,dest from current_bus_route where src = $1 and dest = $2"
-	routes, err := pool.Query(ctx, query, src, dest)
+	routes, err := pg.Pool.Query(ctx, query, src, dest)
 	if err != nil {
 		fmt.Println("error while select the routes by src and dest from current_bus_route - ", err)
 		return All_routes, err
@@ -127,7 +127,7 @@ func (pg *PgStore) FindStops(ctx context.Context, route *models.CurrentRoute) er
 			order BY stop_sequence asc
 		`
 
-	all_stops, err := pool.Query(ctx, query, route.RouteId, route.Direction)
+	all_stops, err := pg.Pool.Query(ctx, query, route.RouteId, route.Direction)
 	if err != nil {
 		fmt.Println("error while finding the route stops - ", err)
 		return err
@@ -163,7 +163,7 @@ func (pg *PgStore) FindReverseRoutesBySrcDest(ctx context.Context, src string, d
 	)
 
 	query := "select bus_id,driver_id,route_id,direction,route_name,src,dest from current_bus_route where src = $1 and dest = $2"
-	routes, err := pool.Query(ctx, query, src, dest)
+	routes, err := pg.Pool.Query(ctx, query, src, dest)
 	if err != nil {
 		fmt.Println("error while select the reverse routes by src and dest from current_bus_route - ", err)
 		return All_routes, err
@@ -237,7 +237,7 @@ func (pg *PgStore) FindRoutesBySrcDstStop(ctx context.Context, original_src stri
 	fmt.Println("filter with - ", filterWith)
 
 	query := "select exists(Select 1 from current_bus_route where direction = $1) "
-	err := pool.QueryRow(ctx, query, direction).Scan(&direction_exists)
+	err := pg.Pool.QueryRow(ctx, query, direction).Scan(&direction_exists)
 	if err != nil {
 		fmt.Println("error while check the existance of direction - ", err)
 		return Matched_routes, err
@@ -266,7 +266,7 @@ func (pg *PgStore) FindRoutesBySrcDstStop(ctx context.Context, original_src stri
 				  END DESC,
 				rs_src.stop_sequence;`
 
-		rows, err := pool.Query(ctx, query, temp_src+"%", temp_dest+"%")
+		rows, err := pg.Pool.Query(ctx, query, temp_src+"%", temp_dest+"%")
 		if err != nil {
 			fmt.Println("error while finding the active route which present in current_bus_route - ", err)
 		}
@@ -319,7 +319,7 @@ func (pg *PgStore) FindRoutesBySrcDstStop(ctx context.Context, original_src stri
 			  	END DESC,
 			rs_src.stop_sequence;`
 
-		rows, err := pool.Query(ctx, query, temp_src+"%", temp_dest+"%")
+		rows, err := pg.Pool.Query(ctx, query, temp_src+"%", temp_dest+"%")
 		if err != nil {
 			fmt.Println("error while finding the inactive route which absent in current_bus_route - ", err)
 		}
@@ -361,7 +361,7 @@ func (pg *PgStore) ChangeRouteDirection(ctx context.Context, direction string) (
 					AND ar.direction = $1
 					AND cbr.direction <> $1;
 			`
-	_, err := pool.Exec(ctx, query, direction)
+	_, err := pg.Pool.Exec(ctx, query, direction)
 
 	if err != nil {
 		fmt.Println("error while changing the routes - ", err)

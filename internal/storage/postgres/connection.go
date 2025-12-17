@@ -11,7 +11,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var pool *pgxpool.Pool
+// var pool *pgxpool.Pool
 
 type PgStore struct {
 	Pool *pgxpool.Pool

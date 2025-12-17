@@ -13,7 +13,7 @@ func (pg *PgStore) GetAllottedBusForDriver(ctx context.Context, driverID int) (m
 
 	var alloted_bus models.AllotedBus
 	query := "select bus_id,route_id,route_name,direction,src,dest from current_bus_route where driver_id = $1"
-	err := pool.QueryRow(ctx, query, driverID).Scan(&alloted_bus.BusID,
+	err := pg.Pool.QueryRow(ctx, query, driverID).Scan(&alloted_bus.BusID,
 
 		&alloted_bus.RouteId,
 		&alloted_bus.RouteName,
@@ -38,7 +38,7 @@ func (pg *PgStore) GetAllottedBusForDriver(ctx context.Context, driverID int) (m
 
 func (pg *PgStore) AddDriver(ctx context.Context, driver *models.Driver) error {
 	query := "insert into drivers(driver_name,mobile_no) values($1,$2)"
-	_, err := pool.Exec(ctx, query, driver.Name, driver.Mobile_no)
+	_, err := pg.Pool.Exec(ctx, query, driver.Name, driver.Mobile_no)
 	if err != nil {
 		fmt.Println("error while inserting the new driver - ", err)
 		return err
@@ -50,7 +50,7 @@ func (pg *PgStore) AddDriver(ctx context.Context, driver *models.Driver) error {
 func (pg *PgStore) DriverExists(ctx context.Context, driverID int) (bool, error) {
 	var exists bool
 	query := "select exists(select 1 from drivers where driver_id = $1)"
-	err := pool.QueryRow(ctx, query, driverID).Scan(&exists)
+	err := pg.Pool.QueryRow(ctx, query, driverID).Scan(&exists)
 	if err != nil {
 		fmt.Println("error while checking the existance of driver - ", err)
 		return exists, err
@@ -62,7 +62,7 @@ func (pg *PgStore) SetDriverPassword(ctx context.Context, driverID int, email st
 	hashed_pass := services.Hash_this_password(password)
 	if exists, _ := pg.DriverExists(ctx, driverID); exists {
 		query := "update drivers set password = $1,email = $2 where driver_id = $3 "
-		_, err := pool.Exec(ctx, query, hashed_pass, email, password)
+		_, err := pg.Pool.Exec(ctx, query, hashed_pass, email, password)
 		if err != nil {
 			fmt.Println("error while update the driver's password - ", err)
 			return false, err
@@ -75,7 +75,7 @@ func (pg *PgStore) ValidateDriver(ctx context.Context, driverID int, password st
 
 	var DB_pass string
 	query := "select password from drivers where driver_id = $1"
-	err := pool.QueryRow(ctx, query, driverID).Scan(&DB_pass)
+	err := pg.Pool.QueryRow(ctx, query, driverID).Scan(&DB_pass)
 	if err != nil {
 		fmt.Println("error while validate the driver - ", err)
 		return false, err
@@ -94,7 +94,7 @@ func (pg *PgStore) GetAvailableDrivers(ctx context.Context) ([]models.AvailableD
 	)
 
 	query := "select driver_id,driver_name,mobile_no from drivers"
-	all_drivers, err := pool.Query(ctx, query)
+	all_drivers, err := pg.Pool.Query(ctx, query)
 	if err != nil {
 		fmt.Println("error while selecting the driver_id , driver_name and mobile no - ", err)
 		return nil, err
@@ -109,7 +109,7 @@ func (pg *PgStore) GetAvailableDrivers(ctx context.Context) ([]models.AvailableD
 			continue
 		}
 		query = "select exists (select 1 from current_bus_route where driver_id = $1 ) "
-		err := pool.QueryRow(ctx, query, driver.Id).Scan(&is_driver_exists)
+		err := pg.Pool.QueryRow(ctx, query, driver.Id).Scan(&is_driver_exists)
 		if err != nil {
 			fmt.Println("error while checking existance of the driver in current_bus_route - ", err)
 			continue

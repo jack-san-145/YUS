@@ -47,7 +47,7 @@ func (pg *PgStore) GetLastRouteID(ctx context.Context) (int, error) {
 
 	var route_id int
 	query := "select route_id from all_routes where direction = 'UP' order by route_id desc limit 1"
-	err := pool.QueryRow(ctx, query).Scan(&route_id)
+	err := pg.Pool.QueryRow(ctx, query).Scan(&route_id)
 	if errors.Is(err, sql.ErrNoRows) {
 		return 1, nil
 	} else if err != nil {
@@ -86,7 +86,7 @@ func (pg *PgStore) InsertRoute(ctx context.Context, route *models.Route) (int, e
 
 	//inserting route and route_stops
 	query := "insert into all_routes(route_id,route_name,src,dest,direction,departure_time,arrival_time) values($1,$2,$3,$4,$5,$6,$7);"
-	_, err = pool.Exec(ctx, query, route.Id, route_name, route.Src, route.Dest, route.Direction, departure_time, arrival_time)
+	_, err = pg.Pool.Exec(ctx, query, route.Id, route_name, route.Src, route.Dest, route.Direction, departure_time, arrival_time)
 	if err != nil {
 		fmt.Println("error while inserting route to db - ", err)
 		return -1, fmt.Errorf("error")
@@ -94,7 +94,7 @@ func (pg *PgStore) InsertRoute(ctx context.Context, route *models.Route) (int, e
 
 	for _, stop := range route.Stops {
 		query = "insert into route_stops(route_id,route_name,direction,stop_sequence,stop_name,is_stop,lat,lon,arrival_time,departure_time) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)"
-		_, err := pool.Exec(ctx, query, route.Id, route_name, route.Direction, stop.StopSequence, stop.LocationName, stop.IsStop, stop.Lat, stop.Lon, stop.Arrival_time, stop.Departure_time)
+		_, err := pg.Pool.Exec(ctx, query, route.Id, route_name, route.Direction, stop.StopSequence, stop.LocationName, stop.IsStop, stop.Lat, stop.Lon, stop.Arrival_time, stop.Departure_time)
 		if err != nil {
 			fmt.Println("error while inserting the route stops  - ", err)
 			return -1, fmt.Errorf("error")
@@ -110,7 +110,7 @@ func (pg *PgStore) CheckRouteExists(ctx context.Context, src string, dest string
 	var is_match_found_inthis_routes bool
 
 	query := "select route_id from all_routes where src = $1 and dest = $2 ;"
-	route_id_rows, err_error := pool.Query(ctx, query, src, dest)
+	route_id_rows, err_error := pg.Pool.Query(ctx, query, src, dest)
 	if err_error != nil {
 		fmt.Println("error while finding the route id - ", err_error)
 	}
@@ -128,7 +128,7 @@ func (pg *PgStore) CheckRouteExists(ctx context.Context, src string, dest string
 			return nil
 		}
 		query = "select stop_name,is_stop from route_stops where route_id = $1"
-		rows, err := pool.Query(ctx, query, route_id)
+		rows, err := pg.Pool.Query(ctx, query, route_id)
 		if err != nil {
 			fmt.Println("error while accesing the stopname - ", err)
 		}

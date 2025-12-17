@@ -16,7 +16,7 @@ func (pg *PgStore) ScheduleBus(ctx context.Context, schedule *models.CurrentSche
 	route.RouteId = schedule.RouteId
 	route.Src, route.Dest, route.RouteName, _ = pg.GetSrcDestNameByRouteID(ctx, schedule.RouteId)
 
-	tx, err := pool.Begin(ctx) //transaction for atomic operation
+	tx, err := pg.Pool.Begin(ctx) //transaction for atomic operation
 	if err != nil {
 		log.Println("failed to begin tx:", err)
 		return err
