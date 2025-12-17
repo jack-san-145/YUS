@@ -13,6 +13,8 @@ import (
 
 func (h *AdminHandler) SaveRouteHandler(w http.ResponseWriter, r *http.Request) {
 
+	ctx := r.Context()
+
 	var NewRoute models.Route
 	err := json.NewDecoder(r.Body).Decode(&NewRoute)
 	if err != nil {
@@ -21,7 +23,7 @@ func (h *AdminHandler) SaveRouteHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	NewRoute.Direction = "UP"
 	fmt.Printf("actual route - %+v", NewRoute)
-	status, _ := postgres.SaveRoute_to_DB(&NewRoute)
+	status, _ := postgres.SaveRoute(ctx, &NewRoute)
 	response.WriteJSON(w, r, map[string]string{"status": status})
 	// All_Bus_Routes = append(All_Bus_Routes, NewRoute)
 	// display_all_routes()

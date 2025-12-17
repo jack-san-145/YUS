@@ -5,12 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"time"
 	"yus/internal/models"
 	"yus/internal/services"
 )
 
-func SaveRoute_to_DB(up_route *models.Route) (string, error) {
+func SaveRoute(ctx context.Context, up_route *models.Route) (string, error) {
 
 	up_route.Direction = "UP"
 	services.Calculate_Uproute_departure(up_route)
@@ -23,7 +22,7 @@ func SaveRoute_to_DB(up_route *models.Route) (string, error) {
 
 	//check is the new  route exist or not ?
 
-	err := check_if_route_exist(up_route.Src, up_route.Dest, up_route.Stops)
+	err := CheckRouteExists(ctx, up_route.Src, up_route.Dest, up_route.Stops)
 	if err != nil {
 		fmt.Println(err.Error())
 		return "failed", err
@@ -31,10 +30,10 @@ func SaveRoute_to_DB(up_route *models.Route) (string, error) {
 
 	fmt.Println("going to insert route to table")
 	//inserting both up and down routes to db
-	up_route_id, err1 := insert_route_to_db(up_route)
+	up_route_id, err1 := InsertRoute(ctx, up_route)
 
 	down_route.Id = up_route_id //assign the up_route_id to the down_route_id
-	_, err2 := insert_route_to_db(down_route)
+	_, err2 := InsertRoute(ctx, down_route)
 
 	if err1 != nil && err2 != nil {
 		return "failed", nil
@@ -44,7 +43,7 @@ func SaveRoute_to_DB(up_route *models.Route) (string, error) {
 }
 
 // find the latest route id
-func find_route_id() (int, error) {
+func GetLastRouteID(ctx context.Context) (int, error) {
 
 	var route_id int
 	query := "select route_id from all_routes where direction = 'UP' order by route_id desc limit 1"
@@ -60,10 +59,7 @@ func find_route_id() (int, error) {
 	return route_id, nil
 }
 
-func insert_route_to_db(route *models.Route) (int, error) {
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+func InsertRoute(ctx context.Context, route *models.Route) (int, error) {
 
 	var (
 		arrival_time   string
@@ -73,7 +69,7 @@ func insert_route_to_db(route *models.Route) (int, error) {
 	)
 
 	if route.Direction == "UP" {
-		route.Id, err = find_route_id()
+		route.Id, err = GetLastRouteID(ctx)
 		if err != nil {
 			fmt.Println("error while finding the route_id - ", err)
 			return -1, err
@@ -109,9 +105,7 @@ func insert_route_to_db(route *models.Route) (int, error) {
 }
 
 // to check if the route is exist on DB or not
-func check_if_route_exist(src string, dest string, stops []models.RouteStops) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+func CheckRouteExists(ctx context.Context, src string, dest string, stops []models.RouteStops) error {
 
 	var is_match_found_inthis_routes bool
 

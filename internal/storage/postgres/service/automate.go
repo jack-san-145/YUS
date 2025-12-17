@@ -19,13 +19,13 @@ func AutomateRouteScheduling(app *AppPkg.Application) {
 
 	//for 12 AM
 	c.AddFunc("0 0 0 * * *", func() {
-		postgres.Change_route_direction("UP")
+		postgres.ChangeRouteDirection(context.Background(), "UP")
 		app.Store.InMemoryDB.CacheBusRoute(context.Background()) //cache current routes in redis
 	})
 
 	//for 12 PM
 	c.AddFunc("0 0 12 * * *", func() {
-		postgres.Change_route_direction("DOWN")
+		postgres.ChangeRouteDirection(context.Background(), "DOWN")
 		app.Store.InMemoryDB.CacheBusRoute(context.Background()) //cache current routes in redis
 	})
 	c.Start()

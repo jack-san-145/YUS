@@ -6,7 +6,7 @@ import (
 	"yus/internal/models"
 )
 
-func Check_route_exits_for_pass_Ws(route models.PassengerWsRequest) (bool, error) {
+func CheckRouteExistsForPassengerWS(ctx context.Context, route models.PassengerWsRequest) (bool, error) {
 	var exists bool
 
 	fmt.Printf("route.Direction - %v & type - %T ", route.Direction, route.Direction)

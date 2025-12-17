@@ -106,7 +106,7 @@ func GetCurrentBusRoutes(ctx context.Context) ([]models.CurrentRoute, error) {
 }
 
 // function to load all up_routes
-func Load_available_routes() ([]models.AvilableRoute, error) {
+func GetAvailableRoutes(ctx context.Context) ([]models.AvilableRoute, error) {
 	var Available_routes []models.AvilableRoute
 	query := "select route_id,route_name,src,dest,direction from all_routes where direction = 'UP' "
 	all_routes, err := pool.Query(context.Background(), query)
@@ -154,10 +154,10 @@ func Load_available_routes() ([]models.AvilableRoute, error) {
 	return Available_routes, nil
 }
 
-func Load_cached_route(bus_id int) ([]models.BusRoute, error) {
+func GetCachedRoutesByBusID(ctx context.Context, busID int) ([]models.BusRoute, error) {
 	var All_bus_routes []models.BusRoute
 	query := "select route_id,route_name,src,dest from cached_bus_route where bus_id = $1"
-	rows, err := pool.Query(context.Background(), query, bus_id)
+	rows, err := pool.Query(context.Background(), query, busID)
 	if err != nil {
 		fmt.Println("error while fetching the cached routes - ", err)
 		return All_bus_routes, err
@@ -176,7 +176,7 @@ func Load_cached_route(bus_id int) ([]models.BusRoute, error) {
 		route.Direction = "UP"
 
 		FindStops(ctx, &route)
-		bus_route.BusID = bus_id
+		bus_route.BusID = busID
 		bus_route.RouteId = route.RouteId
 		bus_route.RouteName = route.RouteName
 		bus_route.Src = route.Src
@@ -184,7 +184,7 @@ func Load_cached_route(bus_id int) ([]models.BusRoute, error) {
 		bus_route.Stops = route.Stops
 
 		query = "select exists(select 1 from current_bus_route where bus_id = $1 and route_id = $2)"
-		err = pool.QueryRow(context.Background(), query, bus_id, bus_route.RouteId).Scan(&bus_route.Active)
+		err = pool.QueryRow(context.Background(), query, busID, bus_route.RouteId).Scan(&bus_route.Active)
 		if err != nil {
 			fmt.Println("error while checking the existance of current route - ", err)
 		}

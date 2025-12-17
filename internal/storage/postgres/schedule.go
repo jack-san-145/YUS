@@ -14,7 +14,7 @@ func ScheduleBus(ctx context.Context, schedule *models.CurrentSchedule) error {
 
 	route.BusID = schedule.BusId
 	route.RouteId = schedule.RouteId
-	route.Src, route.Dest, route.RouteName, _ = find_src_dest_name_by_routeId(schedule.RouteId)
+	route.Src, route.Dest, route.RouteName, _ = GetSrcDestNameByRouteID(ctx, schedule.RouteId)
 
 	tx, err := pool.Begin(ctx) //transaction for atomic operation
 	if err != nil {
@@ -57,7 +57,7 @@ func ScheduleBus(ctx context.Context, schedule *models.CurrentSchedule) error {
 
 	if schedule.RouteId != 0 {
 
-		go cache_this_route(&route)
+		go CacheRoute(ctx, &route)
 	}
 	return nil
 
