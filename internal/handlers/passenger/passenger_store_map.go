@@ -21,8 +21,11 @@ func NewMapPassengerStore() *MapPassengerStore {
 
 // check if the driver exist or not
 func (m *MapPassengerStore) DriverExists(driverID int) bool {
-	_, ok := m.PassMap[driverID]
 
+	m.Rwm.RLock()
+	defer m.Rwm.RUnlock()
+
+	_, ok := m.PassMap[driverID]
 	return ok
 }
 
@@ -73,10 +76,14 @@ func (m *MapPassengerStore) RemovePassengerConn(driverId int, conn *websocket.Co
 func (m *MapPassengerStore) GetPassengerConns(driverID int) []*PassengerConn {
 
 	m.Rwm.RLock()
-	passangerConn := m.PassMap[driverID]
-	m.Rwm.RUnlock()
+	defer m.Rwm.RUnlock()
 
-	return passangerConn
+	passangerConn := m.PassMap[driverID]
+	copied := make([]*PassengerConn, len(passangerConn))
+	copy(copied, passangerConn)
+
+	return copied
+
 }
 
 // send driver location updates to the passengers
