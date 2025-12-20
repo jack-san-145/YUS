@@ -24,7 +24,6 @@ func (m *MapPassengerStore) DriverExists(driverID int) bool {
 
 	m.Rwm.RLock()
 	defer m.Rwm.RUnlock()
-
 	_, ok := m.PassMap[driverID]
 	return ok
 }
@@ -33,31 +32,33 @@ func (m *MapPassengerStore) DriverExists(driverID int) bool {
 func (m *MapPassengerStore) AddDriver(driverID int) {
 
 	m.Rwm.Lock()
+	defer m.Rwm.Unlock()
 	m.PassMap[driverID] = []*PassengerConn{}
-	m.Rwm.Unlock()
+
 }
 
 // remove driver from the PassMap
 func (m *MapPassengerStore) RemoveDriver(driverID int) {
 
 	m.Rwm.Lock()
+	defer m.Rwm.Unlock()
 	delete(m.PassMap, driverID)
-	m.Rwm.Unlock()
+
 }
 
 // add new passengers to the PassMap
 func (m *MapPassengerStore) AddPassengerConn(driverId int, conn *websocket.Conn) {
 
 	m.Rwm.Lock()
+	defer m.Rwm.Unlock()
 	m.PassMap[driverId] = append(m.PassMap[driverId], &PassengerConn{Conn: conn})
-	m.Rwm.Unlock()
+
 }
 
 // remove passenger connections from the PassMap
 func (m *MapPassengerStore) RemovePassengerConn(driverId int, conn *websocket.Conn) {
 
 	m.Rwm.Lock()
-
 	defer m.Rwm.Unlock()
 
 	passengerconn_arr := m.PassMap[driverId]
@@ -102,5 +103,6 @@ func (m *MapPassengerStore) BroadcastLocation(driver_id int, current_location mo
 			p.Conn.Close() //closed the websocket connection
 			m.RemovePassengerConn(driver_id, p.Conn)
 		}
+
 	}
 }
