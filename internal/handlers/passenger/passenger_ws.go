@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 	"yus/internal/models"
 
 	"github.com/gorilla/websocket"
@@ -28,27 +27,6 @@ func (h *PassengerHandler) WebSocketHandler(w http.ResponseWriter, r *http.Reque
 }
 
 func (h *PassengerHandler) listenPassengerMessage(conn *websocket.Conn) {
-	const pingPeriod = 50 * time.Second
-
-	// Ping ticker to keep connection alive
-	ticker := time.NewTicker(pingPeriod)
-	defer ticker.Stop()
-
-	done := make(chan struct{})
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-					fmt.Println("ping error:", err)
-					close(done)
-					return
-				}
-			case <-done:
-				return
-			}
-		}
-	}()
 
 	var (
 		old_requested_bus_route models.PassengerWsRequest
@@ -64,7 +42,6 @@ func (h *PassengerHandler) listenPassengerMessage(conn *websocket.Conn) {
 			} else {
 				fmt.Println("error reading passenger ws message -", err)
 			}
-			close(done)
 
 			//used old_requested_bus_route.DriverId bcz the current requested_bus_route.DriverId not received , so we cleared the old connection
 			PassengerConnStore.RemovePassengerConn(old_requested_bus_route.DriverId, conn)
