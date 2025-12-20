@@ -56,7 +56,7 @@ func (m *MapPassengerStore) AddPassengerConn(driverId int, conn *websocket.Conn)
 		Send: make(chan models.Location, 10), //buffer size 10 to store max 10 location updates
 	}
 	m.PassMap[driverId] = append(m.PassMap[driverId], p)
-	go p.StartWriter(driverId, m)
+	go p.StartWriter(driverId, m) //start a new separate go routine to write location updates,so each passenger have their own writer which avoids blocking others
 }
 
 // remove passenger connections from the PassMap

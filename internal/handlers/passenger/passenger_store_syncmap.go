@@ -39,8 +39,15 @@ func (s *SyncMapPassengerStore) AddPassengerConn(driverId int, conn *websocket.C
 	if value != nil {
 		conns = value.([]*PassengerConn)
 	}
-	conns = append(conns, &PassengerConn{Conn: conn}) //creating a new passenger connection with 'conn'
+
+	p := &PassengerConn{
+		Conn: conn,
+		Send: make(chan models.Location, 10),
+	}
+	conns = append(conns, p) //creating a new passenger connection with 'conn'
 	s.PassMap.Store(driverId, conns)
+	go p.StartWriterSMP(driverId, s)
+
 }
 
 // remove passenger connections from the PassMap
@@ -54,6 +61,8 @@ func (s *SyncMapPassengerStore) RemovePassengerConn(driverId int, conn *websocke
 	for _, c := range conns {
 		if c.Conn != conn {
 			newConns = append(newConns, c)
+		} else {
+			close(c.Send) //closing passenger channel buffer
 		}
 	}
 	s.PassMap.Store(driverId, newConns)
@@ -72,7 +81,25 @@ func (s *SyncMapPassengerStore) GetPassengerConns(driverId int) []*PassengerConn
 	} else {
 		conns = []*PassengerConn{} // initialize a new slice
 	}
-	return conns
+	copied := make([]*PassengerConn, len(conns))
+	copy(copied, conns)
+	return copied
+
+}
+
+func (p *PassengerConn) StartWriterSMP(driver_id int, s *SyncMapPassengerStore) {
+
+	for loc := range p.Send {
+		p.Mu.Lock() // serialize writes
+		err := p.Conn.WriteJSON(loc)
+		p.Mu.Unlock()
+
+		if err != nil {
+			fmt.Println("error sending location to passenger:", err)
+			p.Conn.Close() //closed the websocket connection
+			s.RemovePassengerConn(driver_id, p.Conn)
+		}
+	}
 }
 
 // send driver location updates to the passengers
@@ -82,14 +109,11 @@ func (s *SyncMapPassengerStore) BroadcastLocation(driver_id int, current_locatio
 	fmt.Printf("driver_id - %v sending location, users = %d\n", driver_id, len(passengers))
 
 	for _, p := range passengers {
-		p.Mu.Lock() // serialize writes
-		err := p.Conn.WriteJSON(current_location)
-		p.Mu.Unlock()
-
-		if err != nil {
-			fmt.Println("error sending location to passenger:", err)
-			p.Conn.Close() //closed the websocket connection
-			s.RemovePassengerConn(driver_id, p.Conn)
+		select {
+		case p.Send <- current_location:
+			//location update sents successfully
+		default:
+			//location update dropped
 		}
 	}
 }
