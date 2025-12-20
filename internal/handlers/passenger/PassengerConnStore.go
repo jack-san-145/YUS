@@ -11,6 +11,7 @@ import (
 type PassengerConn struct {
 	Conn *websocket.Conn
 	Mu   sync.Mutex
+	Send chan models.Location
 }
 
 // interface to implement passenger map operations

@@ -51,8 +51,12 @@ func (m *MapPassengerStore) AddPassengerConn(driverId int, conn *websocket.Conn)
 
 	m.Rwm.Lock()
 	defer m.Rwm.Unlock()
-	m.PassMap[driverId] = append(m.PassMap[driverId], &PassengerConn{Conn: conn})
-
+	p := &PassengerConn{
+		Conn: conn,
+		Send: make(chan models.Location, 10), //buffer size 10 to store max 10 location updates
+	}
+	m.PassMap[driverId] = append(m.PassMap[driverId], p)
+	go p.StartWriter(driverId, m)
 }
 
 // remove passenger connections from the PassMap
@@ -65,6 +69,7 @@ func (m *MapPassengerStore) RemovePassengerConn(driverId int, conn *websocket.Co
 
 	for i, p := range passengerconn_arr {
 		if p.Conn == conn {
+			close(p.Send) //closing the disconnected passenger channel
 			passengerconn_arr = append(passengerconn_arr[:i], passengerconn_arr[i+1:]...)
 			m.PassMap[driverId] = passengerconn_arr
 			return
@@ -79,11 +84,27 @@ func (m *MapPassengerStore) GetPassengerConns(driverID int) []*PassengerConn {
 	m.Rwm.RLock()
 	defer m.Rwm.RUnlock()
 
-	passangerConn := m.PassMap[driverID]
-	copied := make([]*PassengerConn, len(passangerConn))
-	copy(copied, passangerConn)
+	passengerConn := m.PassMap[driverID]
+	copied := make([]*PassengerConn, len(passengerConn))
+	copy(copied, passengerConn)
 
 	return copied
+
+}
+
+func (p *PassengerConn) StartWriter(driver_id int, m *MapPassengerStore) {
+
+	for loc := range p.Send {
+		p.Mu.Lock() // serialize writes
+		err := p.Conn.WriteJSON(loc)
+		p.Mu.Unlock()
+
+		if err != nil {
+			fmt.Println("error sending location to passenger:", err)
+			p.Conn.Close() //closed the websocket connection
+			m.RemovePassengerConn(driver_id, p.Conn)
+		}
+	}
 
 }
 
@@ -94,15 +115,11 @@ func (m *MapPassengerStore) BroadcastLocation(driver_id int, current_location mo
 	fmt.Printf("driver_id - %v sending location, users = %d\n", driver_id, len(passengers))
 
 	for _, p := range passengers {
-		p.Mu.Lock() // serialize writes
-		err := p.Conn.WriteJSON(current_location)
-		p.Mu.Unlock()
-
-		if err != nil {
-			fmt.Println("error sending location to passenger:", err)
-			p.Conn.Close() //closed the websocket connection
-			m.RemovePassengerConn(driver_id, p.Conn)
+		select {
+		case p.Send <- current_location:
+			//location update sents successfully
+		default:
+			//location update dropped
 		}
-
 	}
 }
