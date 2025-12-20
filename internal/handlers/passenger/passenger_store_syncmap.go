@@ -3,6 +3,7 @@ package passenger
 import (
 	"fmt"
 	"sync"
+	"time"
 	"yus/internal/models"
 
 	"github.com/gorilla/websocket"
@@ -17,24 +18,26 @@ func NewSyncMapPassengerStore() *SyncMapPassengerStore {
 }
 
 // check if the driver exist or not
-func (s *SyncMapPassengerStore) DriverExists(DriverID int) bool {
-	_, ok := s.PassMap.Load(DriverID)
+func (s *SyncMapPassengerStore) DriverExists(driverID int) bool {
+	_, ok := s.PassMap.Load(driverID)
 	return ok
 }
 
 // add new driver to the PassMap
-func (s *SyncMapPassengerStore) AddDriver(driver_id int) {
-	s.PassMap.Store(driver_id, []*PassengerConn{})
+func (s *SyncMapPassengerStore) AddDriver(driverID int) {
+	s.PassMap.Store(driverID, []*PassengerConn{})
 }
 
 // remove driver from the PassMap
-func (s *SyncMapPassengerStore) RemoveDriver(driver_id int) {
-	s.PassMap.Delete(driver_id)
+func (s *SyncMapPassengerStore) RemoveDriver(driverID int) {
+	s.PassMap.Delete(driverID)
 }
 
 // add new passengers to the PassMap
-func (s *SyncMapPassengerStore) AddPassengerConn(driverId int, conn *websocket.Conn) {
-	value, _ := s.PassMap.Load(driverId)
+func (s *SyncMapPassengerStore) AddPassengerConn(driverID int, conn *websocket.Conn) {
+	s.RemovePassengerConn(driverID, conn) // prevent duplicate connections
+
+	value, _ := s.PassMap.Load(driverID)
 	var conns []*PassengerConn
 	if value != nil {
 		conns = value.([]*PassengerConn)
@@ -42,78 +45,106 @@ func (s *SyncMapPassengerStore) AddPassengerConn(driverId int, conn *websocket.C
 
 	p := &PassengerConn{
 		Conn: conn,
-		Send: make(chan models.Location, 10),
+		Send: make(chan models.Location, 10), // buffered channel
 	}
-	conns = append(conns, p) //creating a new passenger connection with 'conn'
-	s.PassMap.Store(driverId, conns)
-	go p.StartWriterSMP(driverId, s)
+	conns = append(conns, p)
+	s.PassMap.Store(driverID, conns)
 
+	go p.StartWriterSMP(driverID, s)
 }
 
 // remove passenger connections from the PassMap
-func (s *SyncMapPassengerStore) RemovePassengerConn(driverId int, conn *websocket.Conn) {
-	value, ok := s.PassMap.Load(driverId)
+func (s *SyncMapPassengerStore) RemovePassengerConn(driverID int, conn *websocket.Conn) {
+	value, ok := s.PassMap.Load(driverID)
 	if !ok || value == nil {
 		return
 	}
 	conns := value.([]*PassengerConn)
 	newConns := make([]*PassengerConn, 0, len(conns))
+
 	for _, c := range conns {
 		if c.Conn != conn {
 			newConns = append(newConns, c)
 		} else {
-			close(c.Send) //closing passenger channel buffer
+			c.CloseOnce.Do(func() {
+				close(c.Send)
+				c.Conn.Close()
+			})
 		}
 	}
-	s.PassMap.Store(driverId, newConns)
+	s.PassMap.Store(driverID, newConns)
 }
 
-// Get passenger connection from the PassMap
-func (s *SyncMapPassengerStore) GetPassengerConns(driverId int) []*PassengerConn {
-	var conns []*PassengerConn
-	value, ok := s.PassMap.Load(driverId)
-	if !ok {
+// Get passenger connections
+func (s *SyncMapPassengerStore) GetPassengerConns(driverID int) []*PassengerConn {
+	value, ok := s.PassMap.Load(driverID)
+	if !ok || value == nil {
 		return nil
 	}
 
-	if ok && value != nil { //to avoid the panic
-		conns = value.([]*PassengerConn)
-	} else {
-		conns = []*PassengerConn{} // initialize a new slice
-	}
+	conns := value.([]*PassengerConn)
 	copied := make([]*PassengerConn, len(conns))
 	copy(copied, conns)
 	return copied
-
 }
 
-func (p *PassengerConn) StartWriterSMP(driver_id int, s *SyncMapPassengerStore) {
+// Start writer goroutine for a passenger
+func (p *PassengerConn) StartWriterSMP(driverID int, s *SyncMapPassengerStore) {
+	const pingPeriod = 50 * time.Second
+	ticker := time.NewTicker(pingPeriod)
+	defer ticker.Stop()
 
-	for loc := range p.Send {
-		p.Mu.Lock() // serialize writes
-		err := p.Conn.WriteJSON(loc)
-		p.Mu.Unlock()
+	for {
+		select {
+		// 1. Location update
+		case loc, ok := <-p.Send:
+			if !ok {
+				// channel closed → passenger removed
+				return
+			}
 
-		if err != nil {
-			fmt.Println("error sending location to passenger:", err)
-			p.Conn.Close() //closed the websocket connection
-			s.RemovePassengerConn(driver_id, p.Conn)
+			p.Mu.Lock()
+			err := p.Conn.WriteJSON(loc)
+			p.Mu.Unlock()
+
+			if err != nil {
+				fmt.Println("error sending location to passenger:", err)
+				p.CloseOnce.Do(func() {
+					p.Conn.Close()
+				})
+				s.RemovePassengerConn(driverID, p.Conn)
+				return
+			}
+
+		// 2. Ping to keep connection alive
+		case <-ticker.C:
+			p.Mu.Lock()
+			err := p.Conn.WriteMessage(websocket.PingMessage, nil)
+			p.Mu.Unlock()
+
+			if err != nil {
+				fmt.Println("ping error:", err)
+				p.CloseOnce.Do(func() {
+					p.Conn.Close()
+				})
+				s.RemovePassengerConn(driverID, p.Conn)
+				return
+			}
 		}
 	}
 }
 
-// send driver location updates to the passengers
-func (s *SyncMapPassengerStore) BroadcastLocation(driver_id int, current_location models.Location) {
-
-	passengers := s.GetPassengerConns(driver_id)
-	fmt.Printf("driver_id - %v sending location, users = %d\n", driver_id, len(passengers))
+// Broadcast driver location to all passengers
+func (s *SyncMapPassengerStore) BroadcastLocation(driverID int, loc models.Location) {
+	passengers := s.GetPassengerConns(driverID)
+	fmt.Printf("driver_id - %v sending location, users = %d\n", driverID, len(passengers))
 
 	for _, p := range passengers {
 		select {
-		case p.Send <- current_location:
-			//location update sents successfully
+		case p.Send <- loc:
+			// sent successfully
 		default:
-			//location update dropped
+			// dropped if channel full
 		}
 	}
 }
