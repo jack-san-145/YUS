@@ -3,6 +3,7 @@ package passenger
 import (
 	"fmt"
 	"sync"
+	"time"
 	"yus/internal/models"
 
 	"github.com/gorilla/websocket"
@@ -49,6 +50,8 @@ func (m *MapPassengerStore) RemoveDriver(driverID int) {
 // add new passengers to the PassMap
 func (m *MapPassengerStore) AddPassengerConn(driverId int, conn *websocket.Conn) {
 
+	m.RemovePassengerConn(driverId, conn) // to prevent concurrent passenger object creation
+
 	m.Rwm.Lock()
 	defer m.Rwm.Unlock()
 	p := &PassengerConn{
@@ -69,7 +72,10 @@ func (m *MapPassengerStore) RemovePassengerConn(driverId int, conn *websocket.Co
 
 	for i, p := range passengerconn_arr {
 		if p.Conn == conn {
-			close(p.Send) //closing the disconnected passenger channel
+			p.CloseOnce.Do(func() {
+				close(p.Send)
+				p.Conn.Close()
+			}) //closing the disconnected passenger channel
 			passengerconn_arr = append(passengerconn_arr[:i], passengerconn_arr[i+1:]...)
 			m.PassMap[driverId] = passengerconn_arr
 			return
@@ -91,21 +97,46 @@ func (m *MapPassengerStore) GetPassengerConns(driverID int) []*PassengerConn {
 	return copied
 
 }
+func (p *PassengerConn) StartWriter(driverID int, m *MapPassengerStore) {
+	const pingPeriod = 50 * time.Second
+	ticker := time.NewTicker(pingPeriod)
+	defer ticker.Stop()
 
-func (p *PassengerConn) StartWriter(driver_id int, m *MapPassengerStore) {
+	for {
+		select {
 
-	for loc := range p.Send {
-		p.Mu.Lock() // serialize writes
-		err := p.Conn.WriteJSON(loc)
-		p.Mu.Unlock()
+		// 1 Location update
+		case loc, ok := <-p.Send:
+			if !ok {
+				// channel closed → passenger removed
+				return
+			}
 
-		if err != nil {
-			fmt.Println("error sending location to passenger:", err)
-			p.Conn.Close() //closed the websocket connection
-			m.RemovePassengerConn(driver_id, p.Conn)
+			p.Mu.Lock()
+			err := p.Conn.WriteJSON(loc)
+			p.Mu.Unlock()
+
+			if err != nil {
+				fmt.Println("error sending location to passenger:", err)
+				p.Conn.Close()
+				m.RemovePassengerConn(driverID, p.Conn)
+				return
+			}
+
+		// 2️ Ping to keep connection alive
+		case <-ticker.C:
+			p.Mu.Lock()
+			err := p.Conn.WriteMessage(websocket.PingMessage, nil)
+			p.Mu.Unlock()
+
+			if err != nil {
+				fmt.Println("ping error:", err)
+				p.Conn.Close()
+				m.RemovePassengerConn(driverID, p.Conn)
+				return
+			}
 		}
 	}
-
 }
 
 // send driver location updates to the passengers
