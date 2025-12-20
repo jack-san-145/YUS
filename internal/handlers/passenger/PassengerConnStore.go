@@ -9,9 +9,10 @@ import (
 
 // to allow only one go routine to write data in one ws conn at a time
 type PassengerConn struct {
-	Conn *websocket.Conn
-	Mu   sync.Mutex
-	Send chan models.Location
+	Conn      *websocket.Conn
+	Mu        sync.Mutex
+	Send      chan models.Location
+	CloseOnce sync.Once
 }
 
 // interface to implement passenger map operations
