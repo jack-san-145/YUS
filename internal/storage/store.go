@@ -38,6 +38,7 @@ type DBStore interface {
 	GetAvailableDrivers(ctx context.Context) ([]models.AvailableDriver, error)
 	DriverExistsInCBR(ctx context.Context, driverID int) (bool, error)
 	RemoveDriver(ctx context.Context, driverID int) error
+	StoreDriverRemovalRequest(ctx context.Context, driverID int) error 
 
 	// Bus Management
 	AddBus(ctx context.Context, busID int) error

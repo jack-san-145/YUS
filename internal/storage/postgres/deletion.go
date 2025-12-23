@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"log"
 )
 
 func (pg *PgStore) RemoveRoute(ctx context.Context, routeID int) error {
@@ -43,4 +44,14 @@ func (pg *PgStore) RemoveDriver(ctx context.Context, driverID int) error {
 	}
 	return nil
 
+}
+
+func (pg *PgStore) StoreDriverRemovalRequest(ctx context.Context, driverID int) error {
+	query := "insert into driver_removal_request(driver_id) values ($1);"
+	_, err := pg.Pool.Exec(ctx, query, driverID)
+	if err != nil {
+		log.Println("error while store driver removal request - ", err)
+		return err
+	}
+	return nil
 }
