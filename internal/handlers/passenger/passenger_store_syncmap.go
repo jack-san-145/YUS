@@ -65,14 +65,24 @@ func (s *SyncMapPassengerStore) RemovePassengerConn(driverID int, conn *websocke
 	for _, c := range conns {
 		if c.Conn != conn {
 			newConns = append(newConns, c)
-		} else {
-			c.CloseOnce.Do(func() {
-				close(c.Send)
-				c.Conn.Close()
-			})
 		}
 	}
 	s.PassMap.Store(driverID, newConns)
+}
+
+func (s *SyncMapPassengerStore) TerminatePassengerConn(driverId int, conn *websocket.Conn) {
+
+	passengerconn_arr := s.GetPassengerConns(driverId)
+	for _, p := range passengerconn_arr {
+		if p.Conn == conn {
+			p.CloseOnce.Do(func() {
+				close(p.Send)
+				p.Conn.Close()
+			}) //closing the disconnected passenger channel
+		}
+	}
+	s.RemovePassengerConn(driverId, conn)
+
 }
 
 // Get passenger connections

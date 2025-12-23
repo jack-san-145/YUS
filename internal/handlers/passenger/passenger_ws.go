@@ -44,7 +44,8 @@ func (h *PassengerHandler) listenPassengerMessage(conn *websocket.Conn) {
 			}
 
 			//used old_requested_bus_route.DriverId bcz the current requested_bus_route.DriverId not received , so we cleared the old connection
-			PassengerConnStore.RemovePassengerConn(old_requested_bus_route.DriverId, conn)
+			PassengerConnStore.TerminatePassengerConn(old_requested_bus_route.DriverId, conn)
+
 			return
 		}
 

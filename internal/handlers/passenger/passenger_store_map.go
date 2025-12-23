@@ -72,16 +72,28 @@ func (m *MapPassengerStore) RemovePassengerConn(driverId int, conn *websocket.Co
 
 	for i, p := range passengerconn_arr {
 		if p.Conn == conn {
-			p.CloseOnce.Do(func() {
-				close(p.Send)
-				p.Conn.Close()
-			}) //closing the disconnected passenger channel
 			passengerconn_arr = append(passengerconn_arr[:i], passengerconn_arr[i+1:]...)
 			m.PassMap[driverId] = passengerconn_arr
 			return
 		}
 	}
 
+}
+
+func (m *MapPassengerStore) TerminatePassengerConn(driverId int, conn *websocket.Conn) {
+	m.Rwm.Lock()
+
+	passengerconn_arr := m.PassMap[driverId]
+	for _, p := range passengerconn_arr {
+		if p.Conn == conn {
+			p.CloseOnce.Do(func() {
+				close(p.Send)
+				p.Conn.Close()
+			}) //closing the disconnected passenger channel
+		}
+	}
+	m.Rwm.Unlock()
+	m.RemovePassengerConn(driverId, conn)
 }
 
 // Get passenger connection from the PassMap
