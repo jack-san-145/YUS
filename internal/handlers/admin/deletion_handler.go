@@ -70,3 +70,13 @@ func (h *AdminHandler) RemoveDriverHandler(w http.ResponseWriter, r *http.Reques
 	response.WriteJSON(w, r, map[string]bool{"removed": true})
 
 }
+
+func (h *AdminHandler) DriverRemovalRequestHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	removal_requests, err := h.Store.DB.GetDriverRemovalRequest(ctx)
+	if err != nil {
+		response.WriteJSON(w, r, "null")
+		return
+	}
+	response.WriteJSON(w, r, removal_requests)
+}
