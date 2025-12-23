@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"yus/internal/models"
 )
 
 func (pg *PgStore) RemoveRoute(ctx context.Context, routeID int) error {
@@ -54,4 +55,26 @@ func (pg *PgStore) StoreDriverRemovalRequest(ctx context.Context, driverID int) 
 		return err
 	}
 	return nil
+}
+
+func (pg *PgStore) GetDriverRemovalRequest(ctx context.Context) ([]models.DriverRemovalRequest, error) {
+	var Allrequests []models.DriverRemovalRequest
+	query := "select * from driver_removal_request"
+	rows, err := pg.Pool.Query(ctx, query)
+	if err != nil {
+		log.Println("error while get driver removal requests - ", err)
+		return Allrequests, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var request models.DriverRemovalRequest
+		err := rows.Scan(&request)
+		if err != nil {
+			log.Println("error while scan the driver removal request - err")
+			return Allrequests, err
+		}
+		Allrequests = append(Allrequests, request)
+	}
+	return Allrequests, nil
 }
