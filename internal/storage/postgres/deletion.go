@@ -34,11 +34,20 @@ func (pg *PgStore) RemoveBus(ctx context.Context, busID int) error {
 	return nil
 }
 
-func (pg *PgStore) RemoveDriver(ctx context.Context, driverID int) error {
+func (pg *PgStore) RemoveDriver(ctx context.Context, driverID int, mode string) error {
+	err := pg.ClearDriverRemovalRequest(ctx, driverID) //just remove the driver removal request from db
+	if err != nil {
+		return err
+	}
+
+	if mode != "OK" {
+		return nil
+	}
+
 	query := fmt.Sprintf(`update current_bus_route set driver_id = 1000 where driver_id = %d ;
 							delete from drivers where driver_id = %d ;
 						`, driverID, driverID)
-	_, err := pg.Pool.Exec(ctx, query)
+	_, err = pg.Pool.Exec(ctx, query)
 	if err != nil {
 		fmt.Println("error while removing driver - ", err)
 		return err
@@ -77,4 +86,14 @@ func (pg *PgStore) GetDriverRemovalRequest(ctx context.Context) ([]models.Driver
 		Allrequests = append(Allrequests, request)
 	}
 	return Allrequests, nil
+}
+
+func (pg *PgStore) ClearDriverRemovalRequest(ctx context.Context, driverID int) error {
+	query := "delete from driver_removal_request where driver_id = $1;"
+	_, err := pg.Pool.Exec(ctx, query, driverID)
+	if err != nil {
+		log.Println("error while clear driver removal request from db - ", err)
+		return err
+	}
+	return nil
 }

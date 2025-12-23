@@ -37,9 +37,10 @@ type DBStore interface {
 	ValidateDriver(ctx context.Context, driverID int, password string) (bool, error)
 	GetAvailableDrivers(ctx context.Context) ([]models.AvailableDriver, error)
 	DriverExistsInCBR(ctx context.Context, driverID int) (bool, error)
-	RemoveDriver(ctx context.Context, driverID int) error
+	RemoveDriver(ctx context.Context, driverID int, mode string) error
 	StoreDriverRemovalRequest(ctx context.Context, driverID int) error
 	GetDriverRemovalRequest(ctx context.Context) ([]models.DriverRemovalRequest, error)
+	ClearDriverRemovalRequest(ctx context.Context, driverID int) error
 
 	// Bus Management
 	AddBus(ctx context.Context, busID int) error
