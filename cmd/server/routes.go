@@ -65,6 +65,7 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 		protectedDriver.Use(app.IsDriverAuthorized)
 		protectedDriver.Get("/yus/driver-ws", h.Driver.WebSocketHandler)
 		protectedDriver.Get("/yus/get-allotted-bus", h.Driver.GetAllocatedBusHandler)
+		protectedDriver.Delete("/yus/remove-driver-account", h.Driver.RemoveAccountHandler)
 	})
 
 	//Admin Operations
