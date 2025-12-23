@@ -120,3 +120,8 @@ type AllRoute struct {
 	Uproute      CurrentRoute
 	Downroute    CurrentRoute
 }
+
+type DriverRemovalRequest struct {
+	DriverId   int       `json:"driver_id"`
+	Created_At time.Time `json:"created_at"`
+}
