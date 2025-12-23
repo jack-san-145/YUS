@@ -1,0 +1,1 @@
+drop table IF EXISTS driver_removal_request;
