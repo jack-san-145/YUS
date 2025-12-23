@@ -92,6 +92,7 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 		protectedAdmin.Get("/yus/get-cached-routes", h.Admin.GetCachedRoutesHandler)
 		protectedAdmin.Get("/yus/get-current-schedule", h.Admin.GetScheduleHandler)
 		protectedAdmin.Put("/yus/schedule-bus", h.Admin.ScheduleBusHandler)
+		protectedAdmin.Get("/yus/get-driver-removal-request", h.Admin.DriverRemovalRequestHandler)
 		//removal operations
 		protectedAdmin.Delete("/yus/remove-route/{route-id}", h.Admin.RemoveRouteHandler)
 		protectedAdmin.Delete("/yus/remove-bus/{bus-id}", h.Admin.RemoveBusHandler)
