@@ -96,7 +96,7 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 		//removal operations
 		protectedAdmin.Delete("/yus/remove-route/{route-id}", h.Admin.RemoveRouteHandler)
 		protectedAdmin.Delete("/yus/remove-bus/{bus-id}", h.Admin.RemoveBusHandler)
-		protectedAdmin.Delete("/yus/remove-driver/{driver-id}", h.Admin.RemoveDriverHandler)
+		protectedAdmin.Delete("/yus/remove-driver/{driver-id}/{mode}", h.Admin.RemoveDriverHandler)
 
 	})
 
