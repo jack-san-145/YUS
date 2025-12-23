@@ -55,6 +55,7 @@ func (h *AdminHandler) RemoveDriverHandler(w http.ResponseWriter, r *http.Reques
 
 	ctx := r.Context()
 	driver_id_string := chi.URLParam(r, "driver-id")
+	mode := chi.URLParam(r, "mode")
 	driver_id_int, err := strconv.Atoi(driver_id_string)
 	if err != nil {
 		fmt.Println("error while converting driver-id from string to int - ", err)
@@ -62,7 +63,7 @@ func (h *AdminHandler) RemoveDriverHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = h.Store.DB.RemoveDriver(ctx, driver_id_int)
+	err = h.Store.DB.RemoveDriver(ctx, driver_id_int, mode)
 	if err != nil {
 		response.WriteJSON(w, r, map[string]bool{"removed": false})
 		return
