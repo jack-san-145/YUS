@@ -430,6 +430,76 @@ backend to frontend:
 }
 
 
+		protectedAdmin.Get("/yus/get-driver-removal-request", h.Admin.DriverRemovalRequestHandler)
+		//removal operations
+		protectedAdmin.Delete("/yus/remove-route/{route-id}", h.Admin.RemoveRouteHandler)
+		protectedAdmin.Delete("/yus/remove-bus/{bus-id}", h.Admin.RemoveBusHandler)
+		protectedAdmin.Delete("/yus/remove-driver/{driver-id}/{mode}", h.Admin.RemoveDriverHandler)
 
 
-10. 
+
+
+
+
+
+
+
+10. Remove route :
+
+
+endpoint : https://yus.kwscloud.in/yus/remove-route/{route-id}
+method : Delete 
+
+backend to frontend:
+{
+    deleted: true (or)
+     deleted: false
+}
+
+
+
+
+
+
+11. Remove Bus :
+
+endpoint : https://yus.kwscloud.in/yus/remove-bus/{bus-id}
+method : Delete 
+
+backend to frontend:
+{
+    removed: true (or)
+    removed: false
+}
+
+
+
+12. Remove Driver :
+
+endpoint : https://yus.kwscloud.in/yus/remove-driver/{driver-id}/{mode} //here mode can be either "OK" or "CANCEL"
+method : Delete 
+
+backend to frontend:
+{
+    removed: true (or)
+    removed: false
+}
+
+
+
+13. Get Driver Removal Request:
+
+endpoint : https://yus.kwscloud.in/yus/get-driver-removal-request
+method : Get 
+
+backend to frontend:
+[
+    {
+        "driver_id": 1050,
+        "created_at": "2025-12-23T07:27:01.554482Z"
+    },
+    {
+        "driver_id": 1051,
+        "created_at": "2025-12-24T10:49:26.036534Z"
+    }
+]
