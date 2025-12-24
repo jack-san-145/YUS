@@ -2,10 +2,11 @@ package admin
 
 import (
 	"fmt"
-	"github.com/go-chi/chi/v5"
 	"net/http"
 	"strconv"
 	"yus/internal/handlers/common/response"
+
+	"github.com/go-chi/chi/v5"
 )
 
 // to delele the given route from DB
@@ -74,10 +75,6 @@ func (h *AdminHandler) RemoveDriverHandler(w http.ResponseWriter, r *http.Reques
 
 func (h *AdminHandler) DriverRemovalRequestHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	removal_requests, err := h.Store.DB.GetDriverRemovalRequest(ctx)
-	if err != nil {
-		response.WriteJSON(w, r, "null")
-		return
-	}
+	removal_requests, _ := h.Store.DB.GetDriverRemovalRequest(ctx)
 	response.WriteJSON(w, r, removal_requests)
 }

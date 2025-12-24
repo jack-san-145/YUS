@@ -123,5 +123,6 @@ type AllRoute struct {
 
 type DriverRemovalRequest struct {
 	DriverId   int       `json:"driver_id"`
+	DriverName string    `json:"driver_name"`
 	Created_At time.Time `json:"created_at"`
 }
