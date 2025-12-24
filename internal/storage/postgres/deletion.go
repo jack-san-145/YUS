@@ -78,9 +78,10 @@ func (pg *PgStore) GetDriverRemovalRequest(ctx context.Context) ([]models.Driver
 
 	for rows.Next() {
 		var request models.DriverRemovalRequest
-		err := rows.Scan(&request)
+		err := rows.Scan(&request.DriverId,
+			&request.Created_At)
 		if err != nil {
-			log.Println("error while scan the driver removal request - err")
+			log.Println("error while scan the driver removal request - ", err)
 			return Allrequests, err
 		}
 		Allrequests = append(Allrequests, request)
