@@ -57,8 +57,17 @@ func (pg *PgStore) RemoveDriver(ctx context.Context, driverID int, mode string) 
 }
 
 func (pg *PgStore) StoreDriverRemovalRequest(ctx context.Context, driverID int) error {
-	query := "insert into driver_removal_request(driver_id) values ($1);"
-	_, err := pg.Pool.Exec(ctx, query, driverID)
+
+	var DriverName string
+	query := "select driver_name from drivers where driver_id = $1"
+	err := pg.Pool.QueryRow(ctx, query, driverID).Scan(&DriverName)
+	if err != nil {
+		log.Println("error while finding driver name from driverID - ", err)
+		return err
+	}
+
+	query = "insert into driver_removal_request(driver_id,driver_name) values ($1,$2);"
+	_, err = pg.Pool.Exec(ctx, query, driverID, DriverName)
 	if err != nil {
 		log.Println("error while store driver removal request - ", err)
 		return err
@@ -78,8 +87,11 @@ func (pg *PgStore) GetDriverRemovalRequest(ctx context.Context) ([]models.Driver
 
 	for rows.Next() {
 		var request models.DriverRemovalRequest
+
 		err := rows.Scan(&request.DriverId,
+			&request.DriverName,
 			&request.Created_At)
+
 		if err != nil {
 			log.Println("error while scan the driver removal request - ", err)
 			return Allrequests, err
