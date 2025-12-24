@@ -62,7 +62,7 @@ func (pg *PgStore) SetDriverPassword(ctx context.Context, driverID int, email st
 	hashed_pass := services.Hash_this_password(password)
 	if exists, _ := pg.DriverExists(ctx, driverID); exists {
 		query := "update drivers set password = $1,email = $2 where driver_id = $3 "
-		_, err := pg.Pool.Exec(ctx, query, hashed_pass, email, password)
+		_, err := pg.Pool.Exec(ctx, query, hashed_pass, email, driverID)
 		if err != nil {
 			fmt.Println("error while update the driver's password - ", err)
 			return false, err
