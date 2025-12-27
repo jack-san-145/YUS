@@ -85,7 +85,7 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 		protectedAdmin.Put("/yus/change-route/{direction}", h.Admin.UpdateRouteDirectionHandler)
 		protectedAdmin.Post("/yus/add-new-driver", h.Admin.AddDriverHandler)
 		protectedAdmin.Get("/yus/get-available-routes", h.Admin.ListRoutesHandler)
-		protectedAdmin.Put("/yus/add-new-bus", h.Admin.AddBusHandler)
+		protectedAdmin.Post("/yus/add-new-bus", h.Admin.AddBusHandler)
 		protectedAdmin.Put("/yus/allocate-bus-route", h.Admin.AssignRouteToBusHandler)
 		protectedAdmin.Post("/yus/allocate-bus-driver", h.Admin.AssignDriverToBusHandler)
 		protectedAdmin.Get("/yus/get-available-drivers", h.Admin.ListDriversHandler)

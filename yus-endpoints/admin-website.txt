@@ -118,7 +118,7 @@ backend -> frontend (response):
 2. Add new Bus :
 
 endpoint : "https://yus.kwscloud.in/yus/add-new-bus?bus_id=6"
-method : Put (Query Parameter)
+method : Post (Query Parameter)
 
 
 backend -> frontend (response):
