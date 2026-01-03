@@ -18,7 +18,7 @@ func (r *RedisStore) StoreArrivalStatus(ctx context.Context, driverID int, arriv
 	}
 
 	// Store JSON string in Redis
-	err = r.RedisClient.Set(ctx, "ArrivalStatus:"+strconv.Itoa(driverID), arrival_status_json, time.Minute).Err()
+	err = r.RedisClient.Set(ctx, "ArrivalStatus:"+strconv.Itoa(driverID), arrival_status_json, 30*time.Minute).Err()
 	if err != nil {
 		fmt.Println("error while storing the arrival status to redis - ", err)
 		return err

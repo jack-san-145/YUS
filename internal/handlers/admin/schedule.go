@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -105,4 +106,9 @@ func (h *AdminHandler) ScheduleBusHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 	response.WriteJSON(w, r, map[string]bool{"status": true})
+
+	go func() {
+		current_route, _ := h.Store.DB.GetCurrentBusRoutes(context.Background())
+		h.Store.InMemoryDB.CacheBusRoute(context.Background(), current_route)
+	}()
 }
