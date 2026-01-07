@@ -24,6 +24,8 @@ type PassengerConnectionManager interface {
 	RemovePassengerConn(driverID int, conn *websocket.Conn)
 	GetPassengerConns(driverID int) []*PassengerConn
 	BroadcastLocation(driverID int, location models.Location)
+	ScheduleRemoval(driverID int)
+	CancelRemoval(driverID int)
 }
 
 var PassengerConnStore = NewMapPassengerStore() //  to store the passenger connections in normal Go Map
