@@ -1,6 +1,8 @@
 package driver
 
-import "yus/internal/storage"
+import (
+	"yus/internal/storage"
+)
 
 type DriverHandler struct {
 	Store *storage.Store

@@ -53,7 +53,7 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 	defer func() {
 		close(done) // to close the ticker goroutine when the driver disconnects
 		h.Store.InMemoryDB.StoreArrivalStatus(context.Background(), driver_id, Arrival_status)
-		passenger.PassengerConnStore.RemoveDriver(driver_id)
+		passenger.PassengerConnStore.ScheduleRemoval(driver_id)
 		conn.Close()
 	}()
 
@@ -72,7 +72,7 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 	// Ping/pong settings
 	const (
 		pongWait   = 60 * time.Second
-		pingPeriod = 50 * time.Second
+		pingPeriod = 30 * time.Second
 		writeWait  = 10 * time.Second
 	)
 
@@ -121,7 +121,7 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 			current_location.ArrivalStatus = Arrival_status //here store arrival status into currentlocation for continous stop arrival update
 		}
 
-		go passenger.PassengerConnStore.BroadcastLocation(driver_id, current_location)
+		passenger.PassengerConnStore.BroadcastLocation(driver_id, current_location)
 		fmt.Printf("latitude - %v & longitude - %v & speed - %v &AS - %v\n",
 			current_location.Latitude, current_location.Longitude, current_location.Speed, current_location.ArrivalStatus)
 	}
