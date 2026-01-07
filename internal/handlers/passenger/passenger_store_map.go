@@ -13,11 +13,15 @@ import (
 type MapPassengerStore struct {
 	PassMap map[int][]*PassengerConn
 	Rwm     sync.RWMutex
+	Timers  map[int]*time.Timer
 }
 
 // method to return the MapPassengerStore
 func NewMapPassengerStore() *MapPassengerStore {
-	return &MapPassengerStore{PassMap: make(map[int][]*PassengerConn)}
+	return &MapPassengerStore{
+		PassMap: make(map[int][]*PassengerConn),
+		Timers:  make(map[int]*time.Timer),
+	}
 }
 
 // check if the driver exist or not
@@ -34,7 +38,12 @@ func (m *MapPassengerStore) AddDriver(driverID int) {
 
 	m.Rwm.Lock()
 	defer m.Rwm.Unlock()
-	m.PassMap[driverID] = []*PassengerConn{}
+
+	if _, exists := m.PassMap[driverID]; exists {
+		m.CancelRemoval(driverID)
+	} else {
+		m.PassMap[driverID] = []*PassengerConn{}
+	}
 
 }
 
@@ -164,5 +173,35 @@ func (m *MapPassengerStore) BroadcastLocation(driver_id int, current_location mo
 		default:
 			//location update dropped
 		}
+	}
+}
+
+func (m *MapPassengerStore) ScheduleRemoval(driverID int) {
+	m.Rwm.Lock()
+	defer m.Rwm.Unlock()
+
+	// if already scheduled, do nothing
+	if _, exists := m.Timers[driverID]; exists {
+		return
+	}
+
+	timer := time.AfterFunc(30*time.Minute, func() {
+
+		m.Rwm.Lock()
+		delete(m.PassMap, driverID)
+		delete(m.Timers, driverID)
+		m.Rwm.Unlock()
+	})
+
+	m.Timers[driverID] = timer
+}
+
+func (m *MapPassengerStore) CancelRemoval(driverID int) {
+	m.Rwm.Lock()
+	defer m.Rwm.Unlock()
+
+	if timer, exists := m.Timers[driverID]; exists {
+		timer.Stop() // stop timer
+		delete(m.Timers, driverID)
 	}
 }
