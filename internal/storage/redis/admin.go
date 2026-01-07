@@ -63,6 +63,7 @@ func (r *RedisStore) AdminLogin(ctx context.Context, email string, password stri
 
 }
 
-func Change_Admin_password() {
-
+func (r *RedisStore) RemoveAdminSession(ctx context.Context, sessionID string) error {
+	err := r.RedisClient.Del(ctx, sessionID).Err()
+	return err
 }

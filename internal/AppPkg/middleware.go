@@ -2,6 +2,7 @@ package AppPkg
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 )
 
@@ -54,7 +55,9 @@ func (app *Application) IsAdminAuthorized(next http.Handler) http.Handler {
 			return
 		}
 
+		fmt.Println("Admin session id - ", sessionID)
 		// Call next handler
-		next.ServeHTTP(w, r)
+		ctx = context.WithValue(ctx, "ADMIN_SESSION", sessionID)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
