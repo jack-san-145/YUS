@@ -58,7 +58,3 @@ func (pg *PgStore) Connect(ctx context.Context) error {
 	fmt.Println("database connected successfully")
 	return nil
 }
-
-// func GivePostgresConnection() *pgxpool.Pool {
-// 	return pool
-// }

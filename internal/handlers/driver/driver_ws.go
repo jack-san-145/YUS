@@ -42,6 +42,9 @@ func (h *DriverHandler) WebSocketHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
+
+	var current_location models.Location
+
 	//bus_status
 	var Arrival_status = make(map[int]string)
 	var done = make(chan struct{}) // using to shutdown the unwanted ticker goroutine
@@ -57,6 +60,7 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 	redis_as, err := h.Store.InMemoryDB.GetArrivalStatus(context.Background(), driver_id)
 	if err == nil {
 		Arrival_status = redis_as
+		current_location.ArrivalStatus = redis_as
 	}
 
 	r, _ := h.Store.DB.FindRouteByBusOrDriverID(context.Background(), driver_id, "DRIVER")
@@ -97,7 +101,6 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 
 	}()
 
-	var current_location models.Location
 	for {
 		_, loc, err := conn.ReadMessage()
 		if err != nil {
@@ -115,10 +118,11 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 		if is_reached && !ok {
 			Arrival_status[stop_sequence] = reached_time
 			fmt.Println("arrival status - ", Arrival_status)
-			current_location.ArrivalStatus = Arrival_status
+			current_location.ArrivalStatus = Arrival_status //here store arrival status into currentlocation for continous stop arrival update
 		}
-		passenger.PassengerConnStore.BroadcastLocation(driver_id, current_location)
-		fmt.Printf("latitude - %v & longitude - %v & speed - %v\n",
-			current_location.Latitude, current_location.Longitude, current_location.Speed)
+
+		go passenger.PassengerConnStore.BroadcastLocation(driver_id, current_location)
+		fmt.Printf("latitude - %v & longitude - %v & speed - %v &AS - %v\n",
+			current_location.Latitude, current_location.Longitude, current_location.Speed, current_location.ArrivalStatus)
 	}
 }
