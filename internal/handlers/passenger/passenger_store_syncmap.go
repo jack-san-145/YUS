@@ -11,6 +11,8 @@ import (
 
 type SyncMapPassengerStore struct {
 	PassMap sync.Map // driverID -> []*PassengerConn
+	Rwm     sync.RWMutex
+	Timers  map[int]*time.Timer
 }
 
 func NewSyncMapPassengerStore() *SyncMapPassengerStore {
@@ -156,5 +158,35 @@ func (s *SyncMapPassengerStore) BroadcastLocation(driverID int, loc models.Locat
 		default:
 			// dropped if channel full
 		}
+	}
+}
+
+func (s *SyncMapPassengerStore) ScheduleRemoval(driverID int) {
+	s.Rwm.Lock()
+	defer s.Rwm.Unlock()
+
+	// if already scheduled, do nothing
+	if _, exists := s.Timers[driverID]; exists {
+		return
+	}
+
+	timer := time.AfterFunc(30*time.Minute, func() {
+
+		s.Rwm.Lock()
+		s.PassMap.Delete(driverID)
+		delete(s.Timers, driverID)
+		s.Rwm.Unlock()
+	})
+
+	s.Timers[driverID] = timer
+}
+
+func (s *SyncMapPassengerStore) CancelRemoval(driverID int) {
+	s.Rwm.Lock()
+	defer s.Rwm.Unlock()
+
+	if timer, exists := s.Timers[driverID]; exists {
+		timer.Stop() // stop timer
+		delete(s.Timers, driverID)
 	}
 }
