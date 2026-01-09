@@ -114,3 +114,33 @@ backend -> frontend (response):
 
 
 
+5. Driver logout:
+
+endpoint : "https://yus.kwscloud.in/yus/driver-logout"
+method : Delete (Include 'Authorization' = session_id in request header )
+
+
+backend -> frontend (response):
+{
+    "status":true (or) 
+
+    "status":false
+}
+
+
+
+
+6. Driver Account removal request
+
+
+
+endpoint : "https://yus.kwscloud.in/yus/remove-driver-account"
+method : Delete (Include 'Authorization' = session_id in request header )
+
+
+backend -> frontend (response):
+{
+    "status":true (or) 
+
+    "status":false
+}
