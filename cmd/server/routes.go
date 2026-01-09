@@ -37,12 +37,13 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 
 	//web pages
 	router.Get("/", handlers.Serve_logo_page)
-	router.Get("/yus/serve-index-page", handlers.Serve_index_page)
-	router.Get("/yus/serve-login-page", handlers.Serve_login_page)
-	router.Get("/yus/serve-bus-schedule-page", handlers.Serve_bus_schedule_page)
-	router.Get("/yus/serve-driver-page", handlers.Serve_driver_page)
-	router.Get("/yus/serve-register-page", handlers.Serve_register_page)
-	router.Get("/yus/serve-otp-verify-page", handlers.Serve_otp_verify_page)
+
+	router.Get("/yus_admin/index", handlers.Serve_index_page)
+	router.Get("/yus_admin/login", handlers.Serve_login_page)
+	router.Get("/yus_admin/bus_schedule", handlers.Serve_bus_schedule_page)
+	router.Get("/yus_admin/driver", handlers.Serve_driver_page)
+	router.Get("/yus_admin/register", handlers.Serve_register_page)
+	router.Get("/yus_admin/otp_verify", handlers.Serve_otp_verify_page)
 
 	//Passenger Operations
 	router.Group(func(passenger chi.Router) {
@@ -66,6 +67,7 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 		protectedDriver.Get("/yus/driver-ws", h.Driver.WebSocketHandler)
 		protectedDriver.Get("/yus/get-allotted-bus", h.Driver.GetAllocatedBusHandler)
 		protectedDriver.Delete("/yus/remove-driver-account", h.Driver.RemoveAccountHandler)
+		protectedDriver.Delete("/yus/driver-logout", h.Driver.LogoutHandler)
 	})
 
 	//Admin Operations

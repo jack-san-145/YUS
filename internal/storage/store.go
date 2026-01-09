@@ -23,7 +23,6 @@ type InMemoryStore interface {
 	CacheBusRoute(ctx context.Context, route []models.CurrentRoute) error
 	GetCachedRoute(ctx context.Context) ([]models.CurrentRoute, error)
 	RateLimiter(ctx context.Context, rateLimit *models.RateLimit) (int, error)
-	RemoveAdminSession(ctx context.Context, sessionID string) error
 }
 
 type DBStore interface {
