@@ -3,7 +3,7 @@ package admin
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"yus/internal/handlers/common/response"
@@ -20,7 +20,7 @@ func (h *AdminHandler) GetCachedRoutesHandler(w http.ResponseWriter, r *http.Req
 	bus_id_string := r.URL.Query().Get("bus_id")
 	bus_id_int, err := strconv.Atoi(bus_id_string)
 	if err != nil {
-		fmt.Println("error while converting bus_id_int to bus_id_string - ", err)
+		log.Println("error while converting bus_id_int to bus_id_string - ", err)
 		return
 	}
 	cached_bus_routes, _ := h.Store.DB.GetCachedRoutesByBusID(ctx, bus_id_int)
@@ -32,7 +32,6 @@ func (h *AdminHandler) ListRoutesHandler(w http.ResponseWriter, r *http.Request)
 	ctx := r.Context()
 	//to load all the available routes
 	all_available_routes, _ := h.Store.DB.GetAvailableRoutes(ctx)
-	fmt.Println("avalaible routes - ", all_available_routes)
 	response.WriteJSON(w, r, all_available_routes)
 }
 
@@ -66,7 +65,6 @@ func (h *AdminHandler) AssignRouteToBusHandler(w http.ResponseWriter, r *http.Re
 
 	route_id_int, _ := strconv.Atoi(route_id_string)
 	bus_id_int, _ := strconv.Atoi(bus_id_string)
-	fmt.Println(route_id_int, bus_id_int)
 
 	err := h.Store.DB.AssignRouteToBus(ctx, route_id_int, bus_id_int)
 	if err != nil {
@@ -92,7 +90,7 @@ func (h *AdminHandler) AssignDriverToBusHandler(w http.ResponseWriter, r *http.R
 	var status = make(map[int]bool)
 	err := json.NewDecoder(r.Body).Decode(&DriverAllocation_array)
 	if err != nil {
-		fmt.Println("error while decode the bus_and_drivers - ", err)
+		log.Println("error while decode the bus_and_drivers - ", err)
 		return
 	}
 

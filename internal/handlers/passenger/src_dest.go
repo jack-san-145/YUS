@@ -2,7 +2,6 @@ package passenger
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strconv"
 	"yus/internal/handlers/common/response"
@@ -19,11 +18,9 @@ func (h *PassengerHandler) GetRouteByBusIDHandler(w http.ResponseWriter, r *http
 	bus_id_string := r.URL.Query().Get("bus_id")
 	bus_id_int, err := strconv.Atoi(bus_id_string)
 	if err != nil {
-		fmt.Println("error while converting the bus_id_string to bus_id_int - ", err)
 		response.WriteJSON(w, r, "null")
 	}
 	route, _ := h.Store.DB.FindRouteByBusOrDriverID(ctx, bus_id_int, "PASSENGER")
-	fmt.Println("route_by bus id - ", route.Currentroute)
 	response.WriteJSON(w, r, route.Currentroute)
 
 }
@@ -47,7 +44,6 @@ func (h *PassengerHandler) SrcDestHandler(w http.ResponseWriter, r *http.Request
 	ctx := r.Context()
 	src := chi.URLParam(r, "source")
 	dest := chi.URLParam(r, "destination")
-	fmt.Printf("given src - %v & destination - %v ", src, dest)
 
 	src = services.Convert_to_CamelCase(src)
 	dest = services.Convert_to_CamelCase(dest)

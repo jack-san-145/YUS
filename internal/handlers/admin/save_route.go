@@ -2,7 +2,7 @@ package admin
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"yus/internal/handlers/common/response"
 	"yus/internal/models"
@@ -17,15 +17,12 @@ func (h *AdminHandler) SaveRouteHandler(w http.ResponseWriter, r *http.Request) 
 	var NewRoute models.Route
 	err := json.NewDecoder(r.Body).Decode(&NewRoute)
 	if err != nil {
-		fmt.Println("error while get the new route - ", err)
+		log.Println("error while get the new route - ", err)
 		return
 	}
 	NewRoute.Direction = "UP"
-	fmt.Printf("actual route - %+v", NewRoute)
 	status, _ := h.Store.DB.SaveRoute(ctx, &NewRoute)
 	response.WriteJSON(w, r, map[string]string{"status": status})
-	// All_Bus_Routes = append(All_Bus_Routes, NewRoute)
-	// display_all_routes()
 
 	/*
 		// 	admin-app needs to send json like the below format:

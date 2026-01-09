@@ -15,7 +15,7 @@ func (pg *PgStore) RemoveRoute(ctx context.Context, routeID int) error {
 						`, routeID, routeID, routeID, routeID)
 	_, err := pg.Pool.Exec(ctx, query)
 	if err != nil {
-		fmt.Println("error while deleting route - ", err)
+		log.Println("error while deleting route - ", err)
 		return err
 	}
 	return nil
@@ -28,7 +28,7 @@ func (pg *PgStore) RemoveBus(ctx context.Context, busID int) error {
 						`, busID, busID)
 	_, err := pg.Pool.Exec(ctx, query)
 	if err != nil {
-		fmt.Println("error while removing bus - ", err)
+		log.Println("error while removing bus - ", err)
 		return err
 	}
 	return nil
@@ -49,7 +49,7 @@ func (pg *PgStore) RemoveDriver(ctx context.Context, driverID int, mode string) 
 						`, driverID, driverID)
 	_, err = pg.Pool.Exec(ctx, query)
 	if err != nil {
-		fmt.Println("error while removing driver - ", err)
+		log.Println("error while removing driver - ", err)
 		return err
 	}
 	return nil

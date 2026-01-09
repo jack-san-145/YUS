@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -37,7 +38,7 @@ func (pg *PgStore) Connect(ctx context.Context) error {
 	//  ParseConfig parse this "postgres://username:password@host:port/dbname" -> the pool config object so that it can set the maxConnections like that
 	config, err = pgxpool.ParseConfig(conn)
 	if err != nil {
-		fmt.Println("error while parsing the conn - ", err)
+		log.Println("error while parsing the conn - ", err)
 		return err
 	}
 
@@ -46,15 +47,15 @@ func (pg *PgStore) Connect(ctx context.Context) error {
 
 	pg.Pool, err = pgxpool.NewWithConfig(ctx, config) // created the new pool connection with the config
 	if err != nil {
-		fmt.Println("error while creating the new pool connection - ", err)
+		log.Println("error while creating the new pool connection - ", err)
 		return err
 	}
 
 	err = pg.Pool.Ping(ctx)
 	if err != nil {
-		fmt.Println("error while pool connection ping - ", err)
+		log.Println("error while pool connection ping - ", err)
 		return err
 	}
-	fmt.Println("database connected successfully")
+	log.Println("database connected successfully")
 	return nil
 }

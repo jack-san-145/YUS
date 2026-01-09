@@ -2,7 +2,7 @@ package response
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -19,7 +19,7 @@ func WriteJSON(w http.ResponseWriter, r *http.Request, data any) {
 	enc_json.SetEscapeHTML(false) // Don’t change &, <, or > to /u0026,/u003c,/u003e ,just keep them as they are in my JSON
 	err := enc_json.Encode(data)
 	if err != nil {
-		fmt.Println("error while encoding data - ", err)
+		log.Println("error while encoding data - ", err)
 		return
 	}
 

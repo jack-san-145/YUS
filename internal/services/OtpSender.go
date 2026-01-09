@@ -3,6 +3,7 @@ package services
 import (
 	"crypto/rand"
 	"fmt"
+	"log"
 	"math/big"
 	"net/smtp"
 	"os"
@@ -74,18 +75,18 @@ func SendEmailTo(email string, otp string) bool {
 		return false
 	}
 
-	fmt.Println("Email sent to:", email)
+	log.Println("Email sent to:", email)
 	return true
 }
 
 func GenerateOtp() string {
 	n, err := rand.Int(rand.Reader, big.NewInt(900000))
 	if err != nil {
-		fmt.Println("error while generating OTP - ", err)
+		log.Println("error while generating OTP - ", err)
 		return ""
 	}
 	otp := int(n.Int64()) + 100000
-	fmt.Println("generated otp - ", otp)
+	log.Println("generated otp - ", otp)
 	otp_string := strconv.Itoa(otp)
 	return otp_string
 }

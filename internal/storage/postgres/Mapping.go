@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"log"
 	"yus/internal/models"
 )
 
@@ -26,7 +27,7 @@ func (pg *PgStore) AssignDriverToBus(ctx context.Context, driverID int, busID in
 		query := "update current_bus_route set driver_id = $1 where bus_id = $2"
 		_, err = pg.Pool.Exec(ctx, query, driverID, busID)
 		if err != nil {
-			fmt.Println("error while update the driver_id for given bus_id - ", err)
+			log.Println("error while update the driver_id for given bus_id - ", err)
 			return err
 		}
 	}
@@ -59,7 +60,7 @@ func (pg *PgStore) AssignRouteToBus(ctx context.Context, routeID int, busID int)
 		query := "update current_bus_route set route_id = $1 ,route_name = $2 ,src = $3 ,dest = $4 ,direction = 'UP' where bus_id = $5"
 		_, err = pg.Pool.Exec(ctx, query, routeID, route_name, src, dest, busID)
 		if err != nil {
-			fmt.Println("error while update the route_id for given bus_id - ", err)
+			log.Println("error while update the route_id for given bus_id - ", err)
 			return err
 		}
 	}
@@ -102,7 +103,7 @@ func (pg *PgStore) DriverExistsInCBR(ctx context.Context, driverID int) (bool, e
 	query := "select exists(select 1 from current_bus_route where driver_id = $1)"
 	err := pg.Pool.QueryRow(ctx, query, driverID).Scan(&is_driver_present)
 	if err != nil {
-		fmt.Println("error while finding the existance of driver_id in current_bus_route - ", err)
+		log.Println("error while finding the existance of driver_id in current_bus_route - ", err)
 		return false, err
 	}
 	return is_driver_present, nil
@@ -115,7 +116,7 @@ func (pg *PgStore) UpdateBusRoute(ctx context.Context, route *models.BusRoute) e
 	query := "update current_bus_route set route_id = 0,route_name ='',src ='',dest ='' where route_id = $1"
 	_, err := pg.Pool.Exec(ctx, query, route.RouteId)
 	if err != nil {
-		fmt.Println("error while update the existing route as 0 - ", err)
+		log.Println("error while update the existing route as 0 - ", err)
 		return err
 	}
 
@@ -123,7 +124,7 @@ func (pg *PgStore) UpdateBusRoute(ctx context.Context, route *models.BusRoute) e
 	query = "update current_bus_route set route_id = $1 ,route_name = $2 ,src = $3 ,dest = $4 where bus_id = $5"
 	_, err = pg.Pool.Exec(ctx, query, route.RouteId, route.RouteName, route.Src, route.Dest, route.BusID)
 	if err != nil {
-		fmt.Println("error while update the route_id for given bus_id - ", err)
+		log.Println("error while update the route_id for given bus_id - ", err)
 		return err
 	}
 	return nil
@@ -136,7 +137,7 @@ func (pg *PgStore) UpdateBusDriver(ctx context.Context, driverID int, busID int)
 	query := "update current_bus_route set driver_id = 1000 where driver_id = $1"
 	_, err := pg.Pool.Exec(ctx, query, driverID)
 	if err != nil {
-		fmt.Println("error while update the existing driver as 1000 - ", err)
+		log.Println("error while update the existing driver as 1000 - ", err)
 		return err
 	}
 
@@ -144,7 +145,7 @@ func (pg *PgStore) UpdateBusDriver(ctx context.Context, driverID int, busID int)
 	query = "update current_bus_route set driver_id = $1 where bus_id = $2"
 	_, err = pg.Pool.Exec(ctx, query, driverID, busID)
 	if err != nil {
-		fmt.Println("error while update the driver_id for given bus_id - ", err)
+		log.Println("error while update the driver_id for given bus_id - ", err)
 		return err
 	}
 	return nil
@@ -159,7 +160,7 @@ func (pg *PgStore) AddBus(ctx context.Context, busID int) error {
 	query := "select exists(select 1 from current_bus_route where bus_id = $1)"
 	err := pg.Pool.QueryRow(ctx, query, busID).Scan(&is_bus_exists)
 	if err != nil {
-		fmt.Println("error while finding the existance of the bus - ", err)
+		log.Println("error while finding the existance of the bus - ", err)
 		return fmt.Errorf("failed")
 	}
 
@@ -172,7 +173,7 @@ func (pg *PgStore) AddBus(ctx context.Context, busID int) error {
 	query = "insert into current_bus_route(bus_id) values($1) "
 	_, err = pg.Pool.Exec(ctx, query, busID)
 	if err != nil {
-		fmt.Println("error while adding new bus - ", err)
+		log.Println("error while adding new bus - ", err)
 		return fmt.Errorf("failed")
 	}
 	return nil
@@ -185,7 +186,7 @@ func (pg *PgStore) CacheRoute(ctx context.Context, route *models.BusRoute) error
 	query := "select exists(select 1 from cached_bus_route where bus_id = $1 and route_id = $2)"
 	err := pg.Pool.QueryRow(ctx, query, route.BusID, route.RouteId).Scan(&is_route_exists)
 	if err != nil {
-		fmt.Println("error while finding the existance of the bus_route in cached_bus_route - ", err)
+		log.Println("error while finding the existance of the bus_route in cached_bus_route - ", err)
 		return err
 	}
 
@@ -194,7 +195,7 @@ func (pg *PgStore) CacheRoute(ctx context.Context, route *models.BusRoute) error
 		query = "insert into cached_bus_route(bus_id,route_id,route_name,src,dest) values($1,$2,$3,$4,$5)"
 		_, err = pg.Pool.Exec(ctx, query, route.BusID, route.RouteId, route.RouteName, route.Src, route.Dest)
 		if err != nil {
-			fmt.Println("error while insert the route to the cached route - ", err)
+			log.Println("error while insert the route to the cached route - ", err)
 			return err
 		}
 	}

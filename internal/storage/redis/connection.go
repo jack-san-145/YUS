@@ -2,7 +2,6 @@ package redis
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -32,7 +31,7 @@ func (r *RedisStore) CreateClient(ctx context.Context) error {
 		return err
 	}
 	r.RedisClient = redisClient
-	fmt.Println("redis connection successfull")
+	log.Println("redis connected successfully")
 
 	return nil
 

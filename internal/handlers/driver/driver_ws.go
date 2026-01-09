@@ -3,7 +3,7 @@ package driver
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -19,13 +19,13 @@ func (h *DriverHandler) WebSocketHandler(w http.ResponseWriter, r *http.Request)
 
 	driver_id := r.Context().Value("DRIVER_ID").(int)
 
-	fmt.Println("working")
+	log.Println("working")
 	var upgrader = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool {
 		return true
 	}}
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		fmt.Println("error while upgrading the websocket - ", err)
+		log.Println("error while upgrading the websocket - ", err)
 		return
 	}
 
@@ -65,9 +65,8 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 
 	r, _ := h.Store.DB.FindRouteByBusOrDriverID(context.Background(), driver_id, "DRIVER")
 	Ongoing_route_stops := r.Currentroute.Stops
-	fmt.Println("ongoing route - ", Ongoing_route_stops)
 
-	fmt.Println("driver connected successfully")
+	log.Println("driver connected successfully")
 
 	// Ping/pong settings
 	const (
@@ -91,7 +90,7 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 			select {
 			case <-ticker.C:
 				if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-					fmt.Println("ping error:", err)
+					log.Println("ping error:", err)
 					return
 				}
 			case <-done: // this runs immediately when the done channel gets closed
@@ -104,12 +103,12 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 	for {
 		_, loc, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Println("error while reading the driver's websocket message - ", err)
+			log.Println("error while reading the driver's websocket message - ", err)
 			return
 		}
 		err = json.Unmarshal(loc, &current_location)
 		if err != nil {
-			fmt.Println("error while unmarshaling the location - ", err)
+			log.Println("error while unmarshaling the location - ", err)
 			continue
 		}
 
@@ -117,12 +116,12 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 		_, ok := Arrival_status[stop_sequence] //returns true only if the key exists otherwise returns false
 		if is_reached && !ok {
 			Arrival_status[stop_sequence] = reached_time
-			fmt.Println("arrival status - ", Arrival_status)
+			// fmt.Println("arrival status - ", Arrival_status)
 			current_location.ArrivalStatus = Arrival_status //here store arrival status into currentlocation for continous stop arrival update
 		}
 
 		passenger.PassengerConnStore.BroadcastLocation(driver_id, current_location)
-		fmt.Printf("latitude - %v & longitude - %v & speed - %v &AS - %v\n",
+		log.Printf("latitude - %v & longitude - %v & speed - %v &AS - %v\n",
 			current_location.Latitude, current_location.Longitude, current_location.Speed, current_location.ArrivalStatus)
 	}
 }

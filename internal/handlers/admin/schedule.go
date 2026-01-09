@@ -3,7 +3,6 @@ package admin
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -31,7 +30,7 @@ func (h *AdminHandler) AddDriverHandler(w http.ResponseWriter, r *http.Request) 
 	ctx := r.Context()
 	err := json.NewDecoder(r.Body).Decode(&Driver_array)
 	if err != nil {
-		fmt.Println("error while decode the driver array - ", err)
+		log.Println("error while decode the driver array - ", err)
 		return
 	}
 	for _, driver := range Driver_array {
@@ -39,7 +38,6 @@ func (h *AdminHandler) AddDriverHandler(w http.ResponseWriter, r *http.Request) 
 		status.Name = driver.Name
 		status.MobileNo = driver.Mobile_no
 
-		fmt.Println("driver - ", driver)
 		if services.ValidateMobileNo(driver.Mobile_no) && services.ValidateName(driver.Name) {
 			if err := h.Store.DB.AddDriver(ctx, &driver); err == nil { //stores the new_driver to DB
 				status.IsAdded = true
@@ -50,7 +48,6 @@ func (h *AdminHandler) AddDriverHandler(w http.ResponseWriter, r *http.Request) 
 		} else {
 			status.IsAdded = false
 		}
-		fmt.Println("status - ", status)
 		Status_array = append(Status_array, status)
 	}
 	response.WriteJSON(w, r, Status_array)
@@ -62,7 +59,6 @@ func (h *AdminHandler) ListDriversHandler(w http.ResponseWriter, r *http.Request
 	ctx := r.Context()
 	//to load all the available routes
 	all_available_drivers, _ := h.Store.DB.GetAvailableDrivers(ctx)
-	fmt.Println("avalaible drivers - ", all_available_drivers)
 	response.WriteJSON(w, r, all_available_drivers)
 }
 
@@ -97,8 +93,6 @@ func (h *AdminHandler) ScheduleBusHandler(w http.ResponseWriter, r *http.Request
 		log.Println("error while converting route_id to int - ", err)
 		return
 	}
-
-	fmt.Println("schedule bus - ", schedule)
 
 	err = h.Store.DB.ScheduleBus(ctx, &schedule)
 	if err != nil {

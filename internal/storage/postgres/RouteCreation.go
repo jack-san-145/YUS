@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"yus/internal/models"
 	"yus/internal/services"
 )
@@ -13,22 +14,16 @@ func (pg *PgStore) SaveRoute(ctx context.Context, up_route *models.Route) (strin
 
 	up_route.Direction = "UP"
 	services.Calculate_Uproute_departure(up_route)
-	fmt.Println("uproute - ", up_route)
 	down_route := services.Find_down_route(*up_route)
-	fmt.Println()
-	fmt.Println("up route - ", up_route)
-	fmt.Println()
-	fmt.Println("down route - ", down_route)
-
 	//check is the new  route exist or not ?
 
 	err := pg.CheckRouteExists(ctx, up_route.Src, up_route.Dest, up_route.Stops)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return "failed", err
 	}
 
-	fmt.Println("going to insert route to table")
+	log.Println("going to insert route to table")
 	//inserting both up and down routes to db
 	up_route_id, err1 := pg.InsertRoute(ctx, up_route)
 
@@ -51,7 +46,6 @@ func (pg *PgStore) GetLastRouteID(ctx context.Context) (int, error) {
 	if errors.Is(err, sql.ErrNoRows) {
 		return 1, nil
 	} else if err != nil {
-		fmt.Println("this error column is working")
 		return -1, err
 	}
 
@@ -71,7 +65,7 @@ func (pg *PgStore) InsertRoute(ctx context.Context, route *models.Route) (int, e
 	if route.Direction == "UP" {
 		route.Id, err = pg.GetLastRouteID(ctx)
 		if err != nil {
-			fmt.Println("error while finding the route_id - ", err)
+			log.Println("error while finding the route_id - ", err)
 			return -1, err
 		}
 
@@ -88,7 +82,7 @@ func (pg *PgStore) InsertRoute(ctx context.Context, route *models.Route) (int, e
 	query := "insert into all_routes(route_id,route_name,src,dest,direction,departure_time,arrival_time) values($1,$2,$3,$4,$5,$6,$7);"
 	_, err = pg.Pool.Exec(ctx, query, route.Id, route_name, route.Src, route.Dest, route.Direction, departure_time, arrival_time)
 	if err != nil {
-		fmt.Println("error while inserting route to db - ", err)
+		log.Println("error while inserting route to db - ", err)
 		return -1, fmt.Errorf("error")
 	}
 
@@ -96,7 +90,7 @@ func (pg *PgStore) InsertRoute(ctx context.Context, route *models.Route) (int, e
 		query = "insert into route_stops(route_id,route_name,direction,stop_sequence,stop_name,is_stop,lat,lon,arrival_time,departure_time) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)"
 		_, err := pg.Pool.Exec(ctx, query, route.Id, route_name, route.Direction, stop.StopSequence, stop.LocationName, stop.IsStop, stop.Lat, stop.Lon, stop.Arrival_time, stop.Departure_time)
 		if err != nil {
-			fmt.Println("error while inserting the route stops  - ", err)
+			log.Println("error while inserting the route stops  - ", err)
 			return -1, fmt.Errorf("error")
 		}
 
@@ -112,7 +106,7 @@ func (pg *PgStore) CheckRouteExists(ctx context.Context, src string, dest string
 	query := "select route_id from all_routes where src = $1 and dest = $2 ;"
 	route_id_rows, err_error := pg.Pool.Query(ctx, query, src, dest)
 	if err_error != nil {
-		fmt.Println("error while finding the route id - ", err_error)
+		log.Println("error while finding the route id - ", err_error)
 	}
 
 	defer route_id_rows.Close()
@@ -130,7 +124,7 @@ func (pg *PgStore) CheckRouteExists(ctx context.Context, src string, dest string
 		query = "select stop_name,is_stop from route_stops where route_id = $1"
 		rows, err := pg.Pool.Query(ctx, query, route_id)
 		if err != nil {
-			fmt.Println("error while accesing the stopname - ", err)
+			log.Println("error while accesing the stopname - ", err)
 		}
 		if err == sql.ErrNoRows {
 			fmt.Println("no rows")
@@ -149,7 +143,7 @@ func (pg *PgStore) CheckRouteExists(ctx context.Context, src string, dest string
 
 			err := rows.Scan(&stop_name, &is_stop)
 			if err != nil {
-				fmt.Println("error while accessing the stopname and is_stop - ", err)
+				log.Println("error while accessing the stopname and is_stop - ", err)
 			}
 
 			if !(stop_name == stop.LocationName && is_stop == stop.IsStop) {

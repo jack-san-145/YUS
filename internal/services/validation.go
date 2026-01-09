@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -14,8 +13,6 @@ func ValidatePassword(password string) bool {
 	upper := regexp.MustCompile(`[A-Z]`).MatchString
 	number := regexp.MustCompile(`[0-9]`).MatchString
 	special := regexp.MustCompile(`[@$!%*?&]`).MatchString
-
-	fmt.Println("ValidatePassword - ", lower(password) && upper(password) && number(password) && special(password))
 	return lower(password) && upper(password) && number(password) && special(password)
 }
 
@@ -32,7 +29,6 @@ func ValidateClgMail(email string) bool {
 			is_valid = true
 		}
 	}
-	fmt.Println("ValidateClgMail - ", is_valid)
 	return is_valid
 }
 
@@ -41,7 +37,6 @@ func ValidateName(name string) bool {
 	// Allows alphabets and spaces, 2 to 50 chars long
 	re := regexp.MustCompile(`^[A-Za-z ]{2,50}$`)
 	is_valid := re.MatchString(name)
-	fmt.Println("ValidateName - ", is_valid)
 	return is_valid
 }
 

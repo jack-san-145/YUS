@@ -1,7 +1,7 @@
 package admin
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"time"
 	"yus/internal/handlers/common/response"
@@ -14,13 +14,12 @@ func (h *AdminHandler) SendOTPHandler(w http.ResponseWriter, r *http.Request) {
 	var admin_otp_status = make(map[string]any)
 	err := r.ParseForm()
 	if err != nil {
-		fmt.Println("error while parsing form")
+		log.Println("error while parsing form")
 		return
 	}
 	email := r.FormValue("email")
 	name := r.FormValue("name")
 	password := r.FormValue("password")
-	fmt.Println(email, name, password)
 
 	if services.ValidateClgMail(email) && services.ValidateName(name) && services.ValidatePassword(password) {
 
@@ -52,14 +51,13 @@ func (h *AdminHandler) VerifyOTPHandler(w http.ResponseWriter, r *http.Request) 
 	var admin_register_status = make(map[string]string)
 	err := r.ParseForm()
 	if err != nil {
-		fmt.Println("error while parsing form")
+		log.Println("error while parsing form")
 		return
 	}
 	email := r.FormValue("email")
 	name := r.FormValue("name")
 	password := r.FormValue("password")
 	given_otp := r.FormValue("otp")
-	fmt.Println("verify otp for - ", email, name, password, given_otp)
 
 	if services.ValidateClgMail(email) && services.ValidateName(name) && services.ValidatePassword(password) {
 
@@ -89,7 +87,7 @@ func (h *AdminHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var login_status = make(map[string]string)
 	err := r.ParseForm()
 	if err != nil {
-		fmt.Println("error while parsing admin login form")
+		log.Println("error while parsing admin login form")
 		login_status["login_status"] = "invalid"
 	} else {
 		email := r.FormValue("email")

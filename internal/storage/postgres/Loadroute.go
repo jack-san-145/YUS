@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
+	"log"
 	"yus/internal/models"
 	"yus/internal/services"
 )
@@ -64,7 +64,7 @@ func (pg *PgStore) GetCurrentSchedule(ctx context.Context) ([]models.CurrentSche
 	query := "select bus_id,driver_id,route_id from current_bus_route"
 	rows, err := pg.Pool.Query(ctx, query)
 	if err != nil {
-		fmt.Println("error while finding the current bus route - ", err)
+		log.Println("error while finding the current bus route - ", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -93,7 +93,7 @@ func (pg *PgStore) GetCurrentBusRoutes(ctx context.Context) ([]models.CurrentRou
 		var bus_id int
 		err := bus_id_rows.Scan(&bus_id)
 		if err != nil {
-			fmt.Println("error while scanning bus_id - ", err)
+			log.Println("error while scanning bus_id - ", err)
 			return nil, err
 		} else {
 			r, _ := pg.FindRouteByBusOrDriverID(ctx, bus_id, "PASSENGER")
@@ -111,7 +111,7 @@ func (pg *PgStore) GetAvailableRoutes(ctx context.Context) ([]models.AvilableRou
 	query := "select route_id,route_name,src,dest,direction from all_routes where direction = 'UP' "
 	all_routes, err := pg.Pool.Query(ctx, query)
 	if err != nil {
-		fmt.Println("error while finding the the all_routes - ", err)
+		log.Println("error while finding the the all_routes - ", err)
 		return nil, err
 	}
 
@@ -129,7 +129,7 @@ func (pg *PgStore) GetAvailableRoutes(ctx context.Context) ([]models.AvilableRou
 			&route.Dest,
 			&route.Direction)
 		if err != nil {
-			fmt.Println("error while scanning route_id from all_routes - ", err)
+			log.Println("error while scanning route_id from all_routes - ", err)
 			continue
 		}
 		route.Name = services.Convert_to_Normal(route.Name)
@@ -141,7 +141,7 @@ func (pg *PgStore) GetAvailableRoutes(ctx context.Context) ([]models.AvilableRou
 			//if route not present in bus_route and its available to map with a bus
 			route.Available = true
 		} else if err != nil {
-			fmt.Println("error while scanning bus_id from current_bus_route - ", err)
+			log.Println("error while scanning bus_id from current_bus_route - ", err)
 			continue
 		}
 
@@ -159,7 +159,7 @@ func (pg *PgStore) GetCachedRoutesByBusID(ctx context.Context, busID int) ([]mod
 	query := "select route_id,route_name,src,dest from cached_bus_route where bus_id = $1"
 	rows, err := pg.Pool.Query(ctx, query, busID)
 	if err != nil {
-		fmt.Println("error while fetching the cached routes - ", err)
+		log.Println("error while fetching the cached routes - ", err)
 		return All_bus_routes, err
 	}
 	defer rows.Close()
@@ -186,7 +186,7 @@ func (pg *PgStore) GetCachedRoutesByBusID(ctx context.Context, busID int) ([]mod
 		query = "select exists(select 1 from current_bus_route where bus_id = $1 and route_id = $2)"
 		err = pg.Pool.QueryRow(ctx, query, busID, bus_route.RouteId).Scan(&bus_route.Active)
 		if err != nil {
-			fmt.Println("error while checking the existance of current route - ", err)
+			log.Println("error while checking the existance of current route - ", err)
 		}
 		if bus_route.RouteId != 0 && bus_route.RouteName != "" {
 			All_bus_routes = append(All_bus_routes, bus_route)

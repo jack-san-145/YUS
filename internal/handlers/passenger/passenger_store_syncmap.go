@@ -1,7 +1,7 @@
 package passenger
 
 import (
-	"fmt"
+	"log"
 	"sync"
 	"time"
 	"yus/internal/models"
@@ -120,7 +120,7 @@ func (p *PassengerConn) StartWriterSMP(driverID int, s *SyncMapPassengerStore) {
 			p.Mu.Unlock()
 
 			if err != nil {
-				fmt.Println("error sending location to passenger:", err)
+				log.Println("error sending location to passenger:", err)
 				p.CloseOnce.Do(func() {
 					p.Conn.Close()
 				})
@@ -135,7 +135,7 @@ func (p *PassengerConn) StartWriterSMP(driverID int, s *SyncMapPassengerStore) {
 			p.Mu.Unlock()
 
 			if err != nil {
-				fmt.Println("ping error:", err)
+				log.Println("ping error:", err)
 				p.CloseOnce.Do(func() {
 					p.Conn.Close()
 				})
@@ -149,7 +149,7 @@ func (p *PassengerConn) StartWriterSMP(driverID int, s *SyncMapPassengerStore) {
 // Broadcast driver location to all passengers
 func (s *SyncMapPassengerStore) BroadcastLocation(driverID int, loc models.Location) {
 	passengers := s.GetPassengerConns(driverID)
-	fmt.Printf("driver_id - %v sending location, users = %d\n", driverID, len(passengers))
+	log.Printf("driver_id - %v sending location, users = %d\n", driverID, len(passengers))
 
 	for _, p := range passengers {
 		select {

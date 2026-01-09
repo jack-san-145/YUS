@@ -3,6 +3,7 @@ package redis
 import (
 	"context"
 	"fmt"
+	"log"
 	"yus/internal/services"
 )
 
@@ -10,14 +11,13 @@ func (r *RedisStore) AddAdmin(ctx context.Context, name string, email string, pa
 
 	exists, _ := r.AdminExists(ctx)
 	if exists {
-		fmt.Println("Admin already exists")
 		return "", fmt.Errorf("admin already exists")
 	}
 
 	hased_pass := services.Hash_this_password(password)
 	err := r.RedisClient.HSet(ctx, "Admin-data", "name", name, "email", email, "password", hased_pass).Err()
 	if err != nil {
-		fmt.Println("error while set the admin details to the redis - ", err)
+		log.Println("error while set the admin details to the redis - ", err)
 		return "", fmt.Errorf("invalid")
 	}
 	return "successfully added admin", nil
@@ -26,7 +26,7 @@ func (r *RedisStore) AddAdmin(ctx context.Context, name string, email string, pa
 func (r *RedisStore) AdminExists(ctx context.Context) (bool, error) {
 	Exists, err := r.RedisClient.Exists(ctx, "Admin-data").Result()
 	if err != nil {
-		fmt.Println("error while checking the existance of Admin-data - ", err)
+		log.Println("error while checking the existance of Admin-data - ", err)
 		return false, err
 	}
 	if Exists == 1 {
@@ -40,12 +40,11 @@ func (r *RedisStore) AdminLogin(ctx context.Context, email string, password stri
 
 	value, err := r.RedisClient.HMGet(ctx, "Admin-data", "email", "password").Result() //to get the multiple values in a single query
 	if err != nil {
-		fmt.Println("error while accessing the Admin-data - ", err)
+		log.Println("error while accessing the Admin-data - ", err)
 		return false, err
 	}
 
 	if value[0] == nil || value[1] == nil {
-		fmt.Println("both are nil")
 		return false, nil
 	}
 

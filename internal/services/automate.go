@@ -2,7 +2,7 @@ package services
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"time"
 
 	"yus/internal/AppPkg"
@@ -32,7 +32,7 @@ func AutomateRouteScheduling(app *AppPkg.Application) {
 	})
 	c.Start()
 
-	fmt.Println("Route scheduling started..")
+	log.Println("Route scheduling started..")
 
 	select {} //it blocks the go routiune and run forever
 }
