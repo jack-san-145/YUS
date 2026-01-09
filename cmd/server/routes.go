@@ -32,7 +32,7 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 	router.Use(app.RateLimit)                        //limits requests from same ip
 
 	// Serve static files for admin website (CSS, JS, images)
-	fileServer := http.FileServer(http.Dir("../../ui/Admin-website/static"))
+	fileServer := http.FileServer(http.Dir("../../ui/YUS-Admin/static"))
 	router.Handle("/admin-static/*", http.StripPrefix("/admin-static/", fileServer))
 
 	//web pages
