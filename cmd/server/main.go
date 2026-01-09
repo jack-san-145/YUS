@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -48,9 +47,9 @@ func main() {
 
 	go services.AutomateRouteScheduling(app) //to automate route direction change
 
-	fmt.Println("Server listening on :8090")
+	log.Println("Server listening on :8090")
 	err = http.ListenAndServe(app.Port, app.Router)
 	if err != nil {
-		fmt.Println("server failure - ", err)
+		log.Println("server failure - ", err)
 	}
 }
