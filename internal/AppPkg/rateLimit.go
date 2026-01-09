@@ -17,7 +17,7 @@ func (app *Application) RateLimit(next http.Handler) http.Handler {
 
 		ip := "rate:ip:" + GetClientIP(r)
 		rateLimit.Key = ip
-		rateLimit.Capacity = 5
+		rateLimit.Capacity = 10
 		rateLimit.RefillPerSecond = 1
 		rateLimit.TimeStamp = time.Now().UnixMilli()
 

@@ -29,8 +29,8 @@ import (
 
 func SendEmailTo(email string, otp string) bool {
 
-	from := "yellohbus@gmail.com"
-	password := os.Getenv("YUS_EMAIL_PASSWORD")
+	from := "yusofficialteam@gmail.com"
+	password := os.Getenv("YUS_OFFICIAL_TEAM_EMAIL_PASSWORD")
 
 	// HTML email template
 	htmlBody := fmt.Sprintf(`
@@ -50,7 +50,7 @@ func SendEmailTo(email string, otp string) bool {
 	`, otp)
 
 	// Plain text fallback
-	plainBody := "Your YUS Verification Code: " + otp + "\nValid for 3 minutes.\nDo not share this code with anyone."
+	plainBody := "Your Driver Verification Code: " + otp + "\nValid for 3 minutes.\nDo not share this code with anyone."
 
 	// Construct MIME message
 	msg := []byte(

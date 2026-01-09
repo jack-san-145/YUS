@@ -14,6 +14,17 @@ func (h *AdminHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		response.WriteJSON(w, r, map[string]bool{"status": false})
 		return
 	}
-	// http.Redirect(w, r, "/", http.StatusSeeOther)
-	return
+	// response.WriteJSON(w, r, map[string]bool{"status": true})
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_id",
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
+	})
+	response.WriteJSON(w, r, map[string]bool{
+		"status": true,
+	})
 }
