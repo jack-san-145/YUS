@@ -39,7 +39,7 @@ func (pg *PgStore) GetAllottedBusForDriver(ctx context.Context, driverID int) (m
 func (pg *PgStore) AddDriver(ctx context.Context, driver *models.Driver) error {
 	query := "insert into drivers(driver_name,mobile_no) values($1,$2)"
 	_, err := pg.Pool.Exec(ctx, query, driver.Name, driver.Mobile_no)
-	if err != nil {
+	if err != nil { 
 		log.Println("error while inserting the new driver - ", err)
 		return err
 	}

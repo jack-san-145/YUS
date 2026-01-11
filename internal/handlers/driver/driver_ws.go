@@ -90,7 +90,6 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 			select {
 			case <-ticker.C:
 				if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-					log.Println("ping error:", err)
 					return
 				}
 			case <-done: // this runs immediately when the done channel gets closed
@@ -103,12 +102,10 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 	for {
 		_, loc, err := conn.ReadMessage()
 		if err != nil {
-			log.Println("error while reading the driver's websocket message - ", err)
 			return
 		}
 		err = json.Unmarshal(loc, &current_location)
 		if err != nil {
-			log.Println("error while unmarshaling the location - ", err)
 			continue
 		}
 

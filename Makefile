@@ -13,7 +13,13 @@ run :
 #to run the application even after close the terminal and store logs in yus.log file
 run-forever :
 	cd cmd && cd server && nohup ./yus > yus.log 2>&1 &
+
+run-forever-log:
+	pgrep yus || (cd cmd/server && nohup ./yus > /var/log/yus/yus.log 2>&1 &)
  
+show-log:
+	tail -f /var/log/yus/yus.log
+	
 #to show the cuurently running process of yus application
 stop : 
 	@pid=$$(ps aux | grep '[y]us' | awk '{print $$2}'); \

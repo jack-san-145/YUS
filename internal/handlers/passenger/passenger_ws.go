@@ -2,7 +2,7 @@ package passenger
 
 import (
 	"context"
-	"log"
+	// "log"
 	"net/http"
 	"yus/internal/models"
 
@@ -16,7 +16,6 @@ func (h *PassengerHandler) WebSocketHandler(w http.ResponseWriter, r *http.Reque
 	}}
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println("error while upgrading the websocket - ", err)
 		return
 	}
 
@@ -36,9 +35,7 @@ func (h *PassengerHandler) listenPassengerMessage(conn *websocket.Conn) {
 		err := conn.ReadJSON(&requested_bus_route)
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Println("passenger connection closed unexpectedly -", err)
 			} else {
-				log.Println("error reading passenger ws message -", err)
 			}
 
 			//used old_requested_bus_route.DriverId bcz the current requested_bus_route.DriverId not received , so we cleared the old connection
