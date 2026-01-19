@@ -4,13 +4,15 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	// "strconv"
 	"yus/internal/handlers/common/response"
 	"yus/internal/models"
 )
 
 // var All_Bus_Routes []models.Route
 
-func (h *AdminHandler) SaveRouteHandler(w http.ResponseWriter, r *http.Request) {
+func (h *AdminHandler) SaveSameRouteHandler(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
@@ -44,6 +46,24 @@ func (h *AdminHandler) SaveRouteHandler(w http.ResponseWriter, r *http.Request) 
 	*/
 }
 
-// func SaveRoute(w http.ResponseWriter, r *http.Request) {
-// 	ctx := r.Context()
-// }
+func (h *AdminHandler) SaveDifferentRouteHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	var NewRoute models.Route
+
+	err := json.NewDecoder(r.Body).Decode(&NewRoute)
+	if err != nil {
+		log.Println("error while get the new route - ", err)
+		response.WriteJSON(w, r, map[string]bool{"status": false})
+		return
+	}
+
+	log.Printf("direction - %v & id - %v", NewRoute.Direction, NewRoute.Id)
+
+	routeID, err := h.Store.DB.SaveDifferentPathRoute(ctx, &NewRoute)
+	if err != nil {
+		log.Println("error while saving different path route - ", err)
+		response.WriteJSON(w, r, map[string]bool{"status": false})
+		return
+	}
+	response.WriteJSON(w, r, map[string]any{"status": true, "route_id": routeID})
+}

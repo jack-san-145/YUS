@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"strconv"
@@ -27,6 +28,10 @@ func (h *AdminHandler) RemoveRouteHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 	response.WriteJSON(w, r, map[string]bool{"deleted": true})
+	go func() {
+		current_route, _ := h.Store.DB.GetCurrentBusRoutes(context.Background())
+		h.Store.InMemoryDB.CacheBusRoute(context.Background(), current_route)
+	}()
 
 }
 
@@ -48,6 +53,10 @@ func (h *AdminHandler) RemoveBusHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	response.WriteJSON(w, r, map[string]bool{"removed": true})
+	go func() {
+		current_route, _ := h.Store.DB.GetCurrentBusRoutes(context.Background())
+		h.Store.InMemoryDB.CacheBusRoute(context.Background(), current_route)
+	}()
 
 }
 
@@ -70,6 +79,10 @@ func (h *AdminHandler) RemoveDriverHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	response.WriteJSON(w, r, map[string]bool{"removed": true})
+	go func() {
+		current_route, _ := h.Store.DB.GetCurrentBusRoutes(context.Background())
+		h.Store.InMemoryDB.CacheBusRoute(context.Background(), current_route)
+	}()
 
 }
 
