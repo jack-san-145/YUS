@@ -170,3 +170,41 @@ func calculate_down_routeStops(down_route *models.Route) {
 	*/
 
 }
+
+func CalculateDifferentPathRoute(route *models.Route) {
+	upStops := route.Stops
+	//convert the normal names to camel-case to store in DB
+	if route.UpRouteName != "" {
+		route.UpRouteName = Convert_to_CamelCase(route.UpRouteName)
+	}
+
+	if route.DownRouteName != "" {
+		route.DownRouteName = Convert_to_CamelCase(route.DownRouteName)
+	}
+	route.Src = Convert_to_CamelCase(route.Src)
+	route.Dest = Convert_to_CamelCase(route.Dest)
+
+	for i := 0; i < len(upStops); i++ {
+		if i == 0 {
+			// First stop: departure = arrival
+			upStops[i].Departure_time = upStops[i].Arrival_time
+		} else if i == len(upStops)-1 {
+			//last stop: departure = arrival , it don't want departure bcz its the destination
+			upStops[i].Departure_time = upStops[i].Arrival_time
+		} else {
+			// Other stops: departure = arrival + 1 min if IsStop
+			arrival := string_to_Gotime(upStops[i].Arrival_time)
+			if upStops[i].IsStop {
+				upStops[i].Departure_time = goTime_to_string(arrival.Add(1 * time.Minute))
+			} else {
+				upStops[i].Departure_time = upStops[i].Arrival_time
+			}
+		}
+		//convert the stop names(normal names )to camel-case to store in DB
+		upStops[i].LocationName = Convert_to_CamelCase(upStops[i].LocationName)
+	}
+	route.Stops = upStops
+	route.UpDepartureTime = upStops[0].Departure_time
+	route.ArrivalTime = upStops[len(upStops)-1].Arrival_time // reaches the destination
+
+}
