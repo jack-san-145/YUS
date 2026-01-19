@@ -82,6 +82,8 @@ type DBStore interface {
 
 	// Passenger Operations
 	CheckRouteExistsForPassengerWS(ctx context.Context, route models.PassengerWsRequest) (bool, error)
+
+	SaveDifferentPathRoute(ctx context.Context, route *models.Route) (int, error)
 }
 
 type Store struct {
