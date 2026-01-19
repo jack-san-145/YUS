@@ -1,0 +1,1 @@
+drop table IF EXISTS backup_routes;
