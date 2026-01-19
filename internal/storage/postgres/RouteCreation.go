@@ -31,6 +31,7 @@ func (pg *PgStore) SaveRoute(ctx context.Context, up_route *models.Route) (strin
 	_, err2 := pg.InsertRoute(ctx, down_route)
 
 	if err1 != nil && err2 != nil {
+
 		return "failed", nil
 	} else {
 		return "success", nil
@@ -159,4 +160,41 @@ func (pg *PgStore) CheckRouteExists(ctx context.Context, src string, dest string
 		}
 	}
 	return nil
+}
+
+func (pg *PgStore) SaveDifferentPathRoute(ctx context.Context, route *models.Route) (int, error) {
+
+	if route.Direction == "DOWN" {
+		services.CalculateDifferentPathRoute(route)
+		err := pg.CheckRouteExists(ctx, route.Src, route.Dest, route.Stops)
+		if err != nil {
+			log.Println(err.Error())
+			return 0, err
+		}
+
+		log.Println("going to insert route to table")
+		//inserting down routes to db
+		down_route_id, err := pg.InsertRoute(ctx, route)
+		if err != nil {
+			return 0, err
+		}
+		return down_route_id, nil
+
+	} else if route.Direction == "UP" {
+		services.CalculateDifferentPathRoute(route)
+		err := pg.CheckRouteExists(ctx, route.Src, route.Dest, route.Stops)
+		if err != nil {
+			log.Println(err.Error())
+			return 0, err
+		}
+
+		log.Println("going to insert route to table")
+		//inserting up routes to db
+		up_route_id, err := pg.InsertRoute(ctx, route)
+		if err != nil {
+			return 0, err
+		}
+		return up_route_id, nil
+	}
+	return 0, nil
 }
