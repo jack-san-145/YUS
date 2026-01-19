@@ -1,0 +1,123 @@
+1. Save same path route. :
+
+old endpoint : https://yus.kwscloud.in/yus/save-new-route
+
+new endpoint : https://yus.kwscloud.in/yus/save-same-path-route
+
+
+
+
+2. Save Different path route :
+
+endpoint : https://yus.kwscloud.in/yus/save-different-path-route
+method : Post body (Include 'Authorization' = session_id in request header )
+
+for up route:
+
+    frontend -> backend (request):
+        {
+            "up_route_name": "rajapalayam to Kcet",
+            "src": "rajapalayam",
+            "dest": "Kcet",
+            "direction":"UP",
+            "stops": [
+                {
+                "stop_sequence": 1,
+                "location_name": "rajapalayam hospital",
+                "lat": "9.1717581",
+                "lon": "77.8716829",
+                "is_stop": true,
+                "arrival_time": "07:15"
+                },
+                {
+                "stop_sequence": 2,
+                "location_name": "rajapalayam Vinayagar temple",
+                "lat": "9.1719802",
+                "lon": "77.8685167",
+                "is_stop": true,
+                "arrival_time": "07:20"
+                },
+                {
+                "stop_sequence": 3,
+                "location_name": "Kcet",
+                "lat": "9.1730173",
+                "lon": "77.861349",
+                "is_stop": true,
+                "arrival_time": "07:25"
+                },
+            ]
+        }
+    
+    backend -> frontend (response):
+        if success:
+            {
+                "status" : true,
+                "route_id": 12
+            }
+
+        if failed:
+            {
+                "status" : false
+            }
+
+
+
+
+
+
+for down route:
+
+    frontend -> backend (request):
+        {
+            "route_id":12,
+            "down_route_name": "Kcet to rajapalayam via ByPass",
+            "src": "kcet",
+            "dest": "rajapalayam",
+            "direction":"DOWN",
+            "stops": [
+                {
+                "stop_sequence": 1,
+                "location_name": "kcet",
+                "lat": "9.1717581",
+                "lon": "77.8716829",
+                "is_stop": true,
+                "arrival_time": "16:30"
+                },
+                {
+                "stop_sequence": 2,
+                "location_name": "sivaksi",
+                "lat": "9.1719802",
+                "lon": "77.8685167",
+                "is_stop": true,
+                "arrival_time": "16:45"
+                },
+                {
+                "stop_sequence": 3,
+                "location_name": "rajapalayam Railway Station",
+                "lat": "9.1730173",
+                "lon": "77.861349",
+                "is_stop": true,
+                "arrival_time": "16:55"
+                },
+                {
+                "stop_sequence": 7,
+                "location_name": "rajapalayam hospital",
+                "lat": "9.1877404",
+                "lon": "77.8790871",
+                "is_stop": true,
+                "arrival_time": "17:42"
+                }
+            ]
+        }
+    
+    backend -> frontend (response):
+        if success:
+            {
+                "status" : true,
+                "route_id": 12
+            }
+
+        if failed:
+            {
+                "status" : false
+            }

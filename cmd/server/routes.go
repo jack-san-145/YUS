@@ -82,7 +82,8 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 		protectedAdmin.Use(app.IsAdminAuthorized)
 
 		//route creation
-		protectedAdmin.Post("/yus/save-new-route", h.Admin.SaveRouteHandler)
+		protectedAdmin.Post("/yus/save-same-path-route", h.Admin.SaveSameRouteHandler)
+		protectedAdmin.Post("/yus/save-different-path-route", h.Admin.SaveDifferentRouteHandler)
 
 		//scheduling Operations
 		protectedAdmin.Put("/yus/change-route/{direction}", h.Admin.UpdateRouteDirectionHandler)
