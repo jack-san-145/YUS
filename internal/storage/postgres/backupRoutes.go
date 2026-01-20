@@ -48,3 +48,42 @@ func (pg *PgStore) GetBackupRoutes(ctx context.Context) ([]models.BackupRoute, e
 	}
 	return Routes, err
 }
+
+func (pg *PgStore) StoreToBackupRoute(ctx context.Context, path string, route *models.Route) error {
+	var err error
+	query := `insert into backup_routes(route_id,route_name,path,src,dest,direction,route_json) 
+					values($1,$2,$3,$4,$5,$6,$7)`
+
+	if path == "SAME" {
+		_, err = pg.Pool.Exec(ctx, query,
+			route.Id,
+			route.UpRouteName,
+			path,
+			route.Src,
+			route.Dest,
+			route.Direction,
+			*route)
+	} else if path == "DIFFERENT" {
+		if route.Direction == "UP" {
+			_, err = pg.Pool.Exec(ctx, query,
+				route.Id,
+				route.UpRouteName,
+				path,
+				route.Src,
+				route.Dest,
+				route.Direction,
+				*route)
+		} else if route.Direction == "DOWN" {
+			_, err = pg.Pool.Exec(ctx, query,
+				route.Id,
+				route.DownRouteName,
+				path,
+				route.Src,
+				route.Dest,
+				route.Direction,
+				*route)
+		}
+	}
+	return err
+
+}
