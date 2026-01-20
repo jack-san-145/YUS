@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 	"yus/internal/handlers/common/response"
 	"yus/internal/models"
 	"yus/internal/services"
@@ -102,7 +103,15 @@ func (h *AdminHandler) ScheduleBusHandler(w http.ResponseWriter, r *http.Request
 	response.WriteJSON(w, r, map[string]bool{"status": true})
 
 	go func() {
+		now := time.Now()
+		if now.Hour() < 12 {
+			h.Store.DB.ChangeRouteDirection(context.Background(), "UP")
+		} else {
+			h.Store.DB.ChangeRouteDirection(context.Background(), "DOWN")
+		}
+
 		current_route, _ := h.Store.DB.GetCurrentBusRoutes(context.Background())
 		h.Store.InMemoryDB.CacheBusRoute(context.Background(), current_route)
 	}()
+
 }

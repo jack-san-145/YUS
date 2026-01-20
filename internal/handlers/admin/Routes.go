@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 	"yus/internal/handlers/common/response"
 	"yus/internal/models"
 
@@ -75,9 +76,17 @@ func (h *AdminHandler) AssignRouteToBusHandler(w http.ResponseWriter, r *http.Re
 	response.WriteJSON(w, r, status)
 
 	go func() {
+		now := time.Now()
+		if now.Hour() < 12 {
+			h.Store.DB.ChangeRouteDirection(context.Background(), "UP")
+		} else {
+			h.Store.DB.ChangeRouteDirection(context.Background(), "DOWN")
+		}
+
 		current_route, _ := h.Store.DB.GetCurrentBusRoutes(context.Background())
 		h.Store.InMemoryDB.CacheBusRoute(context.Background(), current_route)
 	}()
+
 }
 
 func (h *AdminHandler) AssignDriverToBusHandler(w http.ResponseWriter, r *http.Request) {
@@ -106,9 +115,17 @@ func (h *AdminHandler) AssignDriverToBusHandler(w http.ResponseWriter, r *http.R
 	response.WriteJSON(w, r, status)
 
 	go func() {
+		now := time.Now()
+		if now.Hour() < 12 {
+			h.Store.DB.ChangeRouteDirection(context.Background(), "UP")
+		} else {
+			h.Store.DB.ChangeRouteDirection(context.Background(), "DOWN")
+		}
+
 		current_route, _ := h.Store.DB.GetCurrentBusRoutes(context.Background())
 		h.Store.InMemoryDB.CacheBusRoute(context.Background(), current_route)
 	}()
+
 }
 
 func (h *AdminHandler) UpdateRouteDirectionHandler(w http.ResponseWriter, r *http.Request) {

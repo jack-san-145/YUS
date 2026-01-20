@@ -36,3 +36,4 @@ func AutomateRouteScheduling(app *AppPkg.Application) {
 
 	select {} //it blocks the go routiune and run forever
 }
+
