@@ -164,7 +164,7 @@ func (pg *PgStore) CheckRouteExists(ctx context.Context, src string, dest string
 
 func (pg *PgStore) SaveDifferentPathRoute(ctx context.Context, route *models.Route) (int, error) {
 
-	if route.Direction == "DOWN" {
+	if route.Direction == "DOWN" && route.Id != 0 {
 		services.CalculateDifferentPathRoute(route)
 		err := pg.CheckRouteExists(ctx, route.Src, route.Dest, route.Stops)
 		if err != nil {
