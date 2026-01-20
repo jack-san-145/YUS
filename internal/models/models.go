@@ -126,3 +126,12 @@ type DriverRemovalRequest struct {
 	DriverName string    `json:"driver_name"`
 	Created_At time.Time `json:"created_at"`
 }
+
+type BackupRoute struct {
+	ID        int       `json:"route_id"`
+	Path      string    `json:"path"`
+	Direction string    `json:"direction"`
+	UpRoute   Route     `json:"up_route_json"`
+	DownRoute Route     `json:"down_route_json"`
+	CreatedAt time.Time `json:"created_at"`
+}
