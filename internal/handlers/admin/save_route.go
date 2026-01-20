@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -59,6 +60,10 @@ func (h *AdminHandler) SaveDifferentRouteHandler(w http.ResponseWriter, r *http.
 
 	log.Printf("direction - %v & id - %v", NewRoute.Direction, NewRoute.Id)
 
+	copied_route := NewRoute
+	copied_route.Stops = make([]models.RouteStops, len(NewRoute.Stops))
+	copy(copied_route.Stops, NewRoute.Stops)
+
 	routeID, err := h.Store.DB.SaveDifferentPathRoute(ctx, &NewRoute)
 	if err != nil {
 		log.Println("error while saving different path route - ", err)
@@ -66,4 +71,7 @@ func (h *AdminHandler) SaveDifferentRouteHandler(w http.ResponseWriter, r *http.
 		return
 	}
 	response.WriteJSON(w, r, map[string]any{"status": true, "route_id": routeID})
+
+	copied_route.Id = routeID
+	go h.Store.DB.StoreToBackupRoute(context.Background(), "DIFFERENT", &copied_route)
 }
