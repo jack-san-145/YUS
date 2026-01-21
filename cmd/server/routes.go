@@ -104,7 +104,8 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 
 		protectedAdmin.Delete("/yus/admin-logout", h.Admin.LogoutHandler)
 
-		protectedAdmin.Get("/yus/backup_routes", h.Admin.GetBackupRoutes)
+		protectedAdmin.Get("/yus/backup_routes", h.Admin.GetBackupRoutesHandler)
+		protectedAdmin.Post("/yus/Save_backup_route", h.Admin.SaveBackupRoutesHandler)
 
 	})
 

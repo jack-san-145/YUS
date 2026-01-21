@@ -86,6 +86,7 @@ type DBStore interface {
 	SaveDifferentPathRoute(ctx context.Context, route *models.Route) (int, error)
 
 	StoreToBackupRoute(ctx context.Context, path string, route *models.Route) error
+	StoreFromBackupRoute(ctx context.Context, route *models.BackupRoute) error
 	GetBackupRoutes(ctx context.Context) ([]models.BackupRoute, error)
 }
 

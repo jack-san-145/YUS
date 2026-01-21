@@ -89,3 +89,23 @@ func (pg *PgStore) StoreToBackupRoute(ctx context.Context, path string, route *m
 	return err
 
 }
+
+func (pg *PgStore) StoreFromBackupRoute(ctx context.Context, route *models.BackupRoute) error {
+	if route.Path == "SAME" {
+		_, _, err := pg.SaveRoute(ctx, &route.UpRoute)
+		return err
+	} else if route.Path == "DIFFERENT" {
+		routeID, err := pg.SaveDifferentPathRoute(ctx, &route.UpRoute)
+		if err != nil {
+			log.Println("error while saving uproute from backup route - ", err)
+			return err
+		}
+		route.DownRoute.Id = routeID
+		_, err = pg.SaveDifferentPathRoute(ctx, &route.DownRoute)
+		if err != nil {
+			log.Println("error while saving downroute from backup route")
+			return err
+		}
+	}
+	return nil
+}
