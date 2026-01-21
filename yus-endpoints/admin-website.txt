@@ -519,3 +519,340 @@ backend to frontend:
 ]
 
 (or) null
+
+
+
+
+14. Get Backup routes:
+
+endpoint : https://yus.kwscloud.in/yus/backup_routes
+method : Get 
+
+backend to frontend:
+
+[
+    {
+        "route_id": 57,
+        "path": "DIFFERENT",
+        "direction": "UP",
+        "up_route_json": {
+            "route_id": 57,
+            "up_route_name": "Sengottai to Kcet",
+            "down_route_name": "",
+            "src": "Sengottai",
+            "dest": "Kcet",
+            "stops": [
+                {
+                    "stop_sequence": 1,
+                    "location_name": "Sengottai hospital",
+                    "lat": "9.1717581",
+                    "lon": "77.8716829",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "07:15"
+                },
+                {
+                    "stop_sequence": 2,
+                    "location_name": "Sengottai Vinayagar temple",
+                    "lat": "9.1719802",
+                    "lon": "77.8685167",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "07:20"
+                },
+                {
+                    "stop_sequence": 3,
+                    "location_name": "Sengottai Bus stand",
+                    "lat": "9.1730173",
+                    "lon": "77.861349",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "07:25"
+                },
+                {
+                    "stop_sequence": 4,
+                    "location_name": "Kcet",
+                    "lat": "9.1752685",
+                    "lon": "77.8656677",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "07:30"
+                }
+            ],
+            "direction": "UP",
+            "arrival_time": "",
+            "up_departure_time": "",
+            "down_departure_time": "",
+            "created_at": "0001-01-01T00:00:00Z"
+        },
+        "down_route_json": {
+            "route_id": 57,
+            "up_route_name": "",
+            "down_route_name": "Kcet to Sengottai via ByPass",
+            "src": "kcet",
+            "dest": "Sengottai",
+            "stops": [
+                {
+                    "stop_sequence": 1,
+                    "location_name": "kcet",
+                    "lat": "9.1717581",
+                    "lon": "77.8716829",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "16:30"
+                },
+                {
+                    "stop_sequence": 2,
+                    "location_name": "Sengottai Market",
+                    "lat": "9.1752685",
+                    "lon": "77.8656677",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "17:10"
+                },
+                {
+                    "stop_sequence": 3,
+                    "location_name": "Sengottai Bus stand ",
+                    "lat": "9.1757562",
+                    "lon": "77.8683621",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "17:34"
+                },
+                {
+                    "stop_sequence": 4,
+                    "location_name": "Sengottai Park",
+                    "lat": "9.1823349",
+                    "lon": "77.8741388",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "17:38"
+                },
+                {
+                    "stop_sequence": 5,
+                    "location_name": "Sengottai railway station",
+                    "lat": "9.1877404",
+                    "lon": "77.8790871",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "17:42"
+                }
+            ],
+            "direction": "DOWN",
+            "arrival_time": "",
+            "up_departure_time": "",
+            "down_departure_time": "",
+            "created_at": "0001-01-01T00:00:00Z"
+        },
+        "created_at": "2026-01-20T17:08:35.376872Z"
+    },
+    {
+        "route_id": 58,
+        "path": "SAME",
+        "direction": "UP",
+        "up_route_json": {
+            "route_id": 58,
+            "up_route_name": "Banglore to Kcet",
+            "down_route_name": "Kcet to Banglore",
+            "src": "Banglore",
+            "dest": "Kcet",
+            "stops": [
+                {
+                    "stop_sequence": 1,
+                    "location_name": "Banglore hospital",
+                    "lat": "9.1717581",
+                    "lon": "77.8716829",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "07:15"
+                },
+                {
+                    "stop_sequence": 2,
+                    "location_name": "Banglore temple",
+                    "lat": "9.1719802",
+                    "lon": "77.8685167",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "07:20"
+                },
+                {
+                    "stop_sequence": 3,
+                    "location_name": "Banglore hotel",
+                    "lat": "9.1730173",
+                    "lon": "77.861349",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "07:25"
+                },
+                {
+                    "stop_sequence": 4,
+                    "location_name": "Banglore Market",
+                    "lat": "9.1757562",
+                    "lon": "77.8683621",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "07:34"
+                },
+                {
+                    "stop_sequence": 5,
+                    "location_name": "Kcet",
+                    "lat": "9.6728117",
+                    "lon": "77.9667687",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "09:00"
+                }
+            ],
+            "direction": "UP",
+            "arrival_time": "",
+            "up_departure_time": "",
+            "down_departure_time": "16:40",
+            "created_at": "0001-01-01T00:00:00Z"
+        },
+        "down_route_json": {
+            "route_id": 0,
+            "up_route_name": "",
+            "down_route_name": "",
+            "src": "",
+            "dest": "",
+            "stops": null,
+            "direction": "",
+            "arrival_time": "",
+            "up_departure_time": "",
+            "down_departure_time": "",
+            "created_at": "0001-01-01T00:00:00Z"
+        },
+        "created_at": "2026-01-20T17:38:22.005511Z"
+    }
+]
+
+
+
+
+15. Save Backup route:
+
+endpoint : https://yus.kwscloud.in/yus/Save_backup_route
+method : Post (Body)
+
+frontend to backend:
+  {
+        "route_id": 57,
+        "path": "DIFFERENT",
+        "direction": "UP",
+        "up_route_json": {
+            "route_id": 57,
+            "up_route_name": "Sengottai to Kcet",
+            "down_route_name": "",
+            "src": "Sengottai",
+            "dest": "Kcet",
+            "stops": [
+                {
+                    "stop_sequence": 1,
+                    "location_name": "Sengottai hospital",
+                    "lat": "9.1717581",
+                    "lon": "77.8716829",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "07:15"
+                },
+                {
+                    "stop_sequence": 2,
+                    "location_name": "Sengottai Vinayagar temple",
+                    "lat": "9.1719802",
+                    "lon": "77.8685167",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "07:20"
+                },
+                {
+                    "stop_sequence": 3,
+                    "location_name": "Sengottai Bus stand",
+                    "lat": "9.1730173",
+                    "lon": "77.861349",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "07:25"
+                },
+                {
+                    "stop_sequence": 4,
+                    "location_name": "Kcet",
+                    "lat": "9.1752685",
+                    "lon": "77.8656677",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "07:30"
+                }
+            ],
+            "direction": "UP",
+            "arrival_time": "",
+            "up_departure_time": "",
+            "down_departure_time": "",
+            "created_at": "0001-01-01T00:00:00Z"
+        },
+        "down_route_json": {
+            "route_id": 57,
+            "up_route_name": "",
+            "down_route_name": "Kcet to Sengottai via ByPass",
+            "src": "kcet",
+            "dest": "Sengottai",
+            "stops": [
+                {
+                    "stop_sequence": 1,
+                    "location_name": "kcet",
+                    "lat": "9.1717581",
+                    "lon": "77.8716829",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "16:30"
+                },
+                {
+                    "stop_sequence": 2,
+                    "location_name": "Sengottai Market",
+                    "lat": "9.1752685",
+                    "lon": "77.8656677",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "17:10"
+                },
+                {
+                    "stop_sequence": 3,
+                    "location_name": "Sengottai Bus stand ",
+                    "lat": "9.1757562",
+                    "lon": "77.8683621",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "17:34"
+                },
+                {
+                    "stop_sequence": 4,
+                    "location_name": "Sengottai Park",
+                    "lat": "9.1823349",
+                    "lon": "77.8741388",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "17:38"
+                },
+                {
+                    "stop_sequence": 5,
+                    "location_name": "Sengottai railway station",
+                    "lat": "9.1877404",
+                    "lon": "77.8790871",
+                    "is_stop": true,
+                    "departure_time": "",
+                    "arrival_time": "17:42"
+                }
+            ],
+            "direction": "DOWN",
+            "arrival_time": "",
+            "up_departure_time": "",
+            "down_departure_time": "",
+            "created_at": "0001-01-01T00:00:00Z"
+        },
+        "created_at": "2026-01-20T17:08:35.376872Z"
+    }
+
+backend to frontend:
+{
+    "status": true (or)
+    "status": false
+}
