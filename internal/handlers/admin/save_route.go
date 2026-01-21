@@ -24,7 +24,16 @@ func (h *AdminHandler) SaveSameRouteHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	NewRoute.Direction = "UP"
-	status, _ := h.Store.DB.SaveRoute(ctx, &NewRoute)
+
+	copied_route := NewRoute
+	copied_route.Stops = make([]models.RouteStops, len(NewRoute.Stops))
+	copy(copied_route.Stops, NewRoute.Stops)
+
+	routeID, status, _ := h.Store.DB.SaveRoute(ctx, &NewRoute)
+	if routeID != 0 {
+		copied_route.Id = routeID
+		go h.Store.DB.StoreToBackupRoute(context.Background(), "SAME", &copied_route)
+	}
 	response.WriteJSON(w, r, map[string]string{"status": status})
 
 	/*
