@@ -10,7 +10,7 @@ import (
 	"yus/internal/services"
 )
 
-func (pg *PgStore) SaveRoute(ctx context.Context, up_route *models.Route) (string, error) {
+func (pg *PgStore) SaveRoute(ctx context.Context, up_route *models.Route) (int, string, error) {
 
 	up_route.Direction = "UP"
 	services.Calculate_Uproute_departure(up_route)
@@ -20,7 +20,7 @@ func (pg *PgStore) SaveRoute(ctx context.Context, up_route *models.Route) (strin
 	err := pg.CheckRouteExists(ctx, up_route.Src, up_route.Dest, up_route.Stops)
 	if err != nil {
 		log.Println(err.Error())
-		return "failed", err
+		return 0, "failed", err
 	}
 
 	log.Println("going to insert route to table")
@@ -32,9 +32,9 @@ func (pg *PgStore) SaveRoute(ctx context.Context, up_route *models.Route) (strin
 
 	if err1 != nil && err2 != nil {
 
-		return "failed", nil
+		return up_route_id, "failed", nil
 	} else {
-		return "success", nil
+		return up_route_id, "success", nil
 	}
 }
 

@@ -49,7 +49,7 @@ type DBStore interface {
 	RemoveBus(ctx context.Context, busID int) error
 
 	// Route Operation & Validation
-	SaveRoute(ctx context.Context, route *models.Route) (string, error)
+	SaveRoute(ctx context.Context, route *models.Route) (int, string, error)
 	InsertRoute(ctx context.Context, route *models.Route) (int, error)
 	GetLastRouteID(ctx context.Context) (int, error)
 	CheckRouteExists(ctx context.Context, src string, dest string, stops []models.RouteStops) error

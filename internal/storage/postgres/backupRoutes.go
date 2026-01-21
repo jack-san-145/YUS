@@ -22,12 +22,14 @@ func (pg *PgStore) GetBackupRoutes(ctx context.Context) ([]models.BackupRoute, e
 	for rows.Next() {
 		var common_route models.Route
 		var route models.BackupRoute
-		err := rows.Scan(&route.ID, &route.Path, &common_route, &route.CreatedAt)
+		err := rows.Scan(&route.ID, &route.Path, &route.Direction, &common_route, &route.CreatedAt)
 		if err != nil {
-
+			log.Println("error while scanning backuproutes - ", err)
+			return nil, err
 		}
 		if route.Path == "SAME" {
 			route.UpRoute = common_route
+			Routes = append(Routes, route)
 		} else if route.Path == "DIFFERENT" {
 			if path_map[route.ID] {
 				for i, r := range Routes {

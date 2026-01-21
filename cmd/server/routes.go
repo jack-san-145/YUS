@@ -79,7 +79,7 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 	})
 
 	router.Group(func(protectedAdmin chi.Router) {
-		protectedAdmin.Use(app.IsAdminAuthorized)
+		// protectedAdmin.Use(app.IsAdminAuthorized)
 
 		//route creation
 		protectedAdmin.Post("/yus/save-same-path-route", h.Admin.SaveSameRouteHandler)
@@ -103,6 +103,8 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 		protectedAdmin.Delete("/yus/remove-driver/{driver-id}/{mode}", h.Admin.RemoveDriverHandler)
 
 		protectedAdmin.Delete("/yus/admin-logout", h.Admin.LogoutHandler)
+
+		protectedAdmin.Get("/yus/backup_routes", h.Admin.GetBackupRoutes)
 
 	})
 
