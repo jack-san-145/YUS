@@ -69,7 +69,7 @@ type DBStore interface {
 	FindReverseRoutesBySrcDest(ctx context.Context, src string, dest string) ([]models.CurrentRoute, error)
 	FindRoutesBySrcDstStop(ctx context.Context, src string, dest string, stop string) ([]models.CurrentRoute, error)
 	FindStops(ctx context.Context, route *models.CurrentRoute) error
-	GetSrcDestNameByRouteID(ctx context.Context, routeID int) (string, string, string, error)
+	GetSrcDestNameByRouteID(ctx context.Context, routeID int, direction string) (string, string, string, error)
 
 	// Scheduling Operations
 	GetCurrentSchedule(ctx context.Context) ([]models.CurrentSchedule, error)

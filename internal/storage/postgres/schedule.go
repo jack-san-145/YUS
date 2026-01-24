@@ -14,7 +14,7 @@ func (pg *PgStore) ScheduleBus(ctx context.Context, schedule *models.CurrentSche
 
 	route.BusID = schedule.BusId
 	route.RouteId = schedule.RouteId
-	route.Src, route.Dest, route.RouteName, _ = pg.GetSrcDestNameByRouteID(ctx, schedule.RouteId)
+	route.Src, route.Dest, route.RouteName, _ = pg.GetSrcDestNameByRouteID(ctx, schedule.RouteId, schedule.Direction)
 
 	tx, err := pg.Pool.Begin(ctx) //transaction for atomic operation
 	if err != nil {

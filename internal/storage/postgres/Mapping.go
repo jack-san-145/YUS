@@ -43,7 +43,7 @@ func (pg *PgStore) AssignRouteToBus(ctx context.Context, routeID int, busID int)
 		return err
 	}
 
-	src, dest, route_name, _ := pg.GetSrcDestNameByRouteID(ctx, routeID)
+	src, dest, route_name, _ := pg.GetSrcDestNameByRouteID(ctx, routeID, "")
 
 	if is_route_present && routeID != 0 {
 
@@ -70,14 +70,14 @@ func (pg *PgStore) AssignRouteToBus(ctx context.Context, routeID int, busID int)
 	return nil
 }
 
-func (pg *PgStore) GetSrcDestNameByRouteID(ctx context.Context, routeID int) (string, string, string, error) {
+func (pg *PgStore) GetSrcDestNameByRouteID(ctx context.Context, routeID int, direction string) (string, string, string, error) {
 	var (
 		route_name string
 		src        string
 		dest       string
 	)
-	query := "select route_name,src,dest from all_routes where route_id = $1 and direction = 'UP' "
-	err := pg.Pool.QueryRow(ctx, query, routeID).Scan(&route_name, &src, &dest)
+	query := "select route_name,src,dest from all_routes where route_id = $1 and direction = $2 "
+	err := pg.Pool.QueryRow(ctx, query, routeID, direction).Scan(&route_name, &src, &dest)
 	if err != nil {
 		fmt.Println("error while finding the route_name,src and dest - ", err)
 		return "", "", "", err

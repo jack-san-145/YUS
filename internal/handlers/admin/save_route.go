@@ -30,7 +30,7 @@ func (h *AdminHandler) SaveSameRouteHandler(w http.ResponseWriter, r *http.Reque
 	copy(copied_route.Stops, NewRoute.Stops)
 
 	routeID, status, _ := h.Store.DB.SaveRoute(ctx, &NewRoute)
-	if routeID != 0 {
+	if routeID > 0 {
 		copied_route.Id = routeID
 		go h.Store.DB.StoreToBackupRoute(context.Background(), "SAME", &copied_route)
 	}

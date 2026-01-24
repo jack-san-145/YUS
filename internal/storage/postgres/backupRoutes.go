@@ -91,6 +91,7 @@ func (pg *PgStore) StoreToBackupRoute(ctx context.Context, path string, route *m
 }
 
 func (pg *PgStore) StoreFromBackupRoute(ctx context.Context, route *models.BackupRoute) error {
+	log.Println("route ", route)
 	if route.Path == "SAME" {
 		_, _, err := pg.SaveRoute(ctx, &route.UpRoute)
 		return err

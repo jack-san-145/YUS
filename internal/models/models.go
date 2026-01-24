@@ -104,9 +104,10 @@ type AllotedBus struct {
 }
 
 type CurrentSchedule struct {
-	DriverId int `json:"driver_id"`
-	BusId    int `json:"bus_id"`
-	RouteId  int `json:"route_id"`
+	DriverId  int    `json:"driver_id"`
+	BusId     int    `json:"bus_id"`
+	RouteId   int    `json:"route_id"`
+	Direction string `json:"direction"`
 }
 
 type PassengerWsRequest struct {

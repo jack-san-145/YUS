@@ -67,7 +67,7 @@ func (h *AdminHandler) VerifyOTPHandler(w http.ResponseWriter, r *http.Request) 
 			if err != nil {
 				admin_register_status["status"] = status
 			} else {
-				admin_register_status["status"] = err.Error()
+				admin_register_status["status"] = "invalid"
 			}
 
 		} else {
