@@ -91,3 +91,12 @@ func ServePrivacyPolicy(w http.ResponseWriter, r *http.Request) {
 	}
 	templ.Execute(w, nil)
 }
+
+func ServePortfolio(w http.ResponseWriter, r *http.Request) {
+	templ, err := template.ParseFiles("../../ui/Yus-Portfolio/portfolio.html")
+	if err != nil {
+		log.Println("privacy-policy.html not found - ", err)
+		return
+	}
+	templ.Execute(w, nil)
+}
