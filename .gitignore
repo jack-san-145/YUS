@@ -6,5 +6,6 @@ yus
 yus_notes.txt
 yus.log.txt
 *.log
+ui/YUS-Admin/static/images/**
 echo "cmd/server/yus.log" >> .gitignore
 echo "cmd/server/*.log" >> .gitignore

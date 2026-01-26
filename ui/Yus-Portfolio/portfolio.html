@@ -1215,8 +1215,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .network-center {
     position: relative;
-    width: 5rem;
-    height: 5rem;
+    width:3rem;
+    height: 3rem;
     background: var(--primary);
     border-radius: 50%;
     display: flex;
@@ -1590,6 +1590,536 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
+/* Footer Section */
+/* Footer Section */
+.footer-section {
+    position: relative;
+    background: linear-gradient(180deg, hsl(220, 20%, 6%) 0%, hsl(220, 25%, 3%) 100%);
+    padding: 6rem 1.5rem 2rem;
+    border-top: 1px solid hsl(45, 93%, 58%, 0.2);
+    overflow: hidden;
+}
+
+/* Background Pattern */
+.footer-bg-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        radial-gradient(circle at 20% 80%, hsl(45, 93%, 58%, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, hsl(45, 93%, 58%, 0.02) 0%, transparent 40%),
+        linear-gradient(90deg, transparent 49.5%, hsl(220, 15%, 12%) 49.5%, hsl(220, 15%, 12%) 50.5%, transparent 50.5%),
+        linear-gradient(0deg, transparent 49.5%, hsl(220, 15%, 12%) 49.5%, hsl(220, 15%, 12%) 50.5%, transparent 50.5%);
+    background-size: 100% 100%, 100% 100%, 80px 80px, 80px 80px;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* Glow Effect */
+.footer-glow {
+    position: absolute;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 300px;
+    background: radial-gradient(ellipse at center, hsl(45, 93%, 58%, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Bus Animation */
+.footer-bus-animation {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    height: 40px;
+    overflow: hidden;
+    opacity: 0.3;
+}
+
+.road-line {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, hsl(45, 93%, 58%, 0.4) 0px, hsl(45, 93%, 58%, 0.4) 20px, transparent 20px, transparent 40px);
+}
+
+
+@keyframes driveBus {
+    0% { transform: translateX(-60px); }
+    100% { transform: translateX(calc(100vw + 60px)); }
+}
+
+.footer-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    margin-bottom: 4rem;
+}
+
+@media (min-width: 640px) {
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .footer-grid {
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 3rem;
+    }
+}
+
+/* Brand Column */
+.brand-column {
+    grid-column: 1 / -1;
+}
+
+@media (min-width: 1024px) {
+    .brand-column {
+        grid-column: span 1;
+    }
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.footer-bus-icon {
+    width: 4rem;
+    height: 2rem;
+    filter: drop-shadow(0 0 20px hsla(45, 93%, 58%, 0.4));
+}
+
+.footer-logo h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, hsl(45, 93%, 58%) 0%, hsl(40, 100%, 50%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.footer-tagline {
+    color: hsl(220, 10%, 55%);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 280px;
+}
+
+.footer-social {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.social-link {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: hsl(220, 18%, 12%);
+    border: 1px solid hsl(220, 15%, 18%);
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: hsl(220, 10%, 55%);
+    transition: all 0.3s ease;
+}
+
+.social-link:hover {
+    background: hsl(45, 93%, 58%, 0.1);
+    border-color: hsl(45, 93%, 58%);
+    color: hsl(45, 93%, 58%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px hsl(45, 93%, 58%, 0.2);
+}
+
+/* Footer Columns */
+.footer-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-heading {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: hsl(45, 10%, 95%);
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.footer-link {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    color: hsl(220, 10%, 55%);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.footer-link:hover {
+    color: hsl(45, 93%, 58%);
+    transform: translateX(4px);
+}
+
+.footer-link svg {
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+}
+
+.footer-link:hover svg {
+    opacity: 1;
+}
+
+/* Bottom Bar */
+.footer-bottom {
+    position: relative;
+}
+
+.footer-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(220, 15%, 18%) 20%, hsl(45, 93%, 58%, 0.3) 50%, hsl(220, 15%, 18%) 80%, transparent);
+    margin-bottom: 1.5rem;
+}
+
+.footer-bottom-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .footer-bottom-content {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+    }
+}
+
+.footer-copyright {
+    font-size: 1rem;
+    color: hsl(220, 10%, 45%);
+}
+
+.footer-legal {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+}
+
+.footer-legal a {
+    color: hsl(220, 10%, 55%);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-legal a:hover {
+    color: hsl(45, 93%, 58%);
+}
+
+.footer-legal span {
+    color: hsl(220, 15%, 25%);
+}
+
+
+/* Developer Info */
+.developer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.developer-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.developer-role {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin-bottom: 0.5rem;
+}
+
+.developer-linkedin {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 0.5rem;
+    transition: all 0.3s;
+    width: fit-content;
+}
+
+.developer-linkedin:hover {
+    background: rgba(255, 215, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Footer Bottom */
+.footer-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin-bottom: 2rem;
+}
+
+.footer-bottom-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .footer-bottom-content {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+.copyright {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+.footer-bottom-links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.footer-bottom-link {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-bottom-link:hover {
+    color: var(--primary);
+}
+
+.separator {
+    color: var(--muted-foreground);
+    opacity: 0.5;
+}
+
+/* Decorative Road */
+.footer-road {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.road-lines {
+    position: absolute;
+    bottom: 1rem;
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+}
+
+.road-line {
+    width: 80px;
+    height: 4px;
+    background: rgba(255, 215, 0, 0.2);
+    border-radius: 2px;
+    animation: roadPulse 2s ease-in-out infinite;
+}
+
+.road-line:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.road-line:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+@keyframes roadPulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.6; }
+}
+/* Development Team Section */
+.dev-team-section {
+    margin: 4rem 0 3rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+}
+
+.dev-team-heading {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: var(--foreground);
+    letter-spacing: 0.02em;
+}
+
+.developers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+}
+
+@media (min-width: 768px) {
+    .developers-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .developers-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.developer-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.developer-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 215, 0, 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.1);
+}
+
+.developer-avatar {
+    width: 4rem;
+    height: 4rem;
+    background: rgba(255, 215, 0, 0.1);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    transition: all 0.3s;
+}
+
+.developer-card:hover .developer-avatar {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: var(--primary);
+    transform: scale(1.1);
+}
+
+.developer-avatar svg {
+    color: var(--primary);
+}
+
+.developer-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.developer-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.developer-role {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin-bottom: 0.5rem;
+}
+
+.developer-linkedin-mini {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 215, 0, 0.05);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: 0.5rem;
+    transition: all 0.3s;
+    margin-top: auto;
+}
+
+.developer-linkedin-mini:hover {
+    background: rgba(255, 215, 0, 0.15);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.developer-linkedin-mini svg {
+    flex-shrink: 0;
+
+}
+
+.developer-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f3f3f3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.developer-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* prevents stretching */
+}
+
 </style>
 <body>
     <!-- Scroll Progress Bar -->
@@ -1655,10 +2185,12 @@ h1, h2, h3, h4, h5, h6 {
             </h1>
             <p class="hero-subtitle">A real-time college bus tracking ecosystem</p>
             <div class="hero-tags">
-                <span class="tag">Route</span>
-                <span class="tag">Driver</span>
-                <span class="tag">Passenger</span>
-                <span class="tag">Admin</span>
+                <span class="tag"><a href="#route" class="footer-link"><span style="color: hsla(45, 93%, 58%, 0.8);">YUS Route</span></a></span>
+                <span class="tag"><a href="#driver" class="footer-link"><span style="color: hsla(45, 93%, 58%, 0.8);">YUS Driver</span></a></span>
+                <span class="tag"> <a href="#passenger" class="footer-link"><span style="color: hsla(45, 93%, 58%, 0.8);">Yelloh Bus</span></a></span>
+                <span class="tag"><a href="#admin" class="footer-link"><span style="color: hsla(45, 93%, 58%, 0.8);">YUS Admin</span></a></span>
+                 
+
             </div>
             <div class="scroll-indicator">
                 <span>Scroll to begin the journey</span>
@@ -2336,6 +2868,7 @@ h1, h2, h3, h4, h5, h6 {
         </div>
     </section>
 
+
     <!-- Final Section -->
     <section class="section final-section" id="final">
         <div class="ambient-glow large"></div>
@@ -2362,7 +2895,7 @@ h1, h2, h3, h4, h5, h6 {
                 <span class="text-gradient">YUS</span> is not an app.
             </h2>
             <h3 class="final-subtitle">
-                It's an <span>ecosystem.</span>
+                It's an <span>Ecosystem.</span>
             </h3>
             <div class="final-divider"></div>
             <p class="final-description">
@@ -2370,17 +2903,226 @@ h1, h2, h3, h4, h5, h6 {
             </p>
             <div class="tech-badges">
                 <span class="tech-badge">Real-time</span>
-                <span class="tech-badge">WebSocket</span>
                 <span class="tech-badge">GPS</span>
                 <span class="tech-badge">Scalable</span>
                 <span class="tech-badge">Secure</span>
             </div>
         </div>
-        <div class="final-road">
+        <!-- <div class="final-road">
             <div class="road-base"></div>
             <div class="road-endpoint"></div>
-        </div>
+        </div> -->
     </section>
+
+
+
+        <!-- Development Team Section -->
+         <div class="footer-inner">
+        <div class="dev-team-section">
+            <h4 class="dev-team-heading">YUS Developers</h4>
+            <div class="developers-grid">
+                <!-- Developer 1 -->
+                <div class="developer-card">
+                    <div class="developer-avatar">
+                        <img src="/admin-static/images/Developers/santhosh.png" alt="Santhosh Kumar">
+                    </div>
+                    <div class="developer-details">
+                        <p class="developer-name">Santhosh Kumar</p>
+                        <p class="developer-role">Founder of YUS & Backend Developer</p>
+                        <a href="https://www.linkedin.com/in/santhosh-kumar-s-5017682b4/" target="_blank" rel="noopener" class="developer-linkedin-mini">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                                <rect width="4" height="12" x="2" y="9"/>
+                                <circle cx="4" cy="4" r="2"/>
+                            </svg>
+                            <span>LinkedIn</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Developer 2 -->
+                <div class="developer-card">
+                    <div class="developer-avatar">
+                        <img src="/admin-static/images/Developers/Mareeswari.jpeg" alt="Mareeswari">
+                    </div>
+                    <div class="developer-details">
+                        <p class="developer-name">Mareeswari</p>
+                        <p class="developer-role"> Mobile App Developer</p>
+                        <a href="https://www.linkedin.com/in/mareeswari-r-a9204a2b4/" target="_blank" rel="noopener" class="developer-linkedin-mini">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                                <rect width="4" height="12" x="2" y="9"/>
+                                <circle cx="4" cy="4" r="2"/>
+                            </svg>
+                            <span>LinkedIn</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Developer 3 -->
+                <div class="developer-card">
+                    <div class="developer-avatar">
+                         <img src="/admin-static/images/Developers/sanjai.png" alt="Sanjai Vinayagam">
+                    </div>
+                    <div class="developer-details">
+                        <p class="developer-name">Sanjai Vinayagam</p>
+                        <p class="developer-role">Frontend Developer</p>
+                        <a href="https://www.linkedin.com/in/sanjai-vinayagam-v-658284300/" target="_blank" rel="noopener" class="developer-linkedin-mini">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                                <rect width="4" height="12" x="2" y="9"/>
+                                <circle cx="4" cy="4" r="2"/>
+                            </svg>
+                            <span>LinkedIn</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Developer 4 -->
+                <div class="developer-card">
+                    <div class="developer-avatar">
+                         <img src="/admin-static/images/Developers/ramalingam.png" alt="Ramalingam">
+                    </div>
+                    <div class="developer-details">
+                        <p class="developer-name">Ramalingam</p>
+                        <p class="developer-role">Frontend Developer</p>
+                        <a href="https://www.linkedin.com/in/ramalingam-g-520a50292/" target="_blank" rel="noopener" class="developer-linkedin-mini">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                                <rect width="4" height="12" x="2" y="9"/>
+                                <circle cx="4" cy="4" r="2"/>
+                            </svg>
+                            <span>LinkedIn</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</div>
+
+    <!-- Footer Section -->
+<footer class="footer-section">
+    <!-- Background Pattern -->
+    <div class="footer-bg-pattern"></div>
+    
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <!-- Brand Column -->
+            <div class="brand-column">
+                <div class="footer-logo">
+                    <svg viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg" class="footer-bus-icon">
+                        <rect x="5" y="10" width="100" height="35" rx="8" fill="#FBBF24"/>
+                        <path d="M85 15 L100 15 Q105 15 105 20 L105 35 Q105 38 102 38 L85 38 L85 15Z" fill="rgba(15, 17, 21, 0.3)"/>
+                        <rect x="15" y="18" width="12" height="10" rx="2" fill="rgba(15, 17, 21, 0.3)"/>
+                        <rect x="32" y="18" width="12" height="10" rx="2" fill="rgba(15, 17, 21, 0.3)"/>
+                        <rect x="49" y="18" width="12" height="10" rx="2" fill="rgba(15, 17, 21, 0.3)"/>
+                        <rect x="66" y="18" width="12" height="10" rx="2" fill="rgba(15, 17, 21, 0.3)"/>
+                        <circle cx="28" cy="48" r="8" fill="#1e2128"/>
+                        <circle cx="28" cy="48" r="5" fill="#0f1115"/>
+                        <circle cx="82" cy="48" r="8" fill="#1e2128"/>
+                        <circle cx="82" cy="48" r="5" fill="#0f1115"/>
+                        <text x="55" y="40" text-anchor="middle" fill="#0f1115" font-size="8" font-weight="bold">YUS</text>
+                    </svg>
+                    <h3>YUS</h3>
+                </div>
+                <p class="footer-tagline">Real-time college bus tracking ecosystem. Making campus commute smarter, safer, and stress-free.</p>
+                <div class="footer-social">
+                    <a href="https://www.linkedin.com/company/yelloh-bus" target="_blank" rel="noopener" class="social-link" aria-label="YUS LinkedIn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                            <rect width="4" height="12" x="2" y="9"/>
+                            <circle cx="4" cy="4" r="2"/>
+                        </svg>
+                    </a>
+                    <a href="https://youtube.com/@yus-yellohbus" target="_blank" rel="noopener" class="social-link" aria-label="YUS YouTube">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/>
+                            <path d="m10 15 5-3-5-3z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Contact Column -->
+            <div class="footer-column">
+                <h4 class="footer-heading">Contact</h4>
+                <ul class="footer-links">
+                    <li>
+                        <a href="mailto:yusofficialteam@gmail.com" class="footer-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="20" height="16" x="2" y="4" rx="2"/>
+                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                            </svg>
+                            <span>yusofficialteam@gmail.com</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="tel:+919876543210" class="footer-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                            <span>+91 4549-278791</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="footer-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            <span>Tamil Nadu, India</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Platform Column -->
+            <div class="footer-column">
+                <h4 class="footer-heading">Platform</h4>
+                <ul class="footer-links">
+                    <li><a href="#route" class="footer-link">YUS Route</a></li>
+                    <li><a href="#driver" class="footer-link">YUS Driver</a></li>
+                    <li><a href="#passenger" class="footer-link">Yelloh Bus</a></li>
+                    <li><a href="#admin" class="footer-link">YUS Admin</a></li>
+                </ul>
+            </div>
+
+            <!-- Resources Column -->
+            <div class="footer-column">
+                <h4 class="footer-heading">Resources</h4>
+                <ul class="footer-links">
+                    <li><a href="#" class="footer-link">Documentation</a></li>
+                    <li><a href="#" class="footer-link">API Reference</a></li>
+                    <li><a href="#" class="footer-link">Help Center</a></li>
+                    <li><a href="#" class="footer-link">Blog</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="footer-bottom">
+            <div class="footer-divider"></div>
+            <div class="footer-bottom-content">
+                <p class="footer-copyright">© 2026 YUS – Yelloh Bus. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="https://yus.kwscloud.in/yus/privacy-policy" target="_blank">Privacy Policy</a>
+                    <span>•</span>
+                    <a href="#">Terms of Service</a>
+                    <span>•</span>
+                    <a href="#"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Decorative Elements -->
+    <div class="footer-glow"></div>
+    <div class="footer-bus-animation">
+        <div class="moving-bus"></div>
+        <div class="road-line"></div>
+    </div>
+</footer>
 
     <script>
         // YUS – Yelloh Bus | Vanilla JavaScript
