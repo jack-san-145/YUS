@@ -118,7 +118,7 @@ func (h *DriverHandler) listenForLocation(driver_id int, conn *websocket.Conn) {
 		}
 
 		passenger.PassengerConnStore.BroadcastLocation(driver_id, current_location)
-		log.Printf("latitude - %v & longitude - %v & speed - %v &AS - %v\n",
-			current_location.Latitude, current_location.Longitude, current_location.Speed, current_location.ArrivalStatus)
+		// log.Printf("latitude - %v & longitude - %v & speed - %v &AS - %v\n",
+		// 	current_location.Latitude, current_location.Longitude, current_location.Speed, current_location.ArrivalStatus)
 	}
 }

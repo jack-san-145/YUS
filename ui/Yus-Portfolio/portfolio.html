@@ -2120,6 +2120,84 @@ h1, h2, h3, h4, h5, h6 {
     object-fit: cover; /* prevents stretching */
 }
 
+
+.view-3d-link {
+    text-decoration: none;
+      margin-left: 10rem;
+}
+
+.view-3d-btn {
+    position: relative;
+    padding: 0.9rem 2.2rem;
+    border-radius: 9999px;
+    border: 1px solid hsla(45, 93%, 58%, 0.4);
+    background: linear-gradient(
+        135deg,
+        hsla(45, 93%, 58%, 0.15),
+        hsla(45, 93%, 58%, 0.05)
+    );
+    color: var(--primary);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.35s ease;
+    backdrop-filter: blur(10px);
+}
+
+.view-3d-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--gradient-yelloh);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    z-index: 0;
+}
+
+.view-3d-btn .btn-text {
+    position: relative;
+    z-index: 2;
+}
+
+.view-3d-btn .btn-glow {
+    position: absolute;
+    inset: -40%;
+    background: radial-gradient(
+        circle,
+        hsla(45, 93%, 58%, 0.35),
+        transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    z-index: 1;
+}
+
+.view-3d-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 10px 40px hsla(45, 93%, 58%, 0.25),
+        inset 0 0 0 1px hsla(45, 93%, 58%, 0.6);
+}
+
+.view-3d-btn:hover::before {
+    opacity: 0.15;
+}
+
+.view-3d-btn:hover .btn-glow {
+    opacity: 1;
+}
+
+.view-3d-btn:active {
+    transform: translateY(0);
+    box-shadow: 
+        0 6px 20px hsla(45, 93%, 58%, 0.2);
+}
+
+
 </style>
 <body>
     <!-- Scroll Progress Bar -->
@@ -2271,11 +2349,21 @@ h1, h2, h3, h4, h5, h6 {
                 <div class="route-content" data-animate="fade-right">
                     <div class="app-badge">
                         <div class="app-badge-icon">
+                            
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="3 11 22 2 13 21 11 13 3 11"/>
                             </svg>
+                            </a>
                         </div>
                         <span>YUS ROUTE</span>
+                        <a href="/yus/yus_route" class="view-3d-link">
+                                <button class="view-3d-btn">
+                                    <span class="btn-text">View in 3D</span>
+                                    <span class="btn-glow"></span>
+                                </button>
+                        </a>
+
+                        
                     </div>
                     <h2 class="feature-title">
                         Routes defined by<br>
@@ -2460,6 +2548,12 @@ h1, h2, h3, h4, h5, h6 {
                             </svg>
                         </div>
                         <span>YUS DRIVER</span>
+                        <a href="#" class="view-3d-link">
+                                <button class="view-3d-btn">
+                                    <span class="btn-text">View in 3D</span>
+                                    <span class="btn-glow"></span>
+                                </button>
+                        </a>
                     </div>
                     <h2 class="feature-title">
                         Real-time<br>
@@ -2869,6 +2963,37 @@ h1, h2, h3, h4, h5, h6 {
     </section>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <!-- Final Section -->
     <section class="section final-section" id="final">
         <div class="ambient-glow large"></div>
@@ -2903,6 +3028,7 @@ h1, h2, h3, h4, h5, h6 {
             </p>
             <div class="tech-badges">
                 <span class="tech-badge">Real-time</span>
+                <span class="tech-badge">WebSocket</span>
                 <span class="tech-badge">GPS</span>
                 <span class="tech-badge">Scalable</span>
                 <span class="tech-badge">Secure</span>
@@ -2943,7 +3069,7 @@ h1, h2, h3, h4, h5, h6 {
                 <!-- Developer 2 -->
                 <div class="developer-card">
                     <div class="developer-avatar">
-                        <img src="/admin-static/images/Developers/Mareeswari.jpeg" alt="Mareeswari">
+                        <img src="/admin-static/images/Developers/mareeswari.jpeg" alt="Mareeswari">
                     </div>
                     <div class="developer-details">
                         <p class="developer-name">Mareeswari</p>
@@ -2978,7 +3104,7 @@ h1, h2, h3, h4, h5, h6 {
                     </div>
                 </div>
 
-                <!-- Developer 4 -->
+                 <!-- Developer 4 -->
                 <div class="developer-card">
                     <div class="developer-avatar">
                          <img src="/admin-static/images/Developers/ramalingam.png" alt="Ramalingam">
@@ -2996,6 +3122,46 @@ h1, h2, h3, h4, h5, h6 {
                         </a>
                     </div>
                 </div>
+
+                <!-- Develope 5 -->
+                <!-- <div class="developer-card">
+                    <div class="developer-avatar">
+                         <img src="./ramalingam.png" alt="Ramalingam">
+                    </div>
+                    <div class="developer-details">
+                        <p class="developer-name">Dharshini</p>
+                        <p class="developer-role">Frontend Developer</p>
+                        <a href="https://www.linkedin.com/in/dharshini-g-520a50292/" target="_blank" rel="noopener" class="developer-linkedin-mini">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                                <rect width="4" height="12" x="2" y="9"/>
+                                <circle cx="4" cy="4" r="2"/>
+                            </svg>
+                            <span>LinkedIn</span>
+                        </a>
+                    </div>
+                </div> -->
+
+                 <!-- Developer 6 -->
+                <!-- <div class="developer-card">
+                    <div class="developer-avatar">
+                         <img src="./ramalingam.png" alt="Ramalingam">
+                    </div>
+                    <div class="developer-details">
+                        <p class="developer-name">Shivani Sri</p>
+                        <p class="developer-role">Frontend Developer</p>
+                        <a href="https://www.linkedin.com/in/shivani-g-520a50292/" target="_blank" rel="noopener" class="developer-linkedin-mini">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                                <rect width="4" height="12" x="2" y="9"/>
+                                <circle cx="4" cy="4" r="2"/>
+                            </svg>
+                            <span>LinkedIn</span>
+                        </a>
+                    </div>
+                </div> -->
+
+                
             </div>
         </div>
 

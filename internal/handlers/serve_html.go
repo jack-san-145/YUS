@@ -100,3 +100,12 @@ func ServePortfolio(w http.ResponseWriter, r *http.Request) {
 	}
 	templ.Execute(w, nil)
 }
+
+func ServeYusRoute(w http.ResponseWriter, r *http.Request) {
+	templ, err := template.ParseFiles("../../ui/Yus-Portfolio/yus_route.html")
+	if err != nil {
+		log.Println("yus_route.html not found - ", err)
+		return
+	}
+	templ.Execute(w, nil)
+}

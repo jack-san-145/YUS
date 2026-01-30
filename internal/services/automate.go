@@ -2,12 +2,10 @@ package services
 
 import (
 	"context"
+	"github.com/robfig/cron/v3"
 	"log"
 	"time"
-
 	"yus/internal/AppPkg"
-
-	"github.com/robfig/cron/v3"
 )
 
 func AutomateRouteScheduling(app *AppPkg.Application) {
@@ -18,7 +16,6 @@ func AutomateRouteScheduling(app *AppPkg.Application) {
 
 	//for 12 AM
 	c.AddFunc("0 0 0 * * *", func() {
-
 		app.Store.DB.ChangeRouteDirection(context.Background(), "UP")
 		current_route, _ := app.Store.DB.GetCurrentBusRoutes(context.Background())
 		app.Store.InMemoryDB.CacheBusRoute(context.Background(), current_route) //cache current routes in redis
@@ -36,4 +33,3 @@ func AutomateRouteScheduling(app *AppPkg.Application) {
 
 	select {} //it blocks the go routiune and run forever
 }
-

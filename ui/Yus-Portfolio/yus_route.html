@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YUS ROUTE</title>
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0A0A0A;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #animation-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .header {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 101;
+            pointer-events: none;
+        }
+        
+        .title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(to right, #FFD700, #FFA000);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            z-index: 101;
+        }
+        
+        .control-btn {
+            background: rgba(255, 215, 0, 0.15);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            pointer-events: all;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.2);
+        }
+        
+        .control-btn:active {
+            transform: translateY(0);
+        }
+        
+        .control-btn.active {
+            background: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            transform: scale(1.05);
+        }
+        
+        .info-panel {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(10, 10, 10, 0.85);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 16px;
+            padding: 25px;
+            width: 350px;
+            backdrop-filter: blur(15px);
+            pointer-events: all;
+            z-index: 101;
+            transform: translateX(0);
+            transition: transform 0.5s ease;
+        }
+        
+        .info-panel.hidden {
+            transform: translateX(400px);
+        }
+        
+        .info-title {
+            color: #FFD700;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-title i {
+            font-size: 1.2rem;
+        }
+        
+        .info-content {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .step.active {
+            background: #FFD700;
+            color: #000;
+            transform: scale(1.2);
+        }
+        
+        .step.completed {
+            background: rgba(255, 215, 0, 0.3);
+            color: #FFD700;
+        }
+        
+        .step-line {
+            flex-grow: 1;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 10px;
+        }
+        
+        .gps-data {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .gps-title {
+            color: #FFD700;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .gps-values {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .gps-value {
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .gps-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 3px;
+        }
+        
+        .toggle-info {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(10, 10, 10, 0.85);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #FFD700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            pointer-events: all;
+            z-index: 102;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-info:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: rotate(90deg);
+        }
+        
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 101;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #FFD700, #FFA000);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .notification {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 10, 10, 0.9);
+            border: 1px solid #FFD700;
+            border-radius: 12px;
+            padding: 15px 25px;
+            backdrop-filter: blur(10px);
+            pointer-events: all;
+            z-index: 101;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+        }
+        
+        .notification-icon {
+            color: #FFD700;
+            font-size: 1.2rem;
+        }
+        
+        .notification-text {
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .mobile-device {
+            position: absolute;
+            bottom: 200px;
+            left: 50px;
+            width: 220px;
+            height: 450px;
+            background: #111;
+            border-radius: 30px;
+            border: 10px solid #222;
+            z-index: 50;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            transform: perspective(1000px) rotateY(-15deg) rotateX(5deg);
+        }
+        
+        .mobile-screen {
+            width: 100%;
+            height: 100%;
+            background: #0A0A0A;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mobile-header {
+            height: 60px;
+            background: rgba(255, 215, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .mobile-title {
+            color: #FFD700;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .mobile-map {
+            width: 100%;
+            height: calc(100% - 120px);
+            background: #0A0A0A;
+            position: relative;
+        }
+        
+        .mobile-map-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 215, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .mobile-footer {
+            height: 60px;
+            background: rgba(255, 215, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .mobile-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #FFD700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .camera-controls {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 101;
+        }
+        
+        .camera-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(10, 10, 10, 0.85);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #FFD700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            pointer-events: all;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .camera-btn:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: scale(1.1);
+        }
+        
+        .camera-btn.active {
+            background: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        @media (max-width: 1024px) {
+            .info-panel {
+                width: 300px;
+            }
+            
+            .mobile-device {
+                transform: perspective(800px) rotateY(-15deg) rotateX(5deg) scale(0.8);
+                left: 20px;
+                bottom: 150px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+                padding: 0 20px;
+            }
+            
+            .info-panel {
+                display: none;
+            }
+            
+            .toggle-info {
+                display: none;
+            }
+            
+            .mobile-device {
+                display: none;
+            }
+            
+            .camera-controls {
+                display: none;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+                padding: 0 20px;
+            }
+            
+            .control-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+    </style>
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div id="animation-container"></div>
+        
+        <div class="ui-overlay">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            
+            <div class="header">
+                <h1 class="title">YUS ROUTE</h1>
+                <p class="subtitle">GPS-based route creation for campus transportation. Administrators travel actual routes and mark stops using real-time location data.</p>
+            </div>
+            
+            <div class="toggle-info" id="toggle-info">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            
+            <div class="info-panel" id="info-panel">
+                <div class="info-title">
+                    <i class="fas fa-route"></i>
+                    Route Creation Process
+                </div>
+                
+                <div class="info-content">
+                    The administrator physically travels the bus route while the YUS Route app records GPS coordinates at each stop. This ensures 100% accurate route mapping.
+                </div>
+                
+                <div class="step-indicator">
+                    <div class="step completed">1</div>
+                    <div class="step-line"></div>
+                    <div class="step completed">2</div>
+                    <div class="step-line"></div>
+                    <div class="step active">3</div>
+                    <div class="step-line"></div>
+                    <div class="step">4</div>
+                </div>
+                
+                <div class="gps-data">
+                    <div class="gps-title">
+                        <i class="fas fa-satellite"></i>
+                        LIVE GPS DATA
+                    </div>
+                    <div class="gps-values">
+                        <div>
+                            <div class="gps-label">Latitude</div>
+                            <div class="gps-value" id="latitude">12.9716° N</div>
+                        </div>
+                        <div>
+                            <div class="gps-label">Longitude</div>
+                            <div class="gps-value" id="longitude">77.5946° E</div>
+                        </div>
+                        <div>
+                            <div class="gps-label">Accuracy</div>
+                            <div class="gps-value" id="accuracy">5.2 meters</div>
+                        </div>
+                        <div>
+                            <div class="gps-label">Stops Marked</div>
+                            <div class="gps-value" id="stops-count">3/8</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="camera-controls">
+                <button class="camera-btn" id="reset-camera-btn" title="Reset Camera">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
+                <button class="camera-btn" id="follow-bus-btn" title="Follow Bus">
+                    <i class="fas fa-bus"></i>
+                </button>
+                <button class="camera-btn" id="top-view-btn" title="Top View">
+                    <i class="fas fa-satellite"></i>
+                </button>
+            </div>
+            
+            <div class="mobile-device">
+                <div class="mobile-screen">
+                    <div class="mobile-header">
+                        <div class="mobile-title">YUS ROUTE</div>
+                    </div>
+                    <div class="mobile-map">
+                        <div class="mobile-map-grid"></div>
+                        <div class="mobile-route" id="mobile-route"></div>
+                    </div>
+                    <div class="mobile-footer">
+                        <div class="mobile-button" id="mobile-mark-btn">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="notification" id="notification">
+                <div class="notification-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="notification-text">
+                    Stop #4 marked successfully at Chemistry Building
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="control-btn" id="start-btn">
+                    <i class="fas fa-play"></i>
+                    Start Route Creation
+                </button>
+                <button class="control-btn" id="mark-btn">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Mark Current Stop
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Main variables
+        let scene, camera, renderer, controls;
+        let routePoints = [];
+        let stopMarkers = [];
+        let adminMarker = null;
+        let isAnimating = false;
+        let isFollowingBus = false;
+        let animationStep = 0;
+        let clock = new THREE.Clock();
+        let routeLine = null;
+        let originalCameraPosition = null;
+        let autoRotateAnimation = null;
+        let hasCompletedInitialRotation = false;
+        
+        // Constants for positioning - ROAD IS NOW AT Y=2.0 (HIGHER POSITION)
+        const ROAD_Y_POSITION = 2.0; // Road is at y=2.0 (higher above ground)
+        const GROUND_Y_POSITION = 0; // Ground is at y=0
+        const MINIMUM_HEIGHT_ABOVE_ROAD = 0.1; // Minimum height above road for any object
+        const BUS_HEIGHT = 2.5; // Bus height
+        const MARKER_BASE_HEIGHT = 0.3; // Marker base height
+        const MARKER_TOTAL_HEIGHT = 1.2; // Total marker height
+        
+        // Initialize Three.js scene
+        function init() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0A0A0A);
+            scene.fog = new THREE.Fog(0x0A0A0A, 10, 100);
+            
+            // Create camera - Start from side view (like in the image)
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(40, 20, 0); // Side view position
+            camera.lookAt(0, 10, 0);
+            
+            originalCameraPosition = camera.position.clone();
+            
+            // Create renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('animation-container').appendChild(renderer.domElement);
+            
+            // Add orbit controls for manual rotation
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 10;
+            controls.maxDistance = 150;
+            controls.maxPolarAngle = Math.PI;
+            controls.minPolarAngle = 0;
+            controls.enablePan = true;
+            controls.screenSpacePanning = true;
+            controls.autoRotate = false;
+            
+            // Smoother zoom
+            controls.enableZoom = true;
+            controls.zoomSpeed = 0.5; // Reduced zoom speed for smoother control
+            
+            // Set minimum camera height to prevent going under road
+            controls.minPolarAngle = 0.1; // Prevent camera from going below horizon
+            controls.maxPolarAngle = Math.PI - 0.1; // Prevent camera from going straight up
+            
+            // Add lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xFFD700, 1);
+            directionalLight.position.set(10, 30, 5);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+            
+            const hemisphereLight = new THREE.HemisphereLight(0x87CEEB, 0x2E8B57, 0.3);
+            scene.add(hemisphereLight);
+            
+            // Add ground
+            const groundGeometry = new THREE.PlaneGeometry(120, 120, 30, 30);
+            const groundMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x111111,
+                side: THREE.DoubleSide,
+                roughness: 0.8,
+                metalness: 0.1
+            });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = Math.PI / 2;
+            ground.position.y = GROUND_Y_POSITION; // Ground at y=0
+            ground.receiveShadow = true;
+            scene.add(ground);
+            
+            // Add grid helper - Position it at ground level
+            const gridHelper = new THREE.GridHelper(120, 30, 0x333333, 0x222222);
+            gridHelper.position.y = GROUND_Y_POSITION + 0.01; // Slightly above ground
+            scene.add(gridHelper);
+            
+            // Create campus buildings
+            createCampusBuildings();
+            
+            // Create admin marker (bus)
+            // createAdminMarker();
+            
+            // Create route visualization
+            createRouteVisualization();
+            
+            // Create road and pathways - Road is above ground
+            createRoadAndPathways();
+            
+            // Add decorative elements
+            addDecorativeElements();
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+            
+            // Start initial 360 auto-rotation (one time only)
+            startInitialAutoRotate();
+            
+            // Start animation loop
+            animate();
+            
+            // Initialize UI events
+            initUI();
+        }
+        
+        // Start initial 360 degree auto-rotation (one time only)
+        function startInitialAutoRotate() {
+            if (autoRotateAnimation) {
+                autoRotateAnimation.kill();
+            }
+            
+            // Store original position for reference
+            const startPos = camera.position.clone();
+            const startTarget = new THREE.Vector3(0, 10, 0);
+            
+            // Create a smooth 360 degree rotation
+            let rotationProgress = 0;
+            const rotationDuration = 5; // 5 seconds for full rotation
+            const radius = 40;
+            
+            autoRotateAnimation = gsap.to({}, {
+                duration: rotationDuration,
+                ease: "sine.inOut",
+                repeat: 0,
+                onUpdate: function() {
+                    rotationProgress = this.progress();
+                    
+                    // Calculate circular motion
+                    const angle = rotationProgress * Math.PI * 2;
+                    
+                    // Maintain side view style but rotate around
+                    camera.position.x = Math.cos(angle) * radius;
+                    camera.position.z = Math.sin(angle) * radius;
+                    camera.position.y = 20; // Maintain height
+                    
+                    camera.lookAt(startTarget);
+                    controls.target.copy(startTarget);
+                },
+                onComplete: function() {
+                    // After auto-rotation, return to side view
+                    returnToSideView();
+                    hasCompletedInitialRotation = true;
+                    showNotification("Campus view ready. You can now manually control the camera.");
+                }
+            });
+        }
+        
+        // Return to side view (like in the image)
+        function returnToSideView() {
+            gsap.to(camera.position, {
+                x: 40,
+                y: 20,
+                z: 0,
+                duration: 1,
+                ease: "power2.inOut",
+                onUpdate: function() {
+                    camera.lookAt(0, 10, 0);
+                    controls.target.set(0, 10, 0);
+                }
+            });
+        }
+        
+        // Create road and pathways - Road is positioned above ground
+        function createRoadAndPathways() {
+            // Main road - straight path through campus
+            const roadGeometry = new THREE.PlaneGeometry(80, 10);
+            const roadMaterial = new THREE.MeshStandardMaterial({ 
+                color: "black",
+                side: THREE.DoubleSide,
+                roughness: 0.9,
+                metalness: 0.1
+            });
+            const road = new THREE.Mesh(roadGeometry, roadMaterial);
+            road.position.y = ROAD_Y_POSITION; // Road is at y=2.0 (above ground)
+            road.rotation.x = Math.PI / 2;
+            road.receiveShadow = true;
+            scene.add(road);
+            
+            // Road markings - Position above road
+            const markingsGeometry = new THREE.PlaneGeometry(2, 0.3);
+            const markingsMaterial = new THREE.MeshBasicMaterial({ 
+                color: "white",
+                side: THREE.DoubleSide
+            });
+            
+            for (let i = -40; i <= 40; i += 6) {
+                const marking = new THREE.Mesh(markingsGeometry, markingsMaterial);
+                marking.position.set(i, ROAD_Y_POSITION + 0.01, 0); // Slightly above road
+                marking.rotation.x = Math.PI / 2;
+                scene.add(marking);
+            }
+        }
+        
+        // Create campus buildings
+        function createCampusBuildings() {
+            const buildingColors = [0x2C3E50, 0x34495E, 0x1A5276, 0x21618C, 0x1B4F72];
+            
+            // Building positions - arranged on both sides of the road
+            const buildingPositions = [
+                // Left side of road (positive z)
+                { x: -35, z: 15, width: 12, depth: 8, height: 18 },
+                { x: -20, z: 18, width: 10, depth: 10, height: 14 },
+                { x: -5, z: 15, width: 14, depth: 8, height: 16 },
+                { x: 15, z: 18, width: 12, depth: 10, height: 20 },
+                { x: 30, z: 15, width: 10, depth: 8, height: 15 },
+                
+                // Right side of road (negative z)
+                { x: -35, z: -15, width: 10, depth: 8, height: 16 },
+                { x: -20, z: -18, width: 12, depth: 10, height: 14 },
+                { x: -5, z: -15, width: 10, depth: 8, height: 18 },
+                { x: 15, z: -18, width: 14, depth: 10, height: 22 },
+                { x: 30, z: -15, width: 12, depth: 8, height: 16 }
+            ];
+            
+            buildingPositions.forEach((pos, i) => {
+                // Create building
+                const geometry = new THREE.BoxGeometry(pos.width, pos.height, pos.depth);
+                const material = new THREE.MeshStandardMaterial({ 
+                    color: buildingColors[i % buildingColors.length],
+                    metalness: 0.4,
+                    roughness: 0.6
+                });
+                const building = new THREE.Mesh(geometry, material);
+                // Building base starts at ground level
+                building.position.set(pos.x, GROUND_Y_POSITION + pos.height / 2, pos.z);
+                building.castShadow = true;
+                building.receiveShadow = true;
+                scene.add(building);
+                
+                // Add windows to building
+                const windowRows = Math.floor(pos.height / 4);
+                const windowCols = Math.floor(pos.width / 3);
+                
+                for (let row = 0; row < windowRows; row++) {
+                    for (let col = 0; col < windowCols; col++) {
+                        const windowGeometry = new THREE.BoxGeometry(1, 1.5, 0.1);
+                        const windowMaterial = new THREE.MeshBasicMaterial({ 
+                            color: 0x88CCFF,
+                            transparent: true,
+                            opacity: 0.7
+                        });
+                        
+                        const xPos = pos.x - pos.width/2 + (col + 0.5) * (pos.width / windowCols);
+                        const yPos = GROUND_Y_POSITION + row * 4 + 3;
+                        const zOffset = pos.z > 0 ? -pos.depth/2 - 0.05 : pos.depth/2 + 0.05;
+                        
+                        const window = new THREE.Mesh(windowGeometry, windowMaterial);
+                        window.position.set(xPos, yPos, pos.z + zOffset);
+                        scene.add(window);
+                    }
+                }
+            });
+            
+            // Add trees
+            for (let i = 0; i < 30; i++) {
+                const treeGeometry = new THREE.ConeGeometry(1.5, 4, 8);
+                const treeMaterial = new THREE.MeshStandardMaterial({ color: 0x2E7D32 });
+                const tree = new THREE.Mesh(treeGeometry, treeMaterial);
+                
+                const side = Math.random() > 0.5 ? 1 : -1;
+                const x = -45 + (Math.random() * 90);
+                const z = side * (20 + Math.random() * 10);
+                
+                tree.position.set(x, GROUND_Y_POSITION + 2, z); // Tree base at ground level
+                tree.castShadow = true;
+                scene.add(tree);
+            }
+        }
+        
+        // Add decorative elements
+        function addDecorativeElements() {
+            // Add lamp posts
+            for (let i = -40; i <= 40; i += 10) {
+                createLampPost(i, 8);
+                createLampPost(i, -8);
+            }
+        }
+        
+        // Create lamp post
+        function createLampPost(x, z) {
+            // Lamp post pole
+            const poleGeometry = new THREE.CylinderGeometry(0.2, 0.3, 8, 8);
+            const poleMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x444444,
+                metalness: 0.7,
+                roughness: 0.3
+            });
+            const pole = new THREE.Mesh(poleGeometry, poleMaterial);
+            pole.position.set(x, GROUND_Y_POSITION + 4, z); // Pole base at ground level
+            pole.castShadow = true;
+            scene.add(pole);
+            
+            // Lamp housing
+            const lampGeometry = new THREE.SphereGeometry(0.8, 16, 16);
+            const lampMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xFFD700,
+                emissive: 0xFFA500,
+                emissiveIntensity: 0.5
+            });
+            const lamp = new THREE.Mesh(lampGeometry, lampMaterial);
+            lamp.position.set(x, GROUND_Y_POSITION + 8, z); // Lamp at top of pole
+            scene.add(lamp);
+        }
+        
+        // Create admin marker (bus) - Bus positioned above road
+        // function createAdminMarker() {
+        //     // Bus body
+        //     const busGeometry = new THREE.BoxGeometry(4, BUS_HEIGHT, 8);
+        //     const busMaterial = new THREE.MeshStandardMaterial({ 
+        //         color: 0xFFD700,
+        //         metalness: 0.6,
+        //         roughness: 0.4,
+        //         emissive: 0x333300,
+        //         emissiveIntensity: 0.3
+        //     });
+        //     const bus = new THREE.Mesh(busGeometry, busMaterial);
+        //     bus.castShadow = true;
+            
+        //     // Bus windows
+        //     const windowGeometry = new THREE.BoxGeometry(3.8, 1.2, 7.8);
+        //     const windowMaterial = new THREE.MeshPhysicalMaterial({
+        //         color: 0x88CCFF,
+        //         transparent: true,
+        //         opacity: 0.8,
+        //         roughness: 0.1,
+        //         metalness: 0.9
+        //     });
+        //     const windows = new THREE.Mesh(windowGeometry, windowMaterial);
+        //     windows.position.y = 1.2;
+            
+        //     // Wheels
+        //     const wheelGeometry = new THREE.CylinderGeometry(0.5, 0.5, 0.4, 16);
+        //     const wheelMaterial = new THREE.MeshStandardMaterial({ 
+        //         color: 0x222222,
+        //         metalness: 0.8,
+        //         roughness: 0.2
+        //     });
+            
+        //     const wheelPositions = [
+        //         { x: -1.5, z: 3 },
+        //         { x: 1.5, z: 3 },
+        //         { x: -1.5, z: -3 },
+        //         { x: 1.5, z: -3 }
+        //     ];
+            
+        //     const busGroup = new THREE.Group();
+            
+        //     wheelPositions.forEach(pos => {
+        //         const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+        //         wheel.rotation.z = Math.PI / 2;
+        //         wheel.position.set(pos.x, -BUS_HEIGHT/2 + 0.2, pos.z); // Wheels at bottom of bus
+        //         wheel.castShadow = true;
+        //         busGroup.add(wheel);
+        //     });
+            
+        //     busGroup.add(bus);
+        //     busGroup.add(windows);
+        //     busGroup.position.y = ROAD_Y_POSITION + BUS_HEIGHT/2; // Bus bottom at road level
+            
+        //     // Add YUS logo
+        //     const logoGeometry = new THREE.PlaneGeometry(2, 0.8);
+        //     const logoMaterial = new THREE.MeshBasicMaterial({ 
+        //         color: 0x000000,
+        //         side: THREE.DoubleSide
+        //     });
+        //     const logo = new THREE.Mesh(logoGeometry, logoMaterial);
+        //     logo.position.set(0, 0.5, 4.1);
+        //     logo.rotation.y = Math.PI;
+        //     busGroup.add(logo);
+            
+        //     // Add GPS signal
+        //     const gpsSignalGeometry = new THREE.SphereGeometry(0.4, 16, 16);
+        //     const gpsSignalMaterial = new THREE.MeshBasicMaterial({ 
+        //         color: 0x00FF00,
+        //         transparent: true,
+        //         opacity: 0.9
+        //     });
+        //     const gpsSignal = new THREE.Mesh(gpsSignalGeometry, gpsSignalMaterial);
+        //     gpsSignal.position.set(0, BUS_HEIGHT/2 + 0.5, 0); // Above bus
+        //     busGroup.add(gpsSignal);
+            
+        //     adminMarker = busGroup;
+            
+        //     // Start bus at beginning of road
+        //     adminMarker.position.set(-45, ROAD_Y_POSITION + BUS_HEIGHT/2, 0);
+        //     scene.add(adminMarker);
+            
+        //     // Store wheel references
+        //     adminMarker.userData.wheels = busGroup.children.filter(child => 
+        //         child.geometry === wheelGeometry
+        //     );
+            
+        //     // GPS signal animation
+        //     gsap.to(gpsSignal.scale, {
+        //         x: 1.5,
+        //         y: 1.5,
+        //         z: 1.5,
+        //         duration: 1.5,
+        //         repeat: -1,
+        //         yoyo: true,
+        //         ease: "power2.inOut"
+        //     });
+            
+        //     gsap.to(gpsSignal.material, {
+        //         opacity: 0.3,
+        //         duration: 1.5,
+        //         repeat: -1,
+        //         yoyo: true,
+        //         ease: "power2.inOut"
+        //     });
+        // } 
+        
+        // Create route visualization
+        function createRouteVisualization() {
+            // Create a straight path for the route along the road
+            const curve = new THREE.CatmullRomCurve3([
+                new THREE.Vector3(-45, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(-40, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(-35, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(-30, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(-25, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(-20, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(-15, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(-10, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(-5, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(0, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(5, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(10, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(15, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(20, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(25, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(30, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(35, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(40, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0),
+                new THREE.Vector3(45, ROAD_Y_POSITION + MINIMUM_HEIGHT_ABOVE_ROAD, 0)
+            ]);
+            
+            // Store curve for animation
+            scene.userData.routeCurve = curve;
+            
+            // Create route line
+            const points = curve.getPoints(200);
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            
+            const material = new THREE.LineBasicMaterial({
+                color: 0xFFD700,
+                transparent: true,
+                opacity: 0,
+                linewidth: 4
+            });
+            
+            routeLine = new THREE.Line(geometry, material);
+            scene.add(routeLine);
+        }
+        
+        // Start route creation animation
+        function startRouteAnimation() {
+            if (isAnimating) return;
+            
+            isAnimating = true;
+            animationStep = 0;
+            routePoints = [];
+            stopMarkers = [];
+            
+            // Clear previous stop markers
+            stopMarkers.forEach(marker => {
+                if (marker && marker.marker) scene.remove(marker.marker);
+                if (marker && marker.sprite) scene.remove(marker.sprite);
+            });
+            
+            // Reset route line opacity
+            routeLine.material.opacity = 0;
+            
+            // Start animation sequence
+            animateRouteCreation();
+            
+            // Update UI
+            document.getElementById('start-btn').innerHTML = '<i class="fas fa-pause"></i> Pause Animation';
+            document.getElementById('start-btn').classList.add('active');
+            document.getElementById('progress-fill').style.width = '0%';
+            
+            showNotification("Route creation started. The admin bus is traveling the route...");
+        }
+        
+        // Animate route creation process
+        function animateRouteCreation() {
+            if (!isAnimating) return;
+            
+            const curve = scene.userData.routeCurve;
+            const totalPoints = 200;
+            
+            // Animate admin marker along the curve
+            const t = (animationStep % totalPoints) / totalPoints;
+            const point = curve.getPoint(t);
+            
+            if (adminMarker) {
+                // Move admin marker - Ensure bus stays above road
+                const targetY = ROAD_Y_POSITION + BUS_HEIGHT/2;
+                
+                gsap.to(adminMarker.position, {
+                    x: point.x,
+                    z: point.z,
+                    y: targetY, // Force y position to stay above road
+                    duration: 0.3,
+                    ease: "power1.out"
+                });
+                
+                // Keep bus facing forward
+                if (adminMarker.position.x < point.x) {
+                    gsap.to(adminMarker.rotation, {
+                        y: 0,
+                        duration: 0.2,
+                        ease: "power1.out"
+                    });
+                }
+                
+                // Animate wheels
+                if (adminMarker.userData.wheels) {
+                    adminMarker.userData.wheels.forEach(wheel => {
+                        wheel.rotation.x -= 0.2;
+                    });
+                }
+                
+                // Update GPS data display
+                updateGPSData(point.x, point.z);
+                
+                // Gradually reveal route line
+                if (animationStep <= totalPoints) {
+                    const progress = animationStep / totalPoints;
+                    routeLine.material.opacity = progress * 0.8;
+                    document.getElementById('progress-fill').style.width = `${progress * 100}%`;
+                }
+                
+                // Mark stops at specific points
+                const stopPoints = [0.1, 0.25, 0.4, 0.55, 0.7, 0.85, 0.95];
+                stopPoints.forEach((stopT, index) => {
+                    if (Math.abs(t - stopT) < 0.01 && !stopMarkers[index]) {
+                        markStop(point, index + 1);
+                    }
+                });
+                
+                // Follow bus if enabled
+                if (isFollowingBus) {
+                    controls.target.copy(adminMarker.position);
+                    camera.position.x = adminMarker.position.x;
+                    camera.position.z = adminMarker.position.z + 15;
+                    camera.position.y = ROAD_Y_POSITION + 10; // Keep camera above road
+                    camera.lookAt(adminMarker.position);
+                }
+                
+                animationStep++;
+                
+                // Continue animation
+                if (animationStep <= totalPoints * 1.5) {
+                    setTimeout(animateRouteCreation, 30);
+                } else {
+                    // Animation complete
+                    isAnimating = false;
+                    document.getElementById('start-btn').innerHTML = '<i class="fas fa-play"></i> Start Route Creation';
+                    document.getElementById('start-btn').classList.remove('active');
+                    showNotification("Route creation completed! All stops have been marked.");
+                    
+                    // Pulse the completed route
+                    gsap.to(routeLine.material, {
+                        opacity: 0.9,
+                        duration: 0.8,
+                        repeat: 3,
+                        yoyo: true,
+                        ease: "power1.inOut"
+                    });
+                }
+            }
+        }
+        
+        // Mark a stop at current location - Positioned above road
+        function markStop(position, stopNumber) {
+            // Create small yellow location symbol (pin shape)
+            const locationPinGroup = new THREE.Group();
+            
+            // Pin base (small cylinder - YELLOW color)
+            const pinBaseGeometry = new THREE.CylinderGeometry(0.1, 0.15, MARKER_BASE_HEIGHT, 8);
+            const pinBaseMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xFFD700, // YELLOW
+                emissive: 0x996600,
+                emissiveIntensity: 0.4,
+                metalness: 0.3,
+                roughness: 0.4
+            });
+            const pinBase = new THREE.Mesh(pinBaseGeometry, pinBaseMaterial);
+            pinBase.position.y = MARKER_BASE_HEIGHT/2; // Center the cylinder
+            pinBase.castShadow = true;
+            locationPinGroup.add(pinBase);
+            
+            // Pin head (small sphere - YELLOW color)
+            const pinHeadGeometry = new THREE.SphereGeometry(0.25, 12, 12);
+            const pinHeadMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xFFD700, // Bright yellow/orange
+                emissive: 0x996600,
+                emissiveIntensity: 0.6,
+                metalness: 0.4,
+                roughness: 0.3
+            });
+            const pinHead = new THREE.Mesh(pinHeadGeometry, pinHeadMaterial);
+            pinHead.position.y = MARKER_BASE_HEIGHT + 0.25; // On top of base
+            pinHead.castShadow = true;
+            locationPinGroup.add(pinHead);
+            
+            // Position the entire location symbol - Base at road level
+            locationPinGroup.position.set(position.x, ROAD_Y_POSITION, position.z);
+            scene.add(locationPinGroup);
+            
+            // Create stop label (small number)
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 64; // Smaller canvas for smaller label
+            canvas.height = 64;
+            
+            context.fillStyle = 'rgba(0, 0, 0, 0)';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            
+            context.font = 'bold 24px Arial'; // Smaller font
+            context.fillStyle = '#FFD700'; // Yellow text
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(stopNumber, canvas.width / 2, canvas.height / 2);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ 
+                map: texture,
+                transparent: true,
+                color: 0xFFFFFF
+            });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.position.set(position.x, ROAD_Y_POSITION + MARKER_TOTAL_HEIGHT + 0.5, position.z); // Above marker
+            sprite.scale.set(2, 2, 1); // Smaller sprite
+            scene.add(sprite);
+            
+            // Update stops count
+            document.getElementById('stops-count').textContent = `${stopNumber}/7`;
+            
+            // Show notification
+            const stopNames = ["Main Gate", "Science Block", "Library", "Chemistry Building", 
+                              "Auditorium", "Engineering Block", "Admin Block"];
+            const stopIndex = Math.min(stopNumber - 1, stopNames.length - 1);
+            showNotification(`Stop #${stopNumber} marked successfully at ${stopNames[stopIndex]}`);
+            
+            // Animate the location symbol
+            gsap.from(locationPinGroup.scale, {
+                x: 0,
+                y: 0,
+                z: 0,
+                duration: 0.8,
+                ease: "elastic.out(1.2, 0.5)"
+            });
+            
+            // Pulsing glow effect for the pin head
+            gsap.to(pinHead.material, {
+                emissiveIntensity: 1.0,
+                duration: 0.6,
+                repeat: 3,
+                yoyo: true,
+                ease: "power1.inOut"
+            });
+            
+            // Store stop objects
+            stopMarkers[stopNumber - 1] = { marker: locationPinGroup, sprite };
+            
+            // Also animate on mobile device
+            animateMobileStop(stopNumber);
+        }
+        
+        // Animate stop on mobile device
+        function animateMobileStop(stopNumber) {
+            const mobileRoute = document.getElementById('mobile-route');
+            const stopElement = document.createElement('div');
+            stopElement.className = 'mobile-stop';
+            stopElement.style.cssText = `
+                position: absolute;
+                width: 12px; /* Smaller */
+                height: 12px; /* Smaller */
+                background: #FFD700; /* Yellow */
+                border-radius: 50%;
+                border: 2px solid #FFA000; /* Yellow border */
+                left: ${10 + stopNumber * 12}%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                box-shadow: 0 0 10px #FFD700; /* Yellow glow */
+            `;
+            mobileRoute.appendChild(stopElement);
+            
+            // Animate the stop marker
+            gsap.from(stopElement, {
+                scale: 0,
+                duration: 0.6,
+                ease: "elastic.out(1.2, 0.5)"
+            });
+            
+            // Also animate the mobile button
+            const mobileBtn = document.getElementById('mobile-mark-btn');
+            gsap.to(mobileBtn, {
+                scale: 1.4,
+                duration: 0.2,
+                yoyo: true,
+                repeat: 2,
+                ease: "power1.inOut"
+            });
+        }
+        
+        // Update GPS data display
+        function updateGPSData(x, z) {
+            // Convert x,z to latitude/longitude-like values
+            const lat = 12.9716 + (x / 1000);
+            const lng = 77.5946 + (z / 1000);
+            const accuracy = (4 + Math.random() * 2).toFixed(1);
+            
+            document.getElementById('latitude').textContent = `${lat.toFixed(4)}° N`;
+            document.getElementById('longitude').textContent = `${lng.toFixed(4)}° E`;
+            document.getElementById('accuracy').textContent = `${accuracy} meters`;
+        }
+        
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.querySelector('.notification-text');
+            
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Reset camera to side view
+        function resetCamera() {
+            isFollowingBus = false;
+            document.getElementById('follow-bus-btn').classList.remove('active');
+            
+            returnToSideView();
+            showNotification("Camera reset to side view.");
+        }
+        
+        // Toggle follow bus mode
+        function toggleFollowBus() {
+            isFollowingBus = !isFollowingBus;
+            const followBtn = document.getElementById('follow-bus-btn');
+            
+            if (isFollowingBus) {
+                followBtn.classList.add('active');
+                showNotification("Now following the bus. Camera will track its movement.");
+            } else {
+                followBtn.classList.remove('active');
+                showNotification("Stopped following the bus.");
+            }
+        }
+        
+        // Set top view
+        function setTopView() {
+            isFollowingBus = false;
+            document.getElementById('follow-bus-btn').classList.remove('active');
+            
+            gsap.to(camera.position, {
+                x: 0,
+                y: 60,
+                z: 0,
+                duration: 1.5,
+                ease: "power2.inOut",
+                onUpdate: function() {
+                    camera.lookAt(0, ROAD_Y_POSITION, 0);
+                    controls.target.set(0, ROAD_Y_POSITION, 0);
+                }
+            });
+            
+            showNotification("Top view activated.");
+        }
+        
+        // Initialize UI event handlers
+        function initUI() {
+            // Start button
+            document.getElementById('start-btn').addEventListener('click', function() {
+                if (!isAnimating) {
+                    startRouteAnimation();
+                } else {
+                    isAnimating = false;
+                    this.innerHTML = '<i class="fas fa-play"></i> Resume Animation';
+                    this.classList.remove('active');
+                    showNotification("Route creation paused.");
+                }
+            });
+            
+            // Mark stop button
+            document.getElementById('mark-btn').addEventListener('click', function() {
+                if (adminMarker && isAnimating) {
+                    const curve = scene.userData.routeCurve;
+                    const t = (animationStep % 200) / 200;
+                    const point = curve.getPoint(t);
+                    
+                    // Calculate which stop number this is
+                    const stopNumber = Math.floor(stopMarkers.length) + 1;
+                    
+                    if (stopNumber <= 7) {
+                        markStop(point, stopNumber);
+                    } else {
+                        showNotification("All 7 stops have already been marked.");
+                    }
+                } else {
+                    showNotification("Start route creation first to mark stops.");
+                }
+            });
+            
+            // Mobile mark button
+            document.getElementById('mobile-mark-btn').addEventListener('click', function() {
+                document.getElementById('mark-btn').click();
+            });
+            
+            // Toggle info panel
+            document.getElementById('toggle-info').addEventListener('click', function() {
+                const infoPanel = document.getElementById('info-panel');
+                infoPanel.classList.toggle('hidden');
+            });
+            
+            // Reset camera button
+            document.getElementById('reset-camera-btn').addEventListener('click', resetCamera);
+            
+            // Follow bus button
+            document.getElementById('follow-bus-btn').addEventListener('click', toggleFollowBus);
+            
+            // Top view button
+            document.getElementById('top-view-btn').addEventListener('click', setTopView);
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Spacebar for marking stops
+                if (e.code === 'Space' && isAnimating) {
+                    e.preventDefault();
+                    document.getElementById('mark-btn').click();
+                }
+                
+                // F key for follow bus
+                if (e.code === 'KeyF') {
+                    e.preventDefault();
+                    toggleFollowBus();
+                }
+                
+                // T key for top view
+                if (e.code === 'KeyT') {
+                    e.preventDefault();
+                    setTopView();
+                }
+                
+                // R key for reset camera
+                if (e.code === 'KeyR') {
+                    e.preventDefault();
+                    resetCamera();
+                }
+            });
+        }
+        
+        // Handle window resize
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const delta = clock.getDelta();
+            const time = clock.elapsedTime;
+            
+            // Update controls
+            controls.update();
+            
+            // Prevent camera from going below road level
+            if (camera.position.y < ROAD_Y_POSITION + 2) {
+                camera.position.y = ROAD_Y_POSITION + 2;
+            }
+            
+            // Prevent controls target from going too low
+            if (controls.target.y < ROAD_Y_POSITION) {
+                controls.target.y = ROAD_Y_POSITION;
+            }
+            
+            // Animate stop markers (location pins) - Bobbing animation above road
+            stopMarkers.forEach((stop, index) => {
+                if (stop && stop.marker) {
+                    // Gentle bobbing animation for location symbols
+                    const bobHeight = Math.sin(time * 2 + index) * 0.05; // Smaller bobbing
+                    stop.marker.position.y = ROAD_Y_POSITION + bobHeight;
+                    
+                    // Rotate the symbol slightly for visual interest
+                    stop.marker.rotation.y += delta * 0.5;
+                    
+                    // Gentle pulsing scale animation
+                    const pulseScale = 1 + Math.sin(time * 3 + index) * 0.05;
+                    stop.marker.scale.setScalar(pulseScale);
+                }
+            });
+            
+            // Render scene
+            renderer.render(scene, camera);
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

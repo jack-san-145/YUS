@@ -39,6 +39,7 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 	router.Get("/", handlers.Serve_logo_page)
 	router.Get("/yus/portfolio", handlers.ServePortfolio)
 	router.Get("/yus/privacy-policy", handlers.ServePrivacyPolicy)
+	router.Get("/yus/yus_route", handlers.ServeYusRoute)
 
 	router.Get("/yus_admin/index", handlers.Serve_index_page)
 	router.Get("/yus_admin/login", handlers.Serve_login_page)

@@ -164,7 +164,7 @@ func (p *PassengerConn) StartWriter(driverID int, m *MapPassengerStore) {
 func (m *MapPassengerStore) BroadcastLocation(driver_id int, current_location models.Location) {
 
 	passengers := m.GetPassengerConns(driver_id)
-	log.Printf("driver_id - %v sending location, users = %d\n", driver_id, len(passengers))
+	// log.Printf("driver_id - %v sending location, users = %d\n", driver_id, len(passengers))
 
 	for _, p := range passengers {
 		select {
