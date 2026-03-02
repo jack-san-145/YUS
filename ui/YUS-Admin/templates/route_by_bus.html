@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route by Bus - Yelloh Bus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header Section */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .header-left p {
+            color: #666;
+            font-size: 15px;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #f5b800;
+            color: #1a1a1a;
+        }
+
+        .btn-primary:hover {
+            background: #e0a600;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #e0e0e0;
+            color: #555;
+        }
+
+        .btn-outline:hover {
+            border-color: #f5b800;
+            background: #fff9e6;
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border: 1px solid #eaeaea;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .stat-value small {
+            font-size: 14px;
+            font-weight: 400;
+            color: #999;
+            margin-left: 8px;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid #eaeaea;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 2;
+            min-width: 280px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: #f5b800;
+        }
+
+        .filter-select {
+            flex: 1;
+            min-width: 160px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            background: white;
+        }
+
+        .filter-select:focus {
+            border-color: #f5b800;
+        }
+
+        /* Bus Cards */
+        .bus-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .bus-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #eaeaea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .bus-header {
+            background: white;
+            padding: 18px 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid #f5b800;
+            transition: background 0.2s;
+        }
+
+        .bus-header:hover {
+            background: #fafafa;
+        }
+
+        .bus-info {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .bus-number {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bus-number i {
+            color: #f5b800;
+            font-size: 22px;
+        }
+
+        .bus-badge {
+            background: #f0f0f0;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 14px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bus-badge.available {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .bus-badge.taken {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .bus-header i {
+            font-size: 20px;
+            color: #999;
+            transition: transform 0.3s;
+        }
+
+        .bus-card.expanded .bus-header i {
+            transform: rotate(180deg);
+        }
+
+        /* Routes Grid */
+        .routes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 16px;
+            padding: 20px 24px;
+            background: #f8f9fa;
+            border-top: 1px solid #eaeaea;
+        }
+
+        .route-item {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid #eaeaea;
+            transition: all 0.2s;
+        }
+
+        .route-item:hover {
+            border-color: #f5b800;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .route-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .route-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 15px;
+        }
+
+        .route-id {
+            font-size: 12px;
+            color: #999;
+            background: #f5f5f5;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .route-path {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .route-path span {
+            color: #555;
+        }
+
+        .route-path i {
+            color: #f5b800;
+            font-size: 12px;
+        }
+
+        .route-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-available {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-taken {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .direction-badge {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #f5b800;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+
+        .action-btn:hover {
+            background: #fff9e6;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #eaeaea;
+        }
+
+        .loading i {
+            font-size: 30px;
+            color: #f5b800;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #eaeaea;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .bus-info {
+                gap: 12px;
+            }
+
+            .routes-grid {
+                grid-template-columns: 1fr;
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .bus-header {
+                padding: 15px;
+            }
+
+            .bus-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Title and Actions -->
+        <div class="header-section">
+            <div class="header-left">
+                <h1>Routes by Bus</h1>
+                <p>View and manage routes assigned to each bus</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-outline" id="resetBtn">
+                    <i class="fas fa-times"></i> Reset
+                </button>
+                <button class="btn btn-primary" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> Refresh Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Row -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-box">
+                <div class="stat-label">
+                    <i class="fas fa-route" style="color: #f5b800;"></i> Total Routes
+                </div>
+                <div class="stat-value" id="totalRoutes">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">
+                    <i class="fas fa-bus" style="color: #f5b800;"></i> Total Buses
+                </div>
+                <div class="stat-value" id="totalBuses">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">
+                    <i class="fas fa-check-circle" style="color: #2e7d32;"></i> Available
+                </div>
+                <div class="stat-value" id="availableRoutes">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">
+                    <i class="fas fa-times-circle" style="color: #c62828;"></i> Taken
+                </div>
+                <div class="stat-value" id="takenRoutes">0</div>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search by route name, source or destination...">
+            </div>
+            <select class="filter-select" id="statusFilter">
+                <option value="all">All Routes</option>
+                <option value="available">Available Only</option>
+                <option value="taken">Taken Only</option>
+            </select>
+            <select class="filter-select" id="busFilter">
+                <option value="all">All Buses</option>
+            </select>
+        </div>
+
+        <!-- Bus List Container -->
+        <div id="busListContainer">
+            <div class="loading">
+                <i class="fas fa-circle-notch"></i>
+                <p>Loading bus routes...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://yus.kwscloud.in/yus/get-available-routes';
+        let allRoutes = [];
+        let busGroups = {};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchRoutes();
+            
+            document.getElementById('refreshBtn').addEventListener('click', fetchRoutes);
+            document.getElementById('resetBtn').addEventListener('click', resetFilters);
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+            document.getElementById('statusFilter').addEventListener('change', applyFilters);
+            document.getElementById('busFilter').addEventListener('change', applyFilters);
+        });
+
+        async function fetchRoutes() {
+            showLoading(true);
+            
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    allRoutes = data;
+                    processRoutes();
+                    updateStats();
+                    updateBusFilter();
+                    renderBusList();
+                } else {
+                    showEmpty('No routes data available');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showEmpty('Failed to load routes. Please try again.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function processRoutes() {
+            busGroups = {};
+            
+            allRoutes.forEach(route => {
+                const busId = route.bus_id;
+                if (busId) {
+                    if (!busGroups[busId]) {
+                        busGroups[busId] = [];
+                    }
+                    busGroups[busId].push(route);
+                }
+            });
+
+            // Sort routes within each bus
+            Object.keys(busGroups).forEach(busId => {
+                busGroups[busId].sort((a, b) => a.route_id - b.route_id);
+            });
+        }
+
+        function updateStats() {
+            const totalRoutes = allRoutes.length;
+            const totalBuses = Object.keys(busGroups).length;
+            const available = allRoutes.filter(r => r.available === true).length;
+            const taken = allRoutes.filter(r => r.available === false).length;
+
+            document.getElementById('totalRoutes').textContent = totalRoutes;
+            document.getElementById('totalBuses').textContent = totalBuses;
+            document.getElementById('availableRoutes').textContent = available;
+            document.getElementById('takenRoutes').textContent = taken;
+        }
+
+        function updateBusFilter() {
+            const select = document.getElementById('busFilter');
+            const currentValue = select.value;
+            
+            select.innerHTML = '<option value="all">All Buses</option>';
+            
+            Object.keys(busGroups)
+                .sort((a, b) => a - b)
+                .forEach(busId => {
+                    const option = document.createElement('option');
+                    option.value = busId;
+                    option.textContent = `Bus ${busId} (${busGroups[busId].length} routes)`;
+                    select.appendChild(option);
+                });
+
+            if (currentValue !== 'all' && busGroups[currentValue]) {
+                select.value = currentValue;
+            }
+        }
+
+        function renderBusList() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const busFilter = document.getElementById('busFilter').value;
+
+            let filteredBuses = Object.keys(busGroups).sort((a, b) => a - b);
+
+            // Apply bus filter
+            if (busFilter !== 'all') {
+                filteredBuses = filteredBuses.filter(busId => busId === busFilter);
+            }
+
+            let html = '<div class="bus-list">';
+            let hasResults = false;
+
+            filteredBuses.forEach(busId => {
+                let routes = [...busGroups[busId]];
+
+                // Apply status filter
+                if (statusFilter === 'available') {
+                    routes = routes.filter(r => r.available === true);
+                } else if (statusFilter === 'taken') {
+                    routes = routes.filter(r => r.available === false);
+                }
+
+                // Apply search filter
+                if (searchTerm) {
+                    routes = routes.filter(r => 
+                        r.route_name.toLowerCase().includes(searchTerm) ||
+                        (r.src && r.src.toLowerCase().includes(searchTerm)) ||
+                        (r.dest && r.dest.toLowerCase().includes(searchTerm))
+                    );
+                }
+
+                if (routes.length === 0) return;
+
+                hasResults = true;
+                const availableCount = routes.filter(r => r.available === true).length;
+                const takenCount = routes.filter(r => r.available === false).length;
+
+                html += `
+                    <div class="bus-card expanded" data-bus="${busId}">
+                        <div class="bus-header" onclick="toggleBus(this)">
+                            <div class="bus-info">
+                                <div class="bus-number">
+                                    <i class="fas fa-bus"></i> Bus ${busId}
+                                </div>
+                                <span class="bus-badge">
+                                    <i class="fas fa-route"></i> ${routes.length} Routes
+                                </span>
+                               
+                            </div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="routes-grid">
+                            ${routes.map(route => `
+                                <div class="route-item">
+                                    <div class="route-header">
+                                        <span class="route-name">${route.route_name}</span>
+                                        <span class="route-id">ID: ${route.route_id}</span>
+                                    </div>
+                                    <div class="route-path">
+                                        <span><i class="fas fa-map-marker-alt"></i> ${route.src || 'Start'}</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                        <span><i class="fas fa-flag-checkered"></i> ${route.dest || 'End'}</span>
+                                    </div>
+                                    <div class="route-footer">
+                                        <div style="display: flex; gap: 8px;">
+                                            <span class="status-badge ${route.available ? 'status-available' : 'status-taken'}">
+                                                <i class="fas ${route.available ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                                                ${route.available ? 'Available' : 'Taken'}
+                                            </span>
+                                           
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+
+            if (!hasResults) {
+                document.getElementById('busListContainer').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>No routes match your filters</p>
+                        <button class="btn btn-primary" onclick="resetFilters()">
+                            <i class="fas fa-times"></i> Clear Filters
+                        </button>
+                    </div>
+                `;
+            } else {
+                document.getElementById('busListContainer').innerHTML = html;
+            }
+        }
+
+        function toggleBus(element) {
+            const busCard = element.closest('.bus-card');
+            busCard.classList.toggle('expanded');
+        }
+
+        function applyFilters() {
+            renderBusList();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = 'all';
+            document.getElementById('busFilter').value = 'all';
+            renderBusList();
+        }
+
+        function viewDetails(routeId) {
+            const route = allRoutes.find(r => r.route_id === routeId);
+            if (route) {
+                alert(`
+Route Details:
+----------------
+Name: ${route.route_name}
+ID: ${route.route_id}
+From: ${route.src || 'N/A'}
+To: ${route.dest || 'N/A'}
+Direction: ${route.direction || 'UP'}
+Status: ${route.available ? 'Available' : 'Taken'}
+Bus Number: ${route.bus_id || 'Not Assigned'}
+                `);
+            }
+        }
+
+        function showLoading(show) {
+            if (!show) return;
+            document.getElementById('busListContainer').innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-circle-notch"></i>
+                    <p>Loading bus routes...</p>
+                </div>
+            `;
+        }
+
+        function showEmpty(message) {
+            document.getElementById('busListContainer').innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-bus"></i>
+                    <p>${message}</p>
+                    <button class="btn btn-primary" onclick="fetchRoutes()">
+                        <i class="fas fa-sync-alt"></i> Try Again
+                    </button>
+                </div>
+            `;
+        }
+
+        // Make functions global
+        window.toggleBus = toggleBus;
+        window.viewDetails = viewDetails;
+        window.resetFilters = resetFilters;
+        window.fetchRoutes = fetchRoutes;
+    </script>
+</body>
+</html>

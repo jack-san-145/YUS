@@ -41,10 +41,7 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 	router.Get("/yus/privacy-policy", handlers.ServePrivacyPolicy)
 	router.Get("/yus/yus_route", handlers.ServeYusRoute)
 
-	router.Get("/yus_admin/index", handlers.Serve_index_page)
 	router.Get("/yus_admin/login", handlers.Serve_login_page)
-	router.Get("/yus_admin/bus_schedule", handlers.Serve_bus_schedule_page)
-	router.Get("/yus_admin/driver", handlers.Serve_driver_page)
 	router.Get("/yus_admin/register", handlers.Serve_register_page)
 	router.Get("/yus_admin/otp_verify", handlers.Serve_otp_verify_page)
 
@@ -81,7 +78,7 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 	})
 
 	router.Group(func(protectedAdmin chi.Router) {
-		// protectedAdmin.Use(app.IsAdminAuthorized)
+		protectedAdmin.Use(app.IsAdminAuthorized)
 
 		//route creation
 		protectedAdmin.Post("/yus/save-same-path-route", h.Admin.SaveSameRouteHandler)
@@ -108,6 +105,11 @@ func NewRouter(app *AppPkg.Application, h *handlers.YUSHandler) *chi.Mux {
 
 		protectedAdmin.Get("/yus/backup_routes", h.Admin.GetBackupRoutesHandler)
 		protectedAdmin.Post("/yus/Save_backup_route", h.Admin.SaveBackupRoutesHandler)
+
+		router.Get("/yus_admin/index", handlers.Serve_index_page)
+		protectedAdmin.Get("/yus_admin/route_by_bus", handlers.Serve_route_by_bus_page)
+		protectedAdmin.Get("/yus_admin/bus_schedule", handlers.Serve_bus_schedule_page)
+		protectedAdmin.Get("/yus_admin/driver", handlers.Serve_driver_page)
 
 	})
 

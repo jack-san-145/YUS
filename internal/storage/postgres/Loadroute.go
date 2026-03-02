@@ -108,7 +108,7 @@ func (pg *PgStore) GetCurrentBusRoutes(ctx context.Context) ([]models.CurrentRou
 // function to load all up_routes
 func (pg *PgStore) GetAvailableRoutes(ctx context.Context) ([]models.AvilableRoute, error) {
 	var Available_routes []models.AvilableRoute
-	query := "select route_id,bus_idroute_name,src,dest,direction from all_routes where direction = 'UP' "
+	query := "select route_id,bus_id,route_name,src,dest,direction from all_routes where direction = 'UP' "
 	all_routes, err := pg.Pool.Query(ctx, query)
 	if err != nil {
 		log.Println("error while finding the the all_routes - ", err)

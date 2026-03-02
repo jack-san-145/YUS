@@ -28,6 +28,17 @@ func Serve_logo_page(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func Serve_route_by_bus_page(w http.ResponseWriter, r *http.Request) {
+
+	templ, err := template.ParseFiles("../../ui/YUS-Admin/templates/route_by_bus.html")
+	if err != nil {
+		log.Println("login.html not found - ", err)
+		return
+	}
+	templ.Execute(w, nil)
+
+}
+
 func Serve_login_page(w http.ResponseWriter, r *http.Request) {
 
 	templ, err := template.ParseFiles("../../ui/YUS-Admin/templates/login.html")
@@ -38,7 +49,6 @@ func Serve_login_page(w http.ResponseWriter, r *http.Request) {
 	templ.Execute(w, nil)
 
 }
-
 func Serve_otp_verify_page(w http.ResponseWriter, r *http.Request) {
 
 	templ, err := template.ParseFiles("../../ui/YUS-Admin/templates/otpverify.html")
