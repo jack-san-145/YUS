@@ -11,6 +11,7 @@ type Location struct {
 
 type Route struct {
 	Id                int          `json:"route_id"`
+	BusId             int          `json:"bus_id"`
 	UpRouteName       string       `json:"up_route_name"`
 	DownRouteName     string       `json:"down_route_name"`
 	Src               string       `json:"src"`

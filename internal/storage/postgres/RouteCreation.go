@@ -80,16 +80,16 @@ func (pg *PgStore) InsertRoute(ctx context.Context, route *models.Route) (int, e
 	}
 
 	//inserting route and route_stops
-	query := "insert into all_routes(route_id,route_name,src,dest,direction,departure_time,arrival_time) values($1,$2,$3,$4,$5,$6,$7);"
-	_, err = pg.Pool.Exec(ctx, query, route.Id, route_name, route.Src, route.Dest, route.Direction, departure_time, arrival_time)
+	query := "insert into all_routes(route_id,bus_id,route_name,src,dest,direction,departure_time,arrival_time) values($1,$2,$3,$4,$5,$6,$7);"
+	_, err = pg.Pool.Exec(ctx, query, route.Id, route.BusId, route_name, route.Src, route.Dest, route.Direction, departure_time, arrival_time)
 	if err != nil {
 		log.Println("error while inserting route to db - ", err)
 		return -1, fmt.Errorf("error")
 	}
 
 	for _, stop := range route.Stops {
-		query = "insert into route_stops(route_id,route_name,direction,stop_sequence,stop_name,is_stop,lat,lon,arrival_time,departure_time) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)"
-		_, err := pg.Pool.Exec(ctx, query, route.Id, route_name, route.Direction, stop.StopSequence, stop.LocationName, stop.IsStop, stop.Lat, stop.Lon, stop.Arrival_time, stop.Departure_time)
+		query = "insert into route_stops(route_id,bus_id,route_name,direction,stop_sequence,stop_name,is_stop,lat,lon,arrival_time,departure_time) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)"
+		_, err := pg.Pool.Exec(ctx, query, route.Id, route.BusId, route_name, route.Direction, stop.StopSequence, stop.LocationName, stop.IsStop, stop.Lat, stop.Lon, stop.Arrival_time, stop.Departure_time)
 		if err != nil {
 			log.Println("error while inserting the route stops  - ", err)
 			return -1, fmt.Errorf("error")

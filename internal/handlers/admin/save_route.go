@@ -6,12 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	// "strconv"
 	"yus/internal/handlers/common/response"
 	"yus/internal/models"
 )
-
-// var All_Bus_Routes []models.Route
 
 func (h *AdminHandler) SaveSameRouteHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -35,25 +32,6 @@ func (h *AdminHandler) SaveSameRouteHandler(w http.ResponseWriter, r *http.Reque
 		go h.Store.DB.StoreToBackupRoute(context.Background(), "SAME", &copied_route)
 	}
 	response.WriteJSON(w, r, map[string]string{"status": status})
-
-	/*
-		// 	admin-app needs to send json like the below format:
-
-			{
-				"up_route_name": "Sattur to Kamaraj-College",
-				"down_route_name":"Kamaraj-College to Sattur",
-				"src":"Sattur",
-				"dest":"Kamaraj-College",
-				"stops": [
-							{"location_name": "Sattur","lat": "9.3540035",  "lon": "77.9231079","is_stop":true,"arrival_time":"08:00"},
-							{"location_name": "rr nagar", "lat": "9.3538361", "lon": "77.9231022","is_stop":true,"arrival_time":"08:15"},
-							{"location_name": "soolakrai", "lat": "9.3538361", "lon": "77.9231022","is_stop":false,"arrival_time":"08:35"},
-							{"location_name": "collectrate", "lat": "9.3538361", "lon": "77.9231022","is_stop":true,"arrival_time":"08:45"},
-							{"location_name": "Kamaraj-College","lat": "9.3538282",  "lon": "77.9231091","is_stop":false,"arrival_time":"09:00"}
-						],
-				"down_departure_time":"16:40"
-			}
-	*/
 }
 
 func (h *AdminHandler) SaveDifferentRouteHandler(w http.ResponseWriter, r *http.Request) {
